@@ -1,1930 +1,1460 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <base target="_top">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-      /* =========================================
-         1. Global Variables & Body
-         ========================================= */
-      :root {
-        --primary-color: #4a90e2;
-        --bg-color: #f4f7f6;
-        --text-color: #333;
-      }
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PYH Product Code Request</title>
 
-      body {
-        font-family: 'Sarabun', sans-serif;
-        background-color: var(--bg-color);
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-        padding-top: 0;
-      }
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
-      /* =========================================
-         2. Navbar (แถบเมนูบน)
-         ========================================= */
-      .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
-        padding: 0 25px;
-        background-color: #fff;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        box-sizing: border-box;
-        height: 70px; /* ความสูงมาตรฐาน Desktop */
-      }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-      /* Logo Area */
-      .nav-left { flex: 0 0 auto; padding-left: 10px; }
-
-      /* Wrapper สำหรับเมนูที่จะย่อ/ขยาย (Center + Right) */
-      .nav-collapsible {
-        display: flex;
-        flex: 1;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .nav-center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 40px;
-        flex: 1; 
-      }
-      
-      .nav-right {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 15px;
-        padding-right: 10px;
-      }
-
-      .pyh-logo {
-        font-size: 32px;
-        font-weight: 800;
-        letter-spacing: 1px;
-        background: linear-gradient(135deg, #20a497 0%, #55c2b4 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-      }
-
-      .nav-link {
-        color: #777;
-        font-weight: 600;
-        font-size: 16px;
-        padding: 10px 20px;
-        border-radius: 8px;
-        transition: 0.2s;
-        cursor: pointer;
-        user-select: none;
-        text-align: center;
-        display: inline-block;
-      }
-
-      .nav-link:hover, .nav-link.active {
-        color: var(--primary-color);
-        background-color: #eef6fc;
-      }
-
-      /* Hamburger Icon (Desktop: Hide) */
-      .hamburger {
-        display: none;
-        cursor: pointer;
-        flex-direction: column;
-        justify-content: center;
-        gap: 6px;
-        width: 30px;
-        height: 30px;
-        z-index: 1001;
-        padding: 0;
-        background: transparent;
-        border: none;
-      }
-      .hamburger span {
-        display: block;
-        width: 100%;
-        height: 3px;
-        background-color: #444;
-        border-radius: 3px;
-        transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-      }
-
-      /* User Profile Display */
-      #user-info-display {
-        text-align: right;
-        font-size: 14px;
-        line-height: 1.2;
-        color: #555;
-      }
-      #current-user { display: block; font-weight: bold; color: #333; }
-      #current-role { font-size: 12px; color: #888; }
-
-      /* Logout Button */
-      button.logout-btn {
-        background-color: transparent;
-        border: 1px solid #ff4d4d;
-        color: #ff4d4d;
-        padding: 8px 15px;
-        font-size: 14px;
-        cursor: pointer;
-        border-radius: 6px;
-        transition: 0.2s;
-      }
-      button.logout-btn:hover {
-        background-color: #ff4d4d;
-        color: white;
-      }
-
-      /* Language Toggle Button */
-      .lang-btn {
-        background: #fff;
-        border: 1px solid #e1e5ea;
-        color: #666;
-        font-family: 'Sarabun', sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        border-radius: 30px;
-        padding: 8px 15px;
-        cursor: pointer;
-        margin-right: 10px;
-        min-width: 80px;
-        text-align: center;
-        transition: 0.2s;
-      }
-      .lang-btn:hover {
-        color: #20a497;
-        border-color: #20a497;
-        background: #f0fcfb;
-      }
-
-      /* =========================================
-         3. Containers
-         ========================================= */
-      .container {
-        background: white;
-        padding: 40px 35px;
-        border-radius: 15px;
-        border-top: 5px solid #20a497;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-        width: 100%;
-        max-width: 380px;
-        text-align: center;
-        box-sizing: border-box;
-        transition: max-width 0.3s ease;
-      }
-
-      .settings-card {
-        background: white;
-        padding: 40px;
-        border-radius: 15px;
-        box-shadow: 0 5px 30px rgba(0,0,0,0.08);
-        width: 95%;
-        max-width: 900px;
-        box-sizing: border-box;
-        margin: auto;
-        animation: fadeIn 0.5s;
-        text-align: center;
-      }
-      .settings-card table { width: 100%; }
-
-      /* =========================================
-         4. Login Section
-         ========================================= */
-      .login-header { margin-bottom: 35px; }
-      .login-brand {
-        font-family: 'Sarabun', sans-serif;
-        font-size: 48px;
-        font-weight: 800;
-        line-height: 1;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, #18bca2 0%, #20a497 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-      }
-      .login-subtitle {
-        color: #a0a0a0;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-      }
-
-      .input-group-icon { position: relative; margin-bottom: 20px; }
-      .input-group-icon input {
-        width: 100%;
-        padding: 12px 15px 12px 45px;
-        border: 1px solid #e1e5ea;
-        border-radius: 6px;
-        font-size: 14px;
-        color: #555;
-        font-family: 'Sarabun', sans-serif;
-        box-sizing: border-box;
-      }
-      .input-group-icon input:focus { border-color: #20a497; outline: none; }
-      
-      .icon-user, .icon-lock {
-        position: absolute; top: 50%; left: 15px; transform: translateY(-50%);
-        width: 18px; height: 18px; opacity: 0.4;
-        background-repeat: no-repeat; background-position: center;
-      }
-      .icon-user { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23555'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E"); }
-      .icon-lock { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23555'%3E%3Cpath d='M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/%3E%3C/svg%3E"); }
-
-      .btn-gradient {
-        background: linear-gradient(90deg, #2563eb 0%, #15b8a6 100%);
-        color: white; border: none; padding: 12px; border-radius: 6px;
-        font-size: 16px; font-weight: 600; cursor: pointer; width: 100%;
-        margin-top: 10px; transition: 0.3s; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-      }
-      .btn-gradient:hover { opacity: 0.9; transform: translateY(-1px); }
-
-      /* =========================================
-         5. Survey Form
-         ========================================= */
-      h2 { color: #333; margin-bottom: 10px; }
-
-      .survey-subtitle {
-        color: #888;           /* สีเทา */
-        font-size: 13px;       /* ตัวเล็ก */
-        text-align: center;
-        margin-top: 0;
-        margin-bottom: 25px;   /* เว้นระยะห่างจากฟอร์มด้านล่าง */
-        line-height: 1.5;
-        font-weight: 400;
-      }
-
-      .satisfaction-subtitle {
-        color: #888;
-        font-size: 12px;       /* ตัวเล็ก */
-        text-align: center;
-        margin-top: 5px;     /* ขยับขึ้นไปชิดหัวข้อด้านบน */
-        margin-bottom: 20px;   /* เว้นระยะห่างจากตัว Emoji ด้านล่าง */
-        font-weight: 400;
-        line-height: 1.4;
-      }
-
-      .input-group { margin-bottom: 15px; text-align: left; }
-      label { font-weight: 600; display: block; margin-bottom: 5px; color: #555; }
-      
-      select, textarea, .readonly-field, #contact {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 8px;      /* ปรับขอบมน */
-        font-family: 'Sarabun', sans-serif;
-        box-sizing: border-box;
-        margin-top: 10px;        /* เว้นระยะห่างจากเมนูด้านบน */
-        outline: none;
-        transition: all 0.3s;    /* เพิ่มความสมูท */
-      }
-
-      /* เพิ่มสีตอนกดคลิก (Focus) ให้เหมือนช่องอื่น */
-      /* สไตล์สำหรับช่องระบุข้อมูลเพิ่มเติม (Other) */
-      #other-specify {
-        width: 100%;                  /* กว้างเต็มพื้นที่ */
-        padding: 12px 15px;           /* เพิ่มพื้นที่ด้านในให้ดูโปร่ง พิมพ์ง่าย */
-        margin-top: 12px;             /* เว้นระยะห่างจากเมนูข้างบน */
-        
-        background-color: #fcfcfc;    /* สีพื้นหลังขาวอมเทานิดๆ ให้ดูมีมิติ */
-        border: 1px solid #e1e5ea;    /* เส้นขอบสีเทาอ่อน สบายตา */
-        border-radius: 10px;          /* ขอบมนโค้งกว่าเดิมเล็กน้อย */
-        
-        font-family: 'Sarabun', sans-serif;
-        font-size: 14px;
-        color: #333;
-        
-        box-sizing: border-box;       /* จัดขนาดไม่ให้ล้น */
-        transition: all 0.3s ease;    /* เอฟเฟกต์สมูทเวลาเอาเมาส์ไปชี้ */
-        box-shadow: inset 0 1px 2px rgba(0,0,0,0.03); /* เงาด้านในจางๆ */
-        
-        /* ซ่อนไว้ก่อน (จะโชว์เมื่อเลือก 'อื่นๆ') */
-        display: none; 
-      }
-
-      /* เมื่อคลิกพิมพ์ (Focus) */
-      #other-specify:focus {
-        background-color: #ffffff;    /* เปลี่ยนพื้นหลังเป็นสีขาวสว่าง */
-        border-color: #20a497;        /* เปลี่ยนขอบเป็นสีธีมหลัก (เขียว) */
-        box-shadow: 0 4px 12px rgba(32, 164, 151, 0.15); /* เพิ่มเงาฟุ้งๆ สวยงาม */
-        outline: none;                /* ลบเส้นขอบมาตรฐานออก */
-        transform: translateY(-1px);  /* ขยับลอยขึ้นนิดนึง */
-      }
-      
-      /* เมื่อเอาเมาส์ชี้ (Hover) */
-      #other-specify:hover {
-        border-color: #b0b8c1;
-      }
-
-      /* สไตล์คำอธิบายใต้หัวข้อ Contact */
-      .contact-subtitle {
-        color: #888;
-        font-size: 13px;
-        margin-top: -3px;
-        margin-bottom: 15px;
-        font-weight: 400;
-        line-height: 1.4;
-      }
-
-      /* สไตล์สำหรับช่องกรอกข้อมูลติดต่อทั้ง 4 ช่อง */
-      .contact-input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-family: 'Sarabun', sans-serif;
-        box-sizing: border-box;
-        margin-bottom: 10px; /* เว้นระยะห่างแต่ละช่อง */
-        outline: none;
-        transition: all 0.3s;
-      }
-      .contact-input:focus {
-        border-color: #20a497;
-        box-shadow: 0 0 5px rgba(32, 164, 151, 0.2);
-      }
-
-      .readonly-field { background-color: #e9ecef; cursor: not-allowed; color: #666; }
-
-      button#btn-submit {
-        background: linear-gradient(135deg, #20a497 0%, #15b8a6 100%);
-        color: white; border: none; padding: 14px 20px;
-        font-size: 16px; font-weight: 700; font-family: 'Sarabun', sans-serif;
-        letter-spacing: 1px; border-radius: 50px; cursor: pointer; width: 100%;
-        margin-top: 25px; box-shadow: 0 10px 25px rgba(32, 164, 151, 0.4);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      }
-      button#btn-submit:hover {
-        background: linear-gradient(135deg, #25cbbd 0%, #18bca2 100%);
-        transform: translateY(-3px); box-shadow: 0 15px 35px rgba(32, 164, 151, 0.5);
-      }
-      button#btn-submit:active { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(32, 164, 151, 0.4); }
-      button#btn-submit:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
-
-      .emoji-container { display: flex; justify-content: space-between; margin-bottom: 20px; }
-      .emoji-item { font-size: 35px; cursor: pointer; transition: transform 0.2s; opacity: 0.5; filter: grayscale(100%); }
-      .emoji-item:hover { transform: scale(1.2); }
-      .emoji-item.active { opacity: 1; filter: grayscale(0%); transform: scale(1.3); }
-      .emoji-label { font-size: 12px; margin-top: 5px; color: #666; }
-
-      /* =========================================
-         6. Tables
-         ========================================= */
-      #history-section { display: none; width: 100%; animation: fadeIn 0.5s; }
-      .history-table {
-        width: 100%; border-collapse: collapse; margin-top: 20px;
-        background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        border-radius: 8px; overflow: hidden; table-layout: fixed;
-      }
-      .history-table th, .history-table td {
-        padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px;
-      }
-      .history-table th { background-color: #20a497; color: white; font-weight: 600; white-space: nowrap; }
-      .history-table tr:hover { background-color: #f9f9f9; }
-      .no-data { text-align: center; padding: 20px; color: #888; font-style: italic; }
-
-      .settings-card .history-table th:nth-child(1) { width: 25%; }
-      .settings-card .history-table th:nth-child(2) { width: 30%; }
-      .settings-card .history-table th:nth-child(3) { width: 20%; }
-      .settings-card .history-table th:nth-child(4) { width: 25%; }
-
-      /* =========================================
-         7. Settings & User Management
-         ========================================= */
-      .settings-header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-      .btn-add-user {
-        background: linear-gradient(135deg, #4CAF50 0%, #43A047 100%);
-        color: white; border: none; padding: 10px 20px; border-radius: 30px;
-        font-size: 14px; font-weight: bold; cursor: pointer;
-        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); transition: 0.3s;
-        display: flex; align-items: center; gap: 5px; min-width: 160px; justify-content: center;
-      }
-      .btn-add-user:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4); }
-
-      .action-btn {
-        padding: 5px 10px; border-radius: 6px; border: none;
-        cursor: pointer; font-size: 12px; font-weight: 600;
-        margin: 0 2px; color: white; transition: 0.2s;
-      }
-      .btn-edit { background-color: #ff9800; } .btn-edit:hover { background-color: #f57c00; }
-      .btn-delete { background-color: #f44336; } .btn-delete:hover { background-color: #d32f2f; }
-      
-      .form-row { margin-bottom: 15px; text-align: left; }
-      .form-row label { display: block; font-size: 14px; color: #666; margin-bottom: 5px; font-weight: 600; }
-      .form-row input, .form-row select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun'; }
-
-      /* =========================================
-         8. Modals
-         ========================================= */
-      .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;
-        z-index: 2000; animation: fadeIn 0.3s;
-      }
-      .modal-box {
-        background: white; padding: 40px 60px; border-radius: 15px; text-align: center;
-        box-shadow: 0 5px 30px rgba(0,0,0,0.2); animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      }
-      .modal-box h3 { margin: 20px 0 0 0; color: #555; font-size: 28px; font-weight: 600; font-family: 'Sarabun', sans-serif; }
-
-      .success-icon-ring { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #4CAF50; display: inline-flex; justify-content: center; align-items: center; background-color: #fff; }
-      .checkmark { width: 56px; height: 56px; border-radius: 50%; display: block; stroke-width: 4; stroke: #4CAF50; stroke-miterlimit: 10; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
-      .checkmark__circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: #4CAF50; fill: none; animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards; }
-      .checkmark__check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards; }
-
-      .warning-icon-ring { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #ff9800; display: inline-flex; justify-content: center; align-items: center; background-color: #fff; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2); animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-      .warning-mark { font-size: 50px; font-weight: bold; color: #ff9800; font-family: sans-serif; margin-top: -5px; }
-
-      .btn-modal-ok { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; border: none; padding: 10px 30px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 10px rgba(245, 124, 0, 0.3); font-family: 'Sarabun', sans-serif; transition: 0.2s; }
-      .btn-modal-ok:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(245, 124, 0, 0.4); }
-      
-      .btn-modal-delete { background: linear-gradient(135deg, #ff5252 0%, #f44336 100%); color: white; border: none; padding: 10px 30px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3); transition: 0.2s; font-family: 'Sarabun', sans-serif; }
-      .btn-modal-delete:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(244, 67, 54, 0.4); }
-      .btn-modal-cancel { background: #f0f0f0; color: #666; border: 1px solid #ddd; padding: 10px 30px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: 'Sarabun', sans-serif; transition: 0.2s; }
-      .btn-modal-cancel:hover { background: #e0e0e0; color: #333; }
-
-      @keyframes stroke { 100% { stroke-dashoffset: 0; } }
-      @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-      /* =========================================
-         9. MEDIA QUERIES (Mobile & Desktop)
-         ========================================= */
-
-      /* ----- Mobile (Phone / Portrait) ----- */
-      /* จัดให้กระชับ พอดีจอ ไม่ต้องเลื่อนเยอะ */
-      @media screen and (max-width: 768px) {
-        /* Navbar เตี้ยลง */
-        .navbar {
-          padding: 0 15px;
-          height: 60px;
-          justify-content: space-between;
-        }
-
-        .pyh-logo { font-size: 24px; }
-        .nav-left { display: flex; align-items: center; padding-left: 0; }
-
-        /* Hamburger Show */
-        .hamburger {
-          display: flex;
-          margin-left: auto;
-          transform: scale(0.9);
-        }
-
-        /* เมนู Collapsible */
-        .nav-collapsible {
-          display: none;
-          position: fixed;
-          top: 60px; /* ต่อจาก Navbar */
-          left: 0;
-          width: 100%;
-          background: white;
-          flex-direction: column;
-          align-items: center;
-          padding: 10px 0;
-          box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-          z-index: 999;
-          border-bottom: 1px solid #f0f0f0;
-          animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        
-        .nav-collapsible.active { display: flex; }
-
-        /* Links in Mobile */
-        .nav-center {
-          flex-direction: column;
-          gap: 0;
-          width: 100%;
-        }
-        .nav-link {
-          width: 100%;
-          padding: 15px 0;
-          border-bottom: 1px solid #f5f5f5;
-          border-radius: 0;
-        }
-
-        /* User Info in Mobile */
-        .nav-right {
-          flex-direction: column;
-          width: 100%;
-          gap: 15px;
-          margin-top: 15px;
-          padding: 0 0 10px 0;
-        }
-        #user-info-display { margin-bottom: 5px; }
-
-        /* Animation */
-        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); background-color: #ff4d4d; }
-        .hamburger.open span:nth-child(2) { opacity: 0; }
-        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); background-color: #ff4d4d; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- Body & Container Adjustments (FIT SCREEN) --- */
-        body {
-          display: block;
-          padding-top: 0 !important;
-          height: auto !important;
-          overflow-y: auto !important;
-          background-color: #f0f2f5;
-        }
-
-        .container {
-          width: 96% !important;
-          max-width: 100% !important;
-          /* ระยะห่าง: บน 75px (พ้น Navbar) / ล่าง 20px / ซ้ายขวา auto */
-          margin: 75px auto 20px auto !important; 
-          padding: 15px;
-          border-radius: 12px;
-        }
-
-        .settings-card {
-          width: 98%;
-          padding: 15px 5px;
-          margin-top: 75px !important;
-        }
-
-        /* ลดขนาดตัวอักษรและช่องว่างให้กระชับ */
-        h2 { font-size: 18px; margin-bottom: 10px; margin-top: 0; }
-        .input-group { margin-bottom: 8px; }
-        label { font-size: 13px; margin-bottom: 2px; }
-        input, select, textarea, .readonly-field {
-          padding: 8px 10px;
-          font-size: 14px;
-          height: auto;
-        }
-        textarea#suggestion { height: 60px; }
-        
-        /* Emoji Compact */
-        .emoji-container { margin-bottom: 10px; gap: 2px; }
-        .emoji-item { font-size: 30px; }
-        .emoji-label { font-size: 10px; margin-top: 2px; }
-
-        /* Button Compact */
-        button#btn-submit { margin-top: 15px; padding: 10px; font-size: 15px; }
-      }
-
-      /* ----- Desktop (PC / Laptop) ----- */
-      @media screen and (min-width: 769px) {
-        
-        /* 1. จัดเมนู (Home, History, Settings) ให้อยู่ตรงกลางจอเป๊ะๆ */
-        .nav-center {
-          position: absolute;      /* ลอยตัวออกมา */
-          left: 50%;               /* จุดเริ่มอยู่ที่ 50% ของหน้าจอ */
-          transform: translateX(-50%); /* ขยับกลับมาครึ่งตัวเพื่อให้กลางพอดี */
-          width: auto;
-          justify-content: center;
-        }
-
-        /* 2. สั่งให้กล่องรวมเมนู ดันส่วน User Info ไป "ขวาสุด" */
-        .nav-collapsible {
-          display: flex;
-          flex: 1;                 /* ยืดให้เต็มพื้นที่ที่เหลือ */
-          justify-content: flex-end; /* สำคัญ: ดัน .nav-right ไปชิดขอบขวา */
-          align-items: center;
-        }
-      }
-
-      /* --- Luxury Loading Spinner --- */
-      .loader {
-        border: 3px solid #f3f3f3; /* สีพื้นหลังวงกลมแบบจางๆ */
-        border-top: 3px solid #20a497; /* สีหลัก (Theme Color) */
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: spin 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) infinite; /* หมุนแบบสมูท */
-        margin: 0 auto 15px auto; /* จัดกึ่งกลางและเว้นระยะห่างจากตัวหนังสือ */
-      }
-
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-
-      /* ปรับแต่ง Modal Loading ให้ดูคลีน */
-      .loading-box {
-        background: white;
-        padding: 30px 50px;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.15); /* เงานุ่มๆ ให้ดูลอยมีมิติ */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      }
-
-      .loading-text {
-        font-family: 'Sarabun', sans-serif;
-        font-size: 18px;
-        color: #555;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-      }
-
-      .footer-message {
-        color: #999;           /* สีเทาอ่อน */
-        font-size: 11px;       /* ตัวเล็ก */
-        text-align: center;
-        margin-top: 15px;
-        margin-bottom: 15px;   /* เว้นระยะห่างจากปุ่ม */
-        line-height: 1.4;
-        font-weight: 400;
-        padding: 0 10px;       /* กันข้อความชิดขอบจอเกินไปในมือถือ */
-      }
-
-      /* --- Luxury Detail Modal --- */
-      .detail-modal-box {
-        background: #ffffff;
-        width: 90%;
-        max-width: 500px;
-        padding: 0; /* Reset padding เพื่อจัด Header สวยๆ */
-        border-radius: 20px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.25); /* เงาลึกให้ดูลอย */
-        overflow: hidden;
-        animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        text-align: left;
-        position: relative;
-      }
-
-      .detail-header {
-        background: linear-gradient(135deg, #20a497 0%, #15b8a6 100%);
-        padding: 25px 30px;
-        color: white;
-        position: relative;
-      }
-      .detail-header h3 {
-        margin: 0;
-        font-family: 'Sarabun', sans-serif;
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-      }
-      .btn-close-detail {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: 0.2s;
-      }
-      .btn-close-detail:hover { background: rgba(255,255,255,0.4); }
-
-      .detail-body {
-        padding: 30px;
-        overflow-y: auto;
-        max-height: 70vh; /* กันทะลุจอถ้ายาวมาก */
-      }
-
-      .detail-item {
-        margin-bottom: 20px;
-        border-bottom: 1px solid #f0f0f0;
-        padding-bottom: 15px;
-      }
-      .detail-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-
-      .detail-label {
-        font-size: 13px;
-        color: #888;
-        font-weight: 600;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .detail-value {
-        font-size: 16px;
-        color: #333;
-        font-weight: 500;
-        line-height: 1.6;
-        white-space: pre-wrap; /* เพื่อให้ขึ้นบรรทัดใหม่ได้ */
-        word-break: break-word;
-      }
-      
-      /* ทำให้แถวในตารางกดได้ */
-      .history-table tbody tr {
-        cursor: pointer;
-        transition: background-color 0.2s;
-      }
-      .history-table tbody tr:hover {
-        background-color: #eefbf9; /* สีเขียวอ่อนๆ เวลาชี้ */
-      }
+  <style>
+    body { font-family: 'Kanit', 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
+    .pyh-gradient { background: linear-gradient(135deg, #10B981, #06B6D4); }
+    .pyh-gradient-text {
+      background: linear-gradient(135deg, #10B981, #06B6D4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page { display: none; }
+    .btn-icon-no-pointer { pointer-events: none; }
   </style>
-  </head>
-  <body>
-    <a href="index.html" style="position:fixed; top:10px; left:10px; z-index:9999; background:rgba(0,0,0,0.5); color:white; padding:8px 12px; border-radius:20px; text-decoration:none; font-family:sans-serif; font-size:12px;">
-    ⬅ Home
-    </a>
+</head>
 
-    <nav class="navbar" id="main-navbar" style="display: none;">
-      <div class="nav-left"><span class="pyh-logo">PYH</span></div>
+<body class="bg-gray-100 min-h-screen">
 
-      <div class="hamburger" onclick="toggleMenu(this)">
-        <span></span>
-        <span></span>
-        <span></span>
+  <a href="index.html" class="fixed top-4 left-4 z-50 bg-gray-800 text-white px-3 py-2 rounded-full text-xs hover:bg-gray-700 shadow-lg flex items-center transition-all">
+    <i data-feather="arrow-left" class="w-3 h-3 mr-1"></i> Back to Portal
+  </a>
+
+  <div id="login-page" class="page flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-2xl p-8 overflow-hidden">
+      <div class="text-center mb-8">
+        <h1 class="text-5xl font-bold pyh-gradient-text">PYH</h1>
+        <p class="text-gray-500 mt-2">ระบบขอเปิดรหัสสินค้า</p>
       </div>
-
-      <div class="nav-collapsible" id="nav-collapsible">
-          <div class="nav-center">
-            <a class="nav-link active" onclick="switchTab('main', this); closeMenu();" id="nav-home">หน้าหลัก</a>
-            <a class="nav-link" onclick="switchTab('history', this); closeMenu();" id="nav-history">ประวัติ</a>
-            <a class="nav-link" onclick="switchTab('settings', this); closeMenu();" id="nav-settings">ตั้งค่า</a>
-          </div>
-          <div class="nav-right">
-            <div id="user-info-display">
-              <span id="current-user">User</span><span id="current-role">(Role)</span>
+      <form id="login-form" class="space-y-6">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">ชื่อผู้ใช้</label>
+          <div class="mt-1 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-feather="user" class="w-5 h-5 text-gray-400"></i>
             </div>
-            <button class="lang-btn" onclick="toggleLanguage()">TH | EN</button>
-            <button class="logout-btn" onclick="logout()" id="btn-logout">ออกจากระบบ</button>
+            <input type="text" id="username" name="username" class="focus:ring-cyan-500 focus:border-cyan-500 block w-full pl-10 pr-4 sm:text-sm border-gray-300 rounded-lg h-12" placeholder="เช่น admin หรือ IT">
           </div>
-      </div>
-    </nav>
-
-    <div class="container" id="main-container">
-      
-      <div id="login-section">
-        <div class="login-header">
-          <div class="pyh-logo login-brand">PYH</div>
-          <div class="login-subtitle">SERVICE EVALUATION SYSTEM</div>
         </div>
-        <div class="input-group-icon">
-          <input type="text" id="username" placeholder="Username"><span class="icon-user"></span>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
+          <div class="mt-1 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-feather="lock" class="w-5 h-5 text-gray-400"></i>
+            </div>
+            <input type="password" id="password" name="password" class="focus:ring-cyan-500 focus:border-cyan-500 block w-full pl-10 pr-4 sm:text-sm border-gray-300 rounded-lg h-12" placeholder="••••••••">
+          </div>
         </div>
-        <div class="input-group-icon">
-          <input type="password" id="password" placeholder="Password"><span class="icon-lock"></span>
-        </div>
-        <button onclick="checkLogin()" class="btn-gradient" id="btn-login">เข้าสู่ระบบ</button>
-      </div>
-
-      <div id="survey-section" style="display:none;">
-        <div class="input-group">
-          <label id="lbl-date">วันที่และเวลา</label>
-          <input type="text" id="realtime-clock" class="readonly-field" readonly>
-        </div>
-          <h2 id="survey-header" style="text-align: center; margin-top: 25px;">แบบประเมินความพึงพอใจ</h2>        
-          <p id="survey-subtitle" class="survey-subtitle">ขอบคุณที่ไว้วางใจ Phuket Yacht Haven ความคิดเห็นของท่านจะช่วยให้เราปรับปรุงและมอบประสบการณ์ที่ดียิ่งขึ้น</p>
-        
-        <label style="text-align:center; margin-bottom:5px; display:block; margin-top: 15px;" id="lbl-sat">ระดับความพึงพอใจ</label>
-        <p id="lbl-sat-sub" class="satisfaction-subtitle">ท่านพึงพอใจกับประสบการณ์โดยรวมระหว่างการเข้าพักมากน้อยเพียงใด?</p>
-        <div class="emoji-container">
-          <div onclick="selectEmoji(5, this)"><div class="emoji-item">🤩</div><div class="emoji-label" id="emoji-label-5">ยอดเยี่ยม</div></div>
-          <div onclick="selectEmoji(4, this)"><div class="emoji-item">😄</div><div class="emoji-label" id="emoji-label-4">ดีมาก</div></div>
-          <div onclick="selectEmoji(3, this)"><div class="emoji-item">😐</div><div class="emoji-label" id="emoji-label-3">ปานกลาง</div></div>
-          <div onclick="selectEmoji(2, this)"><div class="emoji-item">😕</div><div class="emoji-label" id="emoji-label-2">พอใช้</div></div>
-          <div onclick="selectEmoji(1, this)"><div class="emoji-item">😫</div><div class="emoji-label" id="emoji-label-1">ปรับปรุง</div></div>
-        </div>
-        <div class="input-group">
-          <label id="lbl-group">กลุ่มลูกค้า</label>
-          <select id="customer-group" onchange="toggleOtherInput()">
-            <option value="" disabled selected id="opt-default">-- เลือกกลุ่มลูกค้า --</option>
-            <option value="Boat Owner" id="opt-1">เจ้าของเรือ</option>
-            <option value="Captain & Crew" id="opt-2">กัปตันและลูกเรือ</option>
-            <option value="Charter Company Guest" id="opt-3">แขกบริษัทเช่าเหมาลำ</option>
-            <option value="Restaurant Guest" id="opt-4">ลูกค้าร้านอาหาร</option>
-            <option value="Other" id="opt-5">อื่นๆ (โปรดระบุ)</option>
-          </select>
-          <input type="text" id="other-specify" placeholder="โปรดระบุ..." style="display:none; margin-top:10px;">
-        </div>
-        <div class="input-group">
-          <label id="lbl-contact">ช่องทางการติดต่อ (ไม่บังคับ)</label>
-          <p id="lbl-contact-sub" class="contact-subtitle">หากจำเป็นต้องติดตามผล เราสามารถติดต่อท่านผ่านช่องทางใดได้บ้าง?</p>
-            <input type="text" id="c-phone" class="contact-input" placeholder="เบอร์โทรศัพท์">
-            <input type="text" id="c-line" class="contact-input" placeholder="Line ID">
-            <input type="text" id="c-email" class="contact-input" placeholder="อีเมล">
-            <input type="text" id="c-other" class="contact-input" placeholder="อื่นๆ (โปรดระบุ)">        
-        </div>
-        <div class="input-group">
-          <label id="lbl-suggestion">ข้อเสนอแนะ (ไม่บังคับ)</label>
-          <textarea id="suggestion" rows="3" placeholder="ความคิดเห็นเพิ่มเติม..."></textarea>
-        </div>
-        <p id="survey-footer" class="footer-message">ขอบคุณค่ะ! เราขอขอบคุณที่สละเวลาและให้ข้อมูลอันมีค่า เพื่อนำไปพัฒนา PYH ให้ดียิ่งขึ้น</p>
-
-        <button onclick="submitForm()" id="btn-submit">บันทึกข้อมูล</button>
-      </div>
-
-      <div id="history-section" style="display:none;">
-        <h2 style="text-align:center; color:#333;" id="history-header">ประวัติการบันทึกข้อมูล</h2>
-        <div style="overflow-x: auto;">
-          <table class="history-table">
-            <thead>
-              <tr>
-                <th id="th-date">วัน-เวลา</th>
-                <th id="th-sat">ความพึงพอใจ</th>
-                <th id="th-group">กลุ่มลูกค้า</th>
-                <th id="th-contact">ติดต่อ</th>
-                <th id="th-suggest">ข้อเสนอแนะ</th>
-              </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-          </table>
-          <div id="loading-msg" class="no-data" style="display:none;">กำลังโหลดข้อมูล...</div>
-        </div>
-      </div>
-    </div>
-
-    <div id="settings-container" class="settings-card" style="display:none;">
-        <div class="settings-header-box">
-          <h2 style="margin:0; color:#333;" id="settings-header">จัดการผู้ใช้งาน</h2>
-          <button class="btn-add-user" onclick="openUserModal()">
-            <span id="btn-add-user-text">+ เพิ่มผู้ใช้งาน</span>
+        <div id="login-error-msg" class="text-red-600 text-sm text-center"></div>
+        <div>
+          <button type="submit" id="login-button" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white pyh-gradient hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+            เข้าสู่ระบบ
           </button>
         </div>
-        <div style="overflow-x: auto;">
-          <table class="history-table">
-            <thead>
-              <tr>
-                <th id="th-u-user">Username</th>
-                <th id="th-u-dept">แผนก (Department)</th>
-                <th id="th-u-role">สิทธิ์ (Role)</th>
-                <th style="text-align:center;" id="th-u-action">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="user-table-body"></tbody>
-          </table>
-          <div id="loading-users" class="no-data" style="display:none;">กำลังโหลดรายชื่อ...</div>
-        </div>
+      </form>
     </div>
+  </div>
 
-    <div id="user-modal" class="modal-overlay" style="display: none;">
-      <div class="modal-box" style="text-align: left; max-width: 400px; width:90%;">
-        <h3 id="user-modal-title" style="margin-top:0; margin-bottom:20px; text-align:center;">เพิ่มผู้ใช้งาน</h3>
-        <input type="hidden" id="old-username"> 
-        <div class="form-row"><label id="lbl-u-user">Username</label><input type="text" id="u-username" placeholder="ตั้งชื่อผู้ใช้"></div>
-        <div class="form-row"><label id="lbl-u-pass">Password</label><input type="text" id="u-password" placeholder="ตั้งรหัสผ่าน"></div>
-        <div class="form-row"><label id="lbl-u-dept">แผนก / สังกัด</label><input type="text" id="u-dept" placeholder="เช่น IT, HR, Admin"></div>
-        <div class="form-row">
-          <label id="lbl-u-role">สิทธิ์การใช้งาน</label>
-          <select id="u-role"><option value="user">User (ผู้ใช้ทั่วไป)</option><option value="admin">Admin (ผู้ดูแลระบบ)</option></select>
-        </div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-          <button id="btn-save-user" class="btn-gradient" onclick="saveUser()" style="margin-top:0;">บันทึก</button>
-          <button id="btn-cancel-user" class="btn-gradient" onclick="closeUserModal()" style="margin-top:0; background:#999;">ยกเลิก</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="success-modal" class="modal-overlay" style="display: none;">
-      <div class="modal-box">
-        <div class="success-icon-ring">
-          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-          </svg>
-        </div>
-        <h3 id="modal-success-text">Success!</h3>
-      </div>
-    </div>
-
-    <div id="alert-modal" class="modal-overlay" style="display: none;">
-      <div class="modal-box">
-        <div class="warning-icon-ring"><span class="warning-mark">!</span></div>
-        <h3 id="alert-title">แจ้งเตือน</h3>
-        <p id="alert-message" style="color:#666; margin-top:10px;">ข้อความแจ้งเตือน</p>
-        <button class="btn-modal-ok" onclick="closeAlertModal()">ตกลง</button>
-      </div>
-    </div>
-
-    <div id="confirm-modal" class="modal-overlay" style="display: none;">
-      <div class="modal-box">
-        <div class="warning-icon-ring" style="border-color: #f44336;">
-          <span class="warning-mark" style="color: #f44336;">?</span>
-        </div>
-        <h3 id="confirm-title">ยืนยันการลบ</h3>
-        <p id="confirm-message" style="color:#666; margin-top:10px;">คุณต้องการลบผู้ใช้นี้ใช่หรือไม่?</p>
-        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
-            <button class="btn-modal-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
-            <button class="btn-modal-delete" onclick="executeDelete()">ลบข้อมูล</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="loading-modal" class="modal-overlay" style="display: none;">
-      <div class="loading-box">
-        <div class="loader"></div>
-        <div id="loading-text" class="loading-text">กำลังบันทึกข้อมูล...</div>
-      </div>
-    </div>
-
-    <div id="detail-modal" class="modal-overlay" style="display: none; backdrop-filter: blur(5px);">
-      <div class="detail-modal-box">
-        <div class="detail-header">
-          <h3 id="detail-title">รายละเอียดการบันทึก</h3>
-          <button class="btn-close-detail" onclick="closeDetailModal()">✕</button>
-        </div>
-        <div class="detail-body">
-          
-          <div class="detail-item">
-            <div class="detail-label" id="lbl-d-date">วัน-เวลา (Date & Time)</div>
-            <div class="detail-value" id="d-date"></div>
+  <div id="main-app" class="page min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-8">
+            <div class="flex-shrink-0">
+              <span class="text-3xl font-bold pyh-gradient-text">PYH</span>
+            </div>
+            <div class="hidden md:flex space-x-4">
+              <a href="#" id="nav-home" class="nav-link text-gray-700 hover:text-cyan-600 px-3 py-2 rounded-md text-sm font-medium" data-page="home">หน้าหลัก</a>
+              <a href="#" id="nav-history" class="nav-link text-gray-700 hover:text-cyan-600 px-3 py-2 rounded-md text-sm font-medium" data-page="history">ประวัติคำขอ</a>
+              <a href="#" id="nav-settings" class="nav-link text-gray-700 hover:text-cyan-600 px-3 py-2 rounded-md text-sm font-medium admin-only-item" data-page="settings">ตั้งค่า (Admin)</a>
+            </div>
           </div>
-
-          <div class="detail-item">
-            <div class="detail-label" id="lbl-d-sat">ความพึงพอใจ (Satisfaction)</div>
-            <div class="detail-value" id="d-sat" style="color:#20a497; font-weight:bold;"></div>
+          <div class="flex items-center space-x-4">
+            <div class="text-right">
+              <div id="user-info-name" class="text-sm font-medium text-gray-800"></div>
+              <div id="user-info-dept" class="text-xs text-gray-500"></div>
+            </div>
+            <button id="logout-button" class="p-2 rounded-full text-gray-500 hover:text-cyan-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+              <i data-feather="log-out" class="w-5 h-5"></i>
+            </button>
           </div>
+        </div>
+      </nav>
+    </header>
 
-          <div class="detail-item">
-            <div class="detail-label" id="lbl-d-group">กลุ่มลูกค้า (Customer Group)</div>
-            <div class="detail-value" id="d-group"></div>
-          </div>
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 
-          <div class="detail-item">
-            <div class="detail-label" id="lbl-d-contact">ข้อมูลติดต่อ (Contact)</div>
-            <div class="detail-value" id="d-contact"></div>
-          </div>
-
-          <div class="detail-item">
-            <div class="detail-label" id="lbl-d-suggest">ข้อเสนอแนะ (Suggestion)</div>
-            <div class="detail-value" id="d-suggest" style="font-style: italic; color:#555;"></div>
-          </div>
-
+      <div id="app-page-home" class="app-page px-4">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 max-w-3xl mx-auto">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-6">แบบฟอร์มขอเปิดรหัสสินค้าใหม่</h2>
+          <form id="request-form" class="space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label for="req-date" class="block text-sm font-medium text-gray-700">วันที่ขอเปิดรหัส</label>
+                <input type="date" id="req-date" name="req-date" class="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3">
+              </div>
+              <div>
+                <label for="req-department" class="block text-sm font-medium text-gray-700">แผนก</label>
+                <input type="text" id="req-department" name="req-department" readonly class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3 bg-gray-100 text-gray-500">
+              </div>
+            </div>
+            <div>
+              <label for="req-product-name" class="block text-sm font-medium text-gray-700">ชื่อสินค้า (ไทย/อังกฤษ) *</label>
+              <input type="text" id="req-product-name" name="req-product-name" required class="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label for="req-product-type" class="block text-sm font-medium text-gray-700">ประเภทสินค้า *</label>
+                <select id="req-product-type" name="req-product-type" required class="mt-1 block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm h-11">
+                </select>
+              </div>
+              <div>
+                <label for="req-unit" class="block text-sm font-medium text-gray-700">หน่วยนับ *</label>
+                <select id="req-unit" name="req-unit" required class="mt-1 block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm h-11">
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label for="req-requester-name" class="block text-sm font-medium text-gray-700">ชื่อผู้ขอเปิดรหัส *</label>
+                <input type="text" id="req-requester-name" name="req-requester-name" required class="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3">
+              </div>
+              <div>
+                <label for="req-position" class="block text-sm font-medium text-gray-700">ตำแหน่ง *</label>
+                <input type="text" id="req-position" name="req-position" required class="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">รหัสสินค้า</label>
+              <p class="mt-1 text-gray-500 bg-gray-100 rounded-md h-11 px-3 py-2.5 sm:text-sm">รอดำเนินการ</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">แนบรูปภาพ (ถ้ามี)</label>
+              <input type="file" id="req-image" name="req-image" class="hidden" accept="image/*">
+              <div class="mt-1 flex items-center">
+                <label for="req-image" class="cursor-pointer rounded-md border-0 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-700 hover:bg-cyan-100">
+                  Choose File
+                </label>
+                <span id="file-name-display" class="ml-3 text-sm text-gray-500">
+                  No file chosen
+                </span>
+              </div>
+              <div class="mt-4">
+                <img id="req-image-preview" src="#" alt="ตัวอย่างรูปภาพ" class="hidden w-full max-w-xs rounded-lg shadow-md border" />
+              </div>
+            </div>
+            <div class="pt-5 text-right">
+              <button type="submit" id="submit-request-button" class="inline-flex justify-center py-2.5 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i data-feather="save" class="w-5 h-5 mr-2"></i>
+                บันทึกคำขอ
+              </button>
+            </div>
+          </form>
         </div>
       </div>
+
+      <div id="app-page-history" class="app-page px-4">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+          <h2 id="history-title" class="text-2xl font-semibold text-gray-900 mb-6">ประวัติคำขอ</h2>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div id="filter-dept-container" class="manager-plus-item">
+              <label for="filter-dept" class="block text-sm font-medium text-gray-700">แผนก</label>
+              <select id="filter-dept" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm h-11">
+                <option value="all">ดูทั้งหมด</option>
+              </select>
+            </div>
+            <div>
+              <label for="filter-status" class="block text-sm font-medium text-gray-700">สถานะ</label>
+              <select id="filter-status" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm h-11">
+                <option value="all">ดูทั้งหมด</option>
+              </select>
+            </div>
+            <div>
+              <label for="filter-date-start" class="block text-sm font-medium text-gray-700">วันที่ (เริ่มต้น)</label>
+              <input type="date" id="filter-date-start" class="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3">
+            </div>
+            <div>
+              <label for="filter-date-end" class="block text-sm font-medium text-gray-700">วันที่ (สิ้นสุด)</label>
+              <input type="date" id="filter-date-end" class="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label for="filter-search" class="block text-sm font-medium text-gray-700">ค้นหาชื่อสินค้า</label>
+              <input type="text" id="filter-search" class="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3" placeholder="พิมพ์เพื่อค้นหาชื่อ...">
+            </div>
+            <div>
+              <label for="filter-search-code" class="block text-sm font-medium text-gray-700">ค้นหารหัสสินค้า</label>
+              <input type="text" id="filter-search-code" class="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md h-11 px-3" placeholder="พิมพ์เพื่อค้นหารหัส...">
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ขอ</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อสินค้า</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider manager-plus-item-cell">
+                    แผนก</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รหัสสินค้า
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body" class="bg-white divide-y divide-gray-200">
+              </tbody>
+            </table>
+            <div id="history-no-data" class="text-center py-12 text-gray-500" style="display: none;">
+              <i data-feather="inbox" class="w-16 h-16 mx-auto mb-4"></i>
+              <p>ไม่พบข้อมูลคำขอ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="app-page-settings" class="app-page px-4">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">ตั้งค่าระบบ (Admin)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-2 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">จัดการผู้ใช้งาน</h3>
+            <form id="add-user-form" class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-4 p-4 border rounded-lg bg-gray-50">
+              <input type="text" id="new-user-username" placeholder="Username" class="sm:text-sm border-gray-300 rounded-md" required>
+              <input type="password" id="new-user-password" placeholder="Password" class="sm:text-sm border-gray-300 rounded-md" required>
+              <select id="new-user-role" class="sm:text-sm border-gray-300 rounded-md" required>
+                <option value="user">User</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+              </select>
+              <input type="text" id="new-user-dept" placeholder="Department" class="sm:text-sm border-gray-300 rounded-md" required>
+              <button type="submit" class="sm:col-span-1 md:col-span-1 text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-md text-sm px-4 py-2 flex items-center justify-center">
+                <i data-feather="plus" class="w-4 h-4 mr-1"></i> เพิ่มผู้ใช้
+              </button>
+            </form>
+            <div class="overflow-y-auto max-h-96">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Username</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="settings-user-table-body" class="bg-white divide-y divide-gray-200">
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="md:col-span-1 space-y-6">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">จัดการ "หน่วยนับ"</h3>
+              <form id="setting-unit-form" class="flex gap-2 mb-3">
+                <input type="text" id="new-unit-value" placeholder="เพิ่มหน่วยนับใหม่" class="flex-grow sm:text-sm border-gray-300 rounded-md" required>
+                <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 rounded-md px-3 py-2">
+                  <i data-feather="plus" class="w-5 h-5"></i>
+                </button>
+              </form>
+              <ul id="settings-unit-list" class="space-y-2 max-h-40 overflow-y-auto">
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">จัดการ "ประเภทสินค้า"</h3>
+              <form id="setting-product-type-form" class="flex gap-2 mb-3">
+                <input type="text" id="new-product-type-value" placeholder="เพิ่มประเภทใหม่" class="flex-grow sm:text-sm border-gray-300 rounded-md" required>
+                <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 rounded-md px-3 py-2">
+                  <i data-feather="plus" class="w-5 h-5"></i>
+                </button>
+              </form>
+              <ul id="settings-product-type-list" class="space-y-2 max-h-40 overflow-y-auto">
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">จัดการ "สถานะ"</h3>
+              <form id="setting-status-form" class="flex gap-2 mb-3">
+                <input type="text" id="new-status-value" placeholder="เพิ่มสถานะใหม่" class="flex-grow sm:text-sm border-gray-300 rounded-md" required>
+                <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 rounded-md px-3 py-2">
+                  <i data-feather="plus" class="w-5 h-5"></i>
+                </button>
+              </form>
+              <ul id="settings-status-list" class="space-y-2 max-h-40 overflow-y-auto">
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="request-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <form id="modal-form">
+        <div class="p-6 md:p-8">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-900">รายละเอียดคำขอ</h2>
+            <button type="button" id="modal-close-button" class="text-gray-400 hover:text-gray-600">
+              <i data-feather="x" class="w-6 h-6"></i>
+            </button>
+          </div>
+          <div class="space-y-5">
+            <input type="hidden" id="modal-request-id">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label for="modal-date" class="block text-sm font-medium text-gray-700">วันที่ขอเปิดรหัส</label>
+                <input type="date" id="modal-date" class="modal-field mt-1 w-full border-gray-300 rounded-md h-11 px-3">
+              </div>
+              <div>
+                <label for="modal-department" class="block text-sm font-medium text-gray-700">แผนก</label>
+                <input type="text" id="modal-department" readonly class="modal-field mt-1 w-full border-gray-300 rounded-md h-11 px-3 bg-gray-100 text-gray-500">
+              </div>
+            </div>
+            <div>
+              <label for="modal-product-name" class="block text-sm font-medium text-gray-700">ชื่อสินค้า (ไทย/อังกฤษ)</label>
+              <input type="text" id="modal-product-name" class="modal-field mt-1 w-full border-gray-300 rounded-md h-11 px-3">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label for="modal-product-type" class="block text-sm font-medium text-gray-700">ประเภทสินค้า</label>
+                <select id="modal-product-type" class="modal-field mt-1 block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm h-11">
+                </select>
+              </div>
+
+              <div>
+                <label for="modal-unit" class="block text-sm font-medium text-gray-700">หน่วยนับ</label>
+                <select id="modal-unit" class="modal-field mt-1 block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm h-11">
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label for="modal-requester-name" class="block text-sm font-medium text-gray-700">ชื่อผู้ขอเปิดรหัส</label>
+                <input type="text" id="modal-requester-name" class="modal-field mt-1 w-full border-gray-300 rounded-md h-11 px-3">
+              </div>
+              <div>
+                <label for="modal-position" class="block text-sm font-medium text-gray-700">ตำแหน่ง</label>
+                <input type="text" id="modal-position" class="modal-field mt-1 w-full border-gray-300 rounded-md h-11 px-3">
+              </div>
+            </div>
+            <div id="modal-image-container" class="space-y-2 hidden">
+              <label class="block text-sm font-medium text-gray-700">รูปภาพที่แนบ</label>
+              <div>
+                <a id="modal-image-link" href="#" target="_blank" rel="noopener noreferrer">
+                  <img id="modal-image-preview" src="#" class="max-w-xs w-full rounded-lg shadow-md border hover:opacity-90 transition-opacity" alt="รูปภาพที่แนบ">
+                </a>
+                <a id="modal-image-link-text" href="#" target="_blank" rel="noopener noreferrer" class="mt-2 inline-block text-sm text-cyan-600 hover:text-cyan-800">
+                  <i data-feather="external-link" class="w-4 h-4 mr-1 inline-block -mt-1"></i>
+                  เปิดรูปภาพในแท็บใหม่
+                </a>
+              </div>
+            </div>
+            <div id="modal-image-upload-container" class="space-y-2 hidden pt-4 border-t border-gray-200">
+              <label class="block text-sm font-medium text-gray-700">
+                เปลี่ยนรูปภาพ (ถ้าต้องการ)
+              </label>
+              <input type="file" id="modal-image-upload" name="modal-image-upload" class="hidden" accept="image/*">
+              <div class="mt-1 flex items-center">
+                <label for="modal-image-upload" class="cursor-pointer rounded-md border-0 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-700 hover:bg-cyan-100">
+                  Choose New File
+                </label>
+                <span id="modal-file-name-display" class="ml-3 text-sm text-gray-500">
+                  No new file chosen
+                </span>
+              </div>
+              <div class="mt-4">
+                <img id="modal-image-upload-preview" src="#" alt="ตัวอย่างรูปภาพใหม่" class="hidden w-full max-w-xs rounded-lg shadow-md border" />
+              </div>
+            </div>
+            <div class="space-y-5 pt-5 border-t border-gray-200 manager-plus-item">
+              <h3 class="text-lg font-medium text-gray-900">ส่วนของ Admin</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label for="modal-product-code" class="block text-sm font-medium text-gray-700">รหัสสินค้า</label>
+                  <input type="text" id="modal-product-code" class="modal-field admin-field mt-1 w-full border-gray-300 rounded-md h-11 px-3">
+                </div>
+                <div>
+                  <label for="modal-status" class="block text-sm font-medium text-gray-700">สถานะ</label>
+                  <select id="modal-status" class="modal-field admin-field mt-1 block w-full py-2.5 px-3 border border-gray-300 bg-white rounded-md shadow-sm h-11">
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="modal-admin-notes" class="block text-sm font-medium text-gray-700">หมายเหตุ (Admin)</label>
+                <textarea id="modal-admin-notes" rows="3" class="modal-field admin-field mt-1 w-full border-gray-300 rounded-md px-3 py-2"></textarea>
+              </div>
+            </div>
+            <div id="modal-readonly-details" class_="space-y-2 text-sm">
+              <h3 class="text-lg font-medium text-gray-900 pt-5 border-t border-gray-200">ข้อมูลเพิ่มเติม</h3>
+              <p><strong>ID คำขอ:</strong> <span id="detail-request-id"></span></p>
+              <p><strong>ผู้สร้างคำขอ:</strong> <span id="detail-created-by"></span></p>
+              <p><strong>เวลาที่สร้าง:</strong> <span id="detail-timestamp"></span></p>
+              <p><strong>เวลาอัปเดตสถานะ:</strong> <span id="detail-status-timestamp"></span></p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+          <button type="button" class="modal-close-btn bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
+            ปิด
+          </button>
+          <button type="submit" id="modal-save-button" class="bg-blue-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700">
+            <i data-feather="save" class="w-5 h-5 mr-2 inline-block"></i>
+            บันทึกการเปลี่ยนแปลง
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <script>
+  <div id="user-edit-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg">
+      <form id="user-edit-form">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-900">แก้ไขผู้ใช้งาน</h2>
+            <button type="button" id="user-edit-modal-close" class="text-gray-400 hover:text-gray-600">
+              <i data-feather="x" class="w-6 h-6"></i>
+            </button>
+          </div>
+          <div class="space-y-4">
+            <input type="hidden" id="edit-user-original-username">
+            <div>
+              <label for="edit-user-username" class="block text-sm font-medium text-gray-700">Username</label>
+              <input type="text" id="edit-user-username" class="mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+            </div>
+            <div>
+              <label for="edit-user-password" class="block text-sm font-medium text-gray-700">รหัสผ่านใหม่</label>
+              <input type="password" id="edit-user-password" class="mt-1 w-full border-gray-300 rounded-md shadow-sm" placeholder="เว้นว่างไว้หากไม่ต้องการเปลี่ยน">
+            </div>
+            <div>
+              <label for="edit-user-role" class="block text-sm font-medium text-gray-700">Role</label>
+              <select id="edit-user-role" class="mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                <option value="user">User</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div>
+              <label for="edit-user-dept" class="block text-sm font-medium text-gray-700">Department</label>
+              <input type="text" id="edit-user-dept" class="mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+          <button type="button" class="user-edit-modal-close bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">
+            ยกเลิก
+          </button>
+          <button type="submit" id="user-edit-save-button" class="bg-blue-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700">
+            <i data-feather="save" class="w-5 h-5 mr-2 inline-block"></i>
+            บันทึกการเปลี่ยนแปลง
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-      // ==========================================
-      // 🔴 ตั้งค่า API (Assessment)
-      // ==========================================
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL7bpluhy_QVwlhpgJ9ghnJ9k2ux1VvhVG2ssFG9SLM3wIzwWaSXDsEO2Rkn2VbxYJ/exec"; // 👈 เอา URL ที่ได้จากข้อ 2.1 มาใส่
 
-      // สร้าง object google.script.run จำลอง
-      const google = {
-        script: {
-          run: {
-            withSuccessHandler: function(onSuccess) {
-              this._onSuccess = onSuccess;
-              return this;
-            },
-            withFailureHandler: function(onFailure) {
-              this._onFailure = onFailure;
-              return this;
-            },
-            _call: function(fnName, args) {
-              fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: fnName, args: args })
-              })
-              .then(res => res.json())
-              .then(data => {
-                if(this._onSuccess) this._onSuccess(data);
-              })
-              .catch(err => {
-                console.error("API Error:", err);
-                if(this._onFailure) this._onFailure(err);
-              });
-            },
-            // Mapping ชื่อฟังก์ชันเดิม
-            loginUser: function(...args) { this._call('loginUser', args); },
-            saveData: function(...args) { this._call('saveData', args); },
-            getHistoryData: function(...args) { this._call('getHistoryData', args); },
-            getAllUsers: function(...args) { this._call('getAllUsers', args); },
-            saveUserData: function(...args) { this._call('saveUserData', args); },
-            deleteUser: function(...args) { this._call('deleteUser', args); }
-          }
-        }
-      };
-      
-      // --- Global Variables ---
-      let currentLang = 'th'; 
-      let cachedUsersData = null; 
-      let cachedHistoryData = null; // ตัวแปรสำหรับจำประวัติ
-      let pendingDeleteUser = ""; 
-      let currentUserRole = ""; 
+  <script>
+    // ------------------------------------
+    // (1) Application State
+    // ------------------------------------
+    const STATE = {
+      loggedInUser: null,
+      isSuperAdmin: false,
+      isPrivilegedUser: false,
+      currentPage: 'login',
+      requests: [],
+      users: [],
+      settings: {
+        units: [],
+        statuses: [],
+        productTypes: [] // (เพิ่ม)
+      },
+      departments: [],
+      currentModalRequest: null,
+    };
 
-      // --- Translations ---
-      const translations = {
-        th: {
-          nav_home: "หน้าหลัก", 
-          nav_history: "ประวัติ", 
-          nav_settings: "ตั้งค่า", 
-          btn_logout: "ออกจากระบบ",
-          btn_login: "เข้าสู่ระบบ", 
-          
-          // 1. หัวข้อหลัก + คำอธิบาย
-          survey_header: "แบบประเมินความพึงพอใจ", 
-          survey_subtitle: "ขอบคุณที่ไว้วางใจ Phuket Yacht Haven ความคิดเห็นของท่านจะช่วยให้เราปรับปรุงและมอบประสบการณ์ที่ดียิ่งขึ้น", 
+    // ------------------------------------
+    // (2) DOM Element Selectors
+    // ------------------------------------
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => document.querySelectorAll(selector);
 
-          lbl_date: "วันที่และเวลา",
-          
-          // 2. ความพึงพอใจ + คำอธิบาย
-          lbl_sat: "ระดับความพึงพอใจ", 
-          lbl_sat_sub: "ท่านพึงพอใจกับประสบการณ์โดยรวมระหว่างการเข้าพักมากน้อยเพียงใด?",
+    const PAGES = {
+      login: $('#login-page'),
+      main: $('#main-app'),
+      home: $('#app-page-home'),
+      postSubmit: $('#app-page-post-submit'),
+      history: $('#app-page-history'),
+      settings: $('#app-page-settings'),
+    };
+    const MODALS = {
+      request: $('#request-modal'),
+      userEdit: $('#user-edit-modal') // (เพิ่ม)
+    };
 
-          lbl_group: "กลุ่มลูกค้า", 
-          
-          // 3. ช่องทางติดต่อ + คำอธิบาย
-          lbl_contact: "ช่องทางการติดต่อ (ไม่บังคับ)",
-          lbl_contact_sub: "หากจำเป็นต้องติดตามผล เราสามารถติดต่อท่านผ่านช่องทางใดได้บ้าง?",
-
-          lbl_suggestion: "ข้อเสนอแนะ (ไม่บังคับ)", 
-          
-          // 4. ข้อความขอบคุณก่อนปุ่มบันทึก
-          footer_msg: "ขอบคุณค่ะ! เราขอขอบคุณที่สละเวลาและให้ข้อมูลอันมีค่า เพื่อนำไปพัฒนา PYH ให้ดียิ่งขึ้น",
-
-          btn_submit: "บันทึกข้อมูล",
-          btn_saving: "กำลังบันทึก...",
-          msg_saving: "กำลังบันทึกข้อมูล...",
-          msg_saving_user: "กำลังบันทึกข้อมูลผู้ใช้...",
-          msg_deleting_user: "กำลังลบข้อมูล...",
-          
-          emoji_5: "ยอดเยี่ยม", 
-          emoji_4: "ดีมาก", 
-          emoji_3: "ปานกลาง", 
-          emoji_2: "พอใช้", 
-          emoji_1: "ปรับปรุง",
-          
-          opt_default: "-- เลือกกลุ่มลูกค้า --", 
-          opt_1: "เจ้าของเรือ", 
-          opt_2: "กัปตันและลูกเรือ", 
-          opt_3: "แขกบริษัทเช่าเหมาลำ",
-          opt_4: "ลูกค้าร้านอาหาร",
-          opt_5: "อื่นๆ (โปรดระบุ)",
-          
-          history_header: "ประวัติการบันทึกข้อมูล", 
-          th_date: "วัน-เวลา", 
-          th_sat: "ความพึงพอใจ", 
-          th_group: "กลุ่มลูกค้า",
-          th_contact: "ติดต่อ", 
-          th_suggest: "ข้อเสนอแนะ", 
-          loading: "กำลังโหลดข้อมูล...", 
-          no_data: "ไม่พบข้อมูลประวัติ",
-          modal_success: "บันทึกสำเร็จ!", 
-          
-          ph_contact: "เบอร์โทร / Line ID / Email", 
-          ph_suggestion: "ความคิดเห็นเพิ่มเติม...",
-          ph_user: "Username", 
-          ph_pass: "Password",
-          
-          // Placeholder สำหรับช่องอื่นๆ และ Contact
-          ph_other: "โปรดระบุรายละเอียด...",
-          ph_c_phone: "เบอร์โทรศัพท์",
-          ph_c_line: "Line ID",
-          ph_c_email: "อีเมล",
-          ph_c_other: "อื่นๆ (โปรดระบุ)",
-
-          settings_header: "จัดการผู้ใช้งาน", 
-          btn_add_user: "+ เพิ่มผู้ใช้งาน", 
-          th_u_user: "Username", 
-          th_u_dept: "แผนก (Department)",
-          th_u_role: "สิทธิ์ (Role)", 
-          th_u_action: "จัดการ", 
-          loading_users: "กำลังโหลดรายชื่อ...", 
-          no_users: "ยังไม่มีข้อมูลผู้ใช้งาน",
-          lbl_u_user: "Username", 
-          lbl_u_pass: "Password", 
-          lbl_u_dept: "แผนก / สังกัด", 
-          lbl_u_role: "สิทธิ์การใช้งาน",
-          ph_u_user: "ตั้งชื่อผู้ใช้", 
-          ph_u_pass: "ตั้งรหัสผ่าน", 
-          ph_u_dept: "เช่น IT, HR, Admin",
-          btn_save: "บันทึก", 
-          btn_cancel: "ยกเลิก", 
-          role_user: "User (ผู้ใช้ทั่วไป)", 
-          role_admin: "Admin (ผู้ดูแลระบบ)",
-          btn_edit: "แก้ไข", 
-          btn_delete: "ลบ",
-          role_display_admin: "ผู้ดูแลระบบ", 
-          role_display_user: "ผู้ใช้งานทั่วไป"
-        },
-        en: {
-          nav_home: "Home", 
-          nav_history: "History", 
-          nav_settings: "Settings", 
-          btn_logout: "Logout",
-          btn_login: "Login", 
-          survey_header: "PYH Overall Experience Survey",
-          survey_subtitle: "Thank you for choosing Phuket Yacht Haven. Your feedback helps us improve and deliver a better marina experience.",
-          lbl_date: "Date & Time",
-          lbl_sat: "Overall Satisfaction", 
-          lbl_sat_sub: "How would you rate your overall experience during your stay?",
-          lbl_group: "Customer Group", 
-          lbl_contact: "Contact Information (Optional)",
-          lbl_contact_sub: "If follow-up is needed, how may we contact you?",
-          ph_c_phone: "Phone",
-          ph_c_line: "Line ID",
-          ph_c_email: "Email",
-          ph_c_other: "Other (please specify)",
-          lbl_suggestion: "Suggestion (Optional)",
-          footer_msg: "Thank you! We appreciate your time and value your feedback as we continue enhancing the PYH experience.",
-          btn_submit: "Save Data",
-          btn_saving: "Saving...",
-          msg_saving: "Saving data...",
-          msg_saving_user: "Saving user data...",
-          msg_deleting_user: "Deleting user...",
-          emoji_5: "Excellent", 
-          emoji_4: "Good", 
-          emoji_3: "Average", 
-          emoji_2: "Fair", 
-          emoji_1: "Needs Improvement",
-          opt_default: "-- Please select your customer category: --", 
-          opt_1: "Boat Owner", 
-          opt_2: "Captain & Crew", 
-          opt_3: "Charter Company Guest",
-          opt_4: "Restaurant Guest",
-          opt_5: "Other (please specify)",
-          history_header: "Submission History", 
-          th_date: "Date-Time", 
-          th_sat: "Satisfaction", 
-          th_group: "Group",
-          th_contact: "Contact", 
-          th_suggest: "Suggestion", 
-          loading: "Loading data...", 
-          no_data: "No history found",
-          modal_success: "Success!", 
-          ph_contact: "Phone / Line ID / Email",
-          ph_other: "Please specify details...",
-          ph_suggestion: "Please share your additional comments...",
-          ph_user: "Username", 
-          ph_pass: "Password",
-          settings_header: "User Management", 
-          btn_add_user: "+ Add User", 
-          th_u_user: "Username", 
-          th_u_dept: "Department",
-          th_u_role: "Role", 
-          th_u_action: "Actions", 
-          loading_users: "Loading users...", 
-          no_users: "No users found",
-          lbl_u_user: "Username", 
-          lbl_u_pass: "Password", 
-          lbl_u_dept: "Department", 
-          lbl_u_role: "Role",
-          ph_u_user: "Enter username", 
-          ph_u_pass: "Enter password", 
-          ph_u_dept: "e.g. IT, HR",
-          btn_save: "Save", 
-          btn_cancel: "Cancel", 
-          role_user: "User", 
-          role_admin: "Admin",
-          btn_edit: "Edit", 
-          btn_delete: "Delete",
-          role_display_admin: "Administrator", 
-          role_display_user: "General User"
-        }
-      };
-
-      // --- Core Functions (Language, Clock, Roles) ---
-      function toggleLanguage() {
-        currentLang = (currentLang === 'th') ? 'en' : 'th';
-        updateLanguage();
-        if(document.getElementById('settings-container').style.display === 'block') {
-            loadUsers(false);
-        }
-      }
-
-      function updateLanguage() {
-        const t = translations[currentLang];
-        // Mapping IDs to translations
-        const ids = [
-            'nav-home', 'nav-history', 'nav-settings', 'btn-logout', 'btn-login', 
-            'survey-header', 'lbl-date', 'lbl-sat', 'lbl-group', 'lbl-contact', 'lbl-suggestion', 'btn-submit',
-            'emoji-label-5', 'emoji-label-4', 'emoji-label-3', 'emoji-label-2', 'emoji-label-1',
-            'opt-default', 'opt-1', 'opt-2', 'opt-3',
-            'history-header', 'th-date', 'th-sat', 'th-group', 'th-contact', 'th-suggest', 'modal-success-text',
-            'settings-header', 'btn-add-user-text', 'th-u-user', 'th-u-dept', 'th-u-role', 'th-u-action',
-            'lbl-u-user', 'lbl-u-pass', 'lbl-u-dept', 'lbl-u-role', 'btn-save-user', 'btn-cancel-user'
-        ];
-        
-        document.getElementById('nav-home').textContent = t.nav_home;
-        document.getElementById('nav-history').textContent = t.nav_history;
-        document.getElementById('nav-settings').textContent = t.nav_settings;
-        document.getElementById('btn-logout').textContent = t.btn_logout;
-        document.getElementById('btn-login').textContent = t.btn_login;
-        
-        document.getElementById('survey-header').textContent = t.survey_header;
-
-        var subTitleEl = document.getElementById('survey-subtitle');
-        subTitleEl.textContent = t.survey_subtitle || "";
-        // ถ้าไม่มีข้อความ (เช่น ภาษาไทย) ให้ซ่อน element ไปเลยเพื่อความสวยงาม
-        subTitleEl.style.display = (t.survey_subtitle) ? "block" : "none";
-
-        document.getElementById('lbl-date').textContent = t.lbl_date;
-        document.getElementById('lbl-sat').textContent = t.lbl_sat;
-
-        var satSubEl = document.getElementById('lbl-sat-sub');
-        satSubEl.textContent = t.lbl_sat_sub || "";
-        satSubEl.style.display = (t.lbl_sat_sub) ? "block" : "none";
-
-        document.getElementById('lbl-group').textContent = t.lbl_group;
-        document.getElementById('lbl-contact').textContent = t.lbl_contact;
-
-        var contactSub = document.getElementById('lbl-contact-sub');
-        contactSub.textContent = t.lbl_contact_sub || "";
-        contactSub.style.display = (t.lbl_contact_sub) ? "block" : "none";
-
-        document.getElementById('c-phone').placeholder = t.ph_c_phone;
-        document.getElementById('c-line').placeholder = t.ph_c_line;
-        document.getElementById('c-email').placeholder = t.ph_c_email;
-        document.getElementById('c-other').placeholder = t.ph_c_other;
-
-        document.getElementById('lbl-suggestion').textContent = t.lbl_suggestion;
-
-        var footerEl = document.getElementById('survey-footer');
-        footerEl.textContent = t.footer_msg || "";
-        // ซ่อนบรรทัดนี้ถ้าไม่มีข้อความ (เช่นในโหมดภาษาไทย)
-        footerEl.style.display = (t.footer_msg) ? "block" : "none";
-        
-        document.getElementById('btn-submit').textContent = t.btn_submit;
-        
-        document.getElementById('history-header').textContent = t.history_header;
-        document.getElementById('th-date').textContent = t.th_date;
-        document.getElementById('th-sat').textContent = t.th_sat;
-        document.getElementById('th-group').textContent = t.th_group;
-        document.getElementById('th-contact').textContent = t.th_contact;
-        document.getElementById('th-suggest').textContent = t.th_suggest;
-        
-        document.getElementById('emoji-label-5').textContent = t.emoji_5;
-        document.getElementById('emoji-label-4').textContent = t.emoji_4;
-        document.getElementById('emoji-label-3').textContent = t.emoji_3;
-        document.getElementById('emoji-label-2').textContent = t.emoji_2;
-        document.getElementById('emoji-label-1').textContent = t.emoji_1;
-        
-        document.getElementById('opt-default').textContent = t.opt_default;
-        document.getElementById('opt-1').textContent = t.opt_1;
-        document.getElementById('opt-2').textContent = t.opt_2;
-        document.getElementById('opt-3').textContent = t.opt_3;
-        document.getElementById('opt-4').textContent = t.opt_4;
-        document.getElementById('opt-5').textContent = t.opt_5;
-        
-        document.getElementById('settings-header').textContent = t.settings_header;
-        document.getElementById('btn-add-user-text').textContent = t.btn_add_user;
-        document.getElementById('th-u-user').textContent = t.th_u_user;
-        document.getElementById('th-u-dept').textContent = t.th_u_dept;
-        document.getElementById('th-u-role').textContent = t.th_u_role;
-        document.getElementById('th-u-action').textContent = t.th_u_action;
-        document.getElementById('lbl-u-user').textContent = t.lbl_u_user;
-        document.getElementById('lbl-u-pass').textContent = t.lbl_u_pass;
-        document.getElementById('lbl-u-dept').textContent = t.lbl_u_dept;
-        document.getElementById('lbl-u-role').textContent = t.lbl_u_role;
-        document.getElementById('btn-save-user').textContent = t.btn_save;
-        document.getElementById('btn-cancel-user').textContent = t.btn_cancel;
-        document.getElementById('modal-success-text').textContent = t.modal_success;
-
-        document.getElementById('username').placeholder = t.ph_user;
-        document.getElementById('password').placeholder = t.ph_pass;
-        document.getElementById('suggestion').placeholder = t.ph_suggestion;
-        document.getElementById('other-specify').placeholder = t.ph_other;
-        document.getElementById('u-username').placeholder = t.ph_u_user;
-        document.getElementById('u-password').placeholder = t.ph_u_pass;
-        document.getElementById('u-dept').placeholder = t.ph_u_dept;
-        
-        updateTime();
-        updateRoleText();
-      }
-
-      function updateRoleText() {
-        if (!currentUserRole) return;
-        const t = translations[currentLang];
-        const displayRole = (currentUserRole === 'admin') ? t.role_display_admin : t.role_display_user;
-        document.getElementById('current-role').textContent = "(Role: " + displayRole + ")";
-      }
-
-      // --- Hamburger Menu Logic ---
-      function toggleMenu(btn) {
-        btn.classList.toggle('open');
-        var menu = document.getElementById('nav-collapsible');
-        menu.classList.toggle('active');
-      }
-
-      function closeMenu() {
-        var menu = document.getElementById('nav-collapsible');
-        var btn = document.querySelector('.hamburger');
-        if (menu.classList.contains('active')) {
-            menu.classList.remove('active');
-            btn.classList.remove('open');
-        }
-      }
-
-      // --- Login & Navigation Logic ---
-      document.getElementById("password").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") checkLogin();
+    // ------------------------------------
+    // (3) Utility Functions
+    // ------------------------------------
+    function showLoading(title = 'กำลังโหลด...') {
+      Swal.fire({ title: title, allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    }
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
       });
+    }
+    function hideLoading() { Swal.close(); }
+    function showError(message) { Swal.fire('เกิดข้อผิดพลาด', message, 'error'); }
+    function showSuccess(message) { Swal.fire('สำเร็จ!', message, 'success'); }
+    function handleGASFailure(error) { hideLoading(); showError(error.message || error); }
+    function formatDate(date) {
+      if (!date) return '';
+      const d = new Date(date);
+      let month = '' + (d.getMonth() + 1);
+      let day = '' + d.getDate();
+      const year = d.getFullYear();
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+      return [year, month, day].join('-');
+    }
+    function getDriveIdFromUrl(url) {
+      if (!url) return null;
+      const match = url.match(/drive.google.com\/file\/d\/([\w-]+)/);
+      if (match && match[1]) { return match[1]; }
+      const match2 = url.match(/drive.google.com\/uc\?id=([\w-]+)/);
+      if (match2 && match2[1]) { return match2[1]; }
+      return null;
+    }
+    function formatDateTime(date) {
+      if (!date) return 'N/A';
+      try {
+        return new Date(date).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short', hour12: false });
+      } catch (e) { return date; }
+    }
 
-      function checkLogin() {
-        var user = document.getElementById('username').value;
-        var pass = document.getElementById('password').value;
-        
-        if (!user || !pass) {
-           showCustomAlert('Username and Password required');
-           return;
-        }
+    // ==========================================
+    // 🔴 ตั้งค่าการเชื่อมต่อ API (Request)
+    // ==========================================
+    // 👇👇👇 ใส่ URL ของคุณที่นี่ (ไม่เปลี่ยนแปลงจากที่คุณให้มา) 👇👇👇
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL7bpluhy_QVwlhpgJ9ghnJ9k2ux1VvhVG2ssFG9SLM3wIzwWaSXDsEO2Rkn2VbxYJ/exec";
 
-        var btn = document.getElementById('btn-login');
-        var originalText = btn.textContent;
-        btn.textContent = "Checking...";
-        btn.disabled = true;
-
-        google.script.run.withSuccessHandler(function(result) {
-          btn.textContent = originalText;
-          btn.disabled = false;
-
-          if (result.success) {
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('currentUser', result.username);
-            localStorage.setItem('currentRole', result.role);
-
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('main-container').style.display = 'block';
-            document.getElementById('survey-section').style.display = 'block';
-            document.getElementById('main-navbar').style.display = 'flex';
-            
-            document.getElementById('current-user').textContent = result.username;
-            currentUserRole = result.role; 
-            updateRoleText(); 
-
-            if (result.role !== 'admin') {
-                document.getElementById('nav-settings').style.display = 'none';
-            } else {
-                document.getElementById('nav-settings').style.display = 'inline-block';
-            }
-
-            startClock();
-
-            let lastTab = localStorage.getItem('currentTab') || 'main';
-            let navId = 'nav-home';
-            if(lastTab === 'history') navId = 'nav-history';
-            if(lastTab === 'settings') navId = 'nav-settings';
-
-            document.body.style.overflowY = "scroll";
-            document.body.style.height = "auto";
-            document.body.style.alignItems = "flex-start";
-            document.body.style.paddingTop = "120px";
-            document.body.style.paddingBottom = "50px";
-            document.querySelector('.container').style.maxWidth = "700px";
-
-            switchTab(lastTab, document.getElementById(navId));
-            
-            preloadUsersData();
-          } else {
-            showCustomAlert('Invalid Username or Password!');
-          }
-        }).loginUser(user, pass);
-        loadHistoryData(true);
-      }
-
-      function logout() {
-
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('currentRole');
-        localStorage.removeItem('currentTab');
-
-        document.getElementById('survey-section').style.display = 'none';
-        document.getElementById('history-section').style.display = 'none';
-        document.getElementById('settings-container').style.display = 'none';
-        document.getElementById('main-container').style.display = 'block';
-        document.getElementById('login-section').style.display = 'block';
-        document.getElementById('main-navbar').style.display = 'none';
-        document.getElementById('username').value = "";
-        document.getElementById('password').value = "";
-        resetSurveyForm();
-        
-        document.body.style.overflow = "hidden";
-        document.body.style.height = "100vh";
-        document.body.style.alignItems = "center";
-        document.body.style.paddingTop = "0";
-        document.body.style.paddingBottom = "0";
-        document.querySelector('.container').style.maxWidth = "380px";
-        
-        closeMenu();
-        
-        cachedUsersData = null;
-        currentUserRole = "";
-      }
-
-      function switchTab(tabName, linkElement) {
-
-        localStorage.setItem('currentTab', tabName);
-        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-        if (linkElement) linkElement.classList.add('active');
-        
-        document.getElementById('survey-section').style.display = 'none';
-        document.getElementById('history-section').style.display = 'none';
-        document.getElementById('main-container').style.display = 'none';
-        document.getElementById('settings-container').style.display = 'none';
-        
-        if (tabName === 'main') {
-          document.getElementById('main-container').style.display = 'block';
-          document.getElementById('survey-section').style.display = 'block';
-        } else if (tabName === 'history') {
-          document.getElementById('main-container').style.display = 'block';
-          document.getElementById('history-section').style.display = 'block';
-          loadHistoryData();
-        } else if (tabName === 'settings') {
-          document.getElementById('settings-container').style.display = 'block';
-          loadUsers(false);
+    // สร้าง object google.script.run จำลอง (Shim)
+    const google = {
+      script: {
+        run: {
+          withSuccessHandler: function(onSuccess) {
+            this._onSuccess = onSuccess;
+            return this;
+          },
+          withFailureHandler: function(onFailure) {
+            this._onFailure = onFailure;
+            return this;
+          },
+          _call: function(fnName, args) {
+            fetch(SCRIPT_URL, {
+              method: 'POST',
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action: fnName, args: args })
+            })
+            .then(res => res.json())
+            .then(data => {
+               if(this._onSuccess) this._onSuccess(data);
+            })
+            .catch(err => {
+               console.error("API Error:", err);
+               if(this._onFailure) this._onFailure(err);
+            });
+          },
+          // Mapping ชื่อฟังก์ชัน
+          checkLogin: function(...args) { this._call('checkLogin', args); },
+          getInitialData: function(...args) { this._call('getInitialData', args); },
+          submitRequest: function(...args) { this._call('submitRequest', args); },
+          updateRequest: function(...args) { this._call('updateRequest', args); },
+          deleteRequest: function(...args) { this._call('deleteRequest', args); },
+          manageUser: function(...args) { this._call('manageUser', args); },
+          updateUser: function(...args) { this._call('updateUser', args); },
+          manageSettings: function(...args) { this._call('manageSettings', args); }
         }
       }
+    };
 
-      // --- User Management Functions ---
-      function preloadUsersData() {
-        google.script.run.withSuccessHandler(function(users) { cachedUsersData = users; }).getAllUsers();
+    // ------------------------------------
+    // (4) Page Navigation
+    // ------------------------------------
+    function navigateTo(pageKey) {
+      if (STATE.loggedInUser && STATE.loggedInUser.role === 'user' && pageKey === 'settings') {
+        navigateTo('home');
+        return;
       }
-
-      function loadUsers(forceRefresh) {
-        var tbody = document.getElementById('user-table-body');
-        var loading = document.getElementById('loading-users');
-        if (cachedUsersData && !forceRefresh) { renderUserTable(cachedUsersData); return; }
-        tbody.innerHTML = ""; loading.style.display = "block"; loading.textContent = translations[currentLang].loading_users;
-        google.script.run.withSuccessHandler(function(users) {
-          cachedUsersData = users; renderUserTable(users);
-        }).getAllUsers();
+      STATE.currentPage = pageKey;
+      if (pageKey !== 'login' && pageKey !== 'post-submit' && STATE.loggedInUser) {
+        sessionStorage.setItem('pyh_last_page', pageKey);
       }
-
-      function renderUserTable(users) {
-        var tbody = document.getElementById('user-table-body');
-        var loading = document.getElementById('loading-users');
-        loading.style.display = "none";
-        if (!users || users.length === 0) {
-          loading.textContent = translations[currentLang].no_users; loading.style.display = "block"; tbody.innerHTML = ""; return;
-        }
-        var html = "";
-        const t = translations[currentLang];
-        users.forEach(function(u) {
-          html += "<tr>";
-          html += "<td>" + u[0] + "</td><td>" + u[2] + "</td>";
-          var roleBadge = u[3] === 'admin' ? `<span style="color:#20a497; font-weight:bold;">${t.role_admin}</span>` : t.role_user;
-          html += "<td>" + roleBadge + "</td>";
-          html += '<td style="text-align:center;">';
-          html += `<button class="action-btn btn-edit" onclick="editUser('${u[0]}', '${u[1]}', '${u[2]}', '${u[3]}')">${t.btn_edit}</button>`;
-          var currentUser = document.getElementById('current-user').textContent;
-          if (u[0] !== currentUser) {
-             html += `<button class="action-btn btn-delete" onclick="deleteUserFunc('${u[0]}')">${t.btn_delete}</button>`;
-          }
-          html += '</td></tr>';
-        });
-        tbody.innerHTML = html;
-      }
-
-      function openUserModal() {
-        document.getElementById('user-modal').style.display = 'flex';
-        document.getElementById('user-modal-title').textContent = translations[currentLang].btn_add_user.replace("+ ", "");
-        document.getElementById('old-username').value = ""; 
-        document.getElementById('u-username').value = "";
-        document.getElementById('u-password').value = "";
-        document.getElementById('u-dept').value = "";
-        document.getElementById('u-role').value = "user";
-        document.getElementById('u-username').disabled = false;
-      }
-
-      function editUser(user, pass, dept, role) {
-        document.getElementById('user-modal').style.display = 'flex';
-        const t = translations[currentLang];
-        document.getElementById('user-modal-title').textContent = t.btn_edit + " User";
-        document.getElementById('old-username').value = user;
-        document.getElementById('u-username').value = user;
-        document.getElementById('u-password').value = pass;
-        document.getElementById('u-dept').value = dept;
-        document.getElementById('u-role').value = role;
-        document.getElementById('u-username').disabled = true; 
-      }
-
-      function closeUserModal() { document.getElementById('user-modal').style.display = 'none'; }
-
-      function saveUser() {
-        var formData = {
-          oldUsername: document.getElementById('old-username').value,
-          username: document.getElementById('u-username').value,
-          password: document.getElementById('u-password').value,
-          department: document.getElementById('u-dept').value,
-          role: document.getElementById('u-role').value
-        };
-        if(!formData.username || !formData.password) { 
-          showCustomAlert("Username/Password required"); 
-          return; 
-          }
-          // 1. เรียก Loading Modal พร้อมข้อความเฉพาะ
-          showLoadingModal(translations[currentLang].msg_saving_user);
-          
-          // 2. ปิดปุ่ม Save กันกดซ้ำ
-          var btnSave = document.getElementById('btn-save-user');
-          btnSave.disabled = true;
-
-          google.script.run.withSuccessHandler(function(res) {
-            // 3. ปิด Loading Modal เมื่อเสร็จ
-            closeLoadingModal();
-            btnSave.disabled = false; // คืนค่าปุ่ม
-
-            if (res === 'Duplicate') { 
-              showCustomAlert("Username already exists"); 
-            } else { 
-              closeUserModal(); 
-              showSuccessModal(); 
-              loadUsers(true); 
-            }
-          }).saveUserData(formData);
-        }
-
-      function deleteUserFunc(username) {
-        pendingDeleteUser = username; 
-        const isThai = currentLang === 'th';
-        document.getElementById('confirm-title').textContent = isThai ? "ยืนยันการลบ" : "Confirm Deletion";
-        document.getElementById('confirm-message').textContent = (isThai ? "คุณต้องการลบผู้ใช้: " : "Delete user: ") + username + " ?";
-        document.getElementById('confirm-modal').style.display = 'flex';
-      }
-
-      function executeDelete() {
-        if (!pendingDeleteUser) return;
-        const userToDelete = pendingDeleteUser; 
-        closeConfirmModal(); 
-        // 1. เรียก Loading Modal พร้อมข้อความ "กำลังลบ..."
-        showLoadingModal(translations[currentLang].msg_deleting_user);
-
-        google.script.run.withSuccessHandler(function(){ 
-          // 2. ปิด Loading Modal
-          closeLoadingModal();
-          
-          loadUsers(true); 
-          showSuccessModal(); 
-        }).deleteUser(userToDelete);      
-      }
-
-      function closeConfirmModal() {
-        document.getElementById('confirm-modal').style.display = 'none';
-        pendingDeleteUser = "";
-      }
-
-      // --- History & Survey Functions ---
-      function loadHistoryData(forceRefresh = false) { // รับพารามิเตอร์ forceRefresh เพิ่ม
-        var tbody = document.getElementById('table-body');
-        var loading = document.getElementById('loading-msg');
-        
-        // 1. ถ้ามีข้อมูลแคชอยู่แล้ว และไม่ได้สั่งให้บังคับโหลดใหม่ -> โชว์เลย เร็วปรู๊ด!
-        if (cachedHistoryData && !forceRefresh) {
-            renderHistoryTable(cachedHistoryData);
-            return; 
-        }
-
-        tbody.innerHTML = ""; 
-        loading.style.display = "block"; 
-        loading.textContent = translations[currentLang].loading;
-
-        google.script.run.withFailureHandler(function(error) {
-            loading.textContent = "Error: " + error.message;
-        }).withSuccessHandler(function(data) {
-          loading.style.display = "none";
-          
-          // 2. เก็บข้อมูลลงตัวแปรแคชไว้ใช้รอบหน้า
-          cachedHistoryData = data; 
-          
-          renderHistoryTable(data);
-        }).getHistoryData();
-      }
-
-      // --- ฟังก์ชันแสดงตารางประวัติ (สำหรับ request.html) ---
-      function renderHistoryTable(data) {
-          var tbody = document.getElementById('history-table-body');
-          var noData = document.getElementById('history-no-data');
-      
-          // ✅ 1. แก้ Error จอแดง: เช็คก่อนว่าเป็น Array จริงไหม
-          if (!data || !Array.isArray(data)) {
-              console.warn("Data is not an array:", data);
-              if (tbody) tbody.innerHTML = "";
-              return; // ถ้าไม่ใช่ Array ให้หยุดทำงานทันที (กันจอแดง)
-          }
-      
-          // 2. เช็คว่ามีข้อมูลไหม
-          if (data.length === 0) {
-              if (noData) noData.style.display = "block";
-              if (tbody) tbody.innerHTML = "";
-              return;
-          }
-      
-          if (noData) noData.style.display = "none";
-      
-          var html = "";
-      
-          // ✅ 3. วนลูปสร้างตาราง (ใช้ Key ให้ตรงกับระบบสินค้า)
-          data.forEach(function(req) {
-              // ใช้ฟังก์ชันเสริมที่มีอยู่แล้ว
-              var displayDate = (typeof formatDate === 'function') ? formatDate(req.RequestDate) : req.RequestDate;
-              var statusBadge = (typeof getStatusBadge === 'function') ? getStatusBadge(req.Status) : req.Status;
-              
-              // เช็คสิทธิ์การแสดงปุ่ม (จำลอง logic เดิม)
-              var isUser = (STATE.loggedInUser && STATE.loggedInUser.role === 'user');
-              var isPrivileged = (STATE.isPrivilegedUser);
-              var isSuper = (STATE.isSuperAdmin);
-              
-              var canEdit = isPrivileged || (isUser && req.Status === 'รอดำเนินการ');
-              var canDelete = isSuper;
-      
-              html += '<tr class="hover:bg-gray-50">';
-              html += '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">' + displayDate + '</td>';
-              html += '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">' + (req.ProductName || '-') + '</td>';
-              
-              // คอลัมน์แผนก (ซ่อนถ้าไม่ใช่ Admin/Manager)
-              var deptStyle = isPrivileged ? '' : 'display:none;';
-              html += '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 manager-plus-item-cell" style="' + deptStyle + '">' + (req.Department || '-') + '</td>';
-              
-              html += '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + (req.ProductCode || 'N/A') + '</td>';
-              html += '<td class="px-6 py-4 whitespace-nowrap text-sm">' + statusBadge + '</td>';
-              
-              // ปุ่มจัดการ
-              html += '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">';
-              html += '<div class="flex items-center justify-center space-x-3">';
-              
-              // ปุ่มดู
-              html += '<button class="text-cyan-600 hover:text-cyan-900 w-8 h-8 flex items-center justify-center rounded-md hover:bg-cyan-50" title="ดูรายละเอียด" data-action="view" data-request-id="' + req.RequestID + '"><i data-feather="eye" class="w-4 h-4 btn-icon-no-pointer"></i></button>';
-              
-              // ปุ่มแก้ไข
-              if (canEdit) {
-                  html += '<button class="text-blue-600 hover:text-blue-900 w-8 h-8 flex items-center justify-center rounded-md hover:bg-blue-50" title="แก้ไข" data-action="edit" data-request-id="' + req.RequestID + '"><i data-feather="edit-2" class="w-4 h-4 btn-icon-no-pointer"></i></button>';
-              }
-              
-              // ปุ่มลบ
-              if (canDelete) {
-                  html += '<button class="text-red-600 hover:text-red-900 w-8 h-8 flex items-center justify-center rounded-md hover:bg-red-50" title="ลบ" data-action="delete" data-request-id="' + req.RequestID + '"><i data-feather="trash-2" class="w-4 h-4 btn-icon-no-pointer"></i></button>';
-              }
-              
-              html += '</div></td></tr>';
-          });
-      
-          if (tbody) tbody.innerHTML = html;
-          
-          // เรียก Feather Icons ให้ทำงานใหม่
-          if (typeof feather !== 'undefined') feather.replace();
-      }
-
-      function showSuccessModal() {
-        var modal = document.getElementById('success-modal');
-        modal.style.display = 'flex';
-        setTimeout(function() { modal.style.display = 'none'; }, 2000); 
-      }
-      function showCustomAlert(message) {
-        var modal = document.getElementById('alert-modal');
-        document.getElementById('alert-message').textContent = message;
-        modal.style.display = 'flex';
-      }
-      function closeAlertModal() { document.getElementById('alert-modal').style.display = 'none'; }
-
-      function resetSurveyForm() {
-          document.getElementById('c-phone').value = "";
-          document.getElementById('c-line').value = "";
-          document.getElementById('c-email').value = "";
-          document.getElementById('c-other').value = "";
-          document.getElementById('suggestion').value = "";
-          document.getElementById('customer-group').selectedIndex = 0;
-
-          var items = document.querySelectorAll('.emoji-item'); 
-          items.forEach(el => el.classList.remove('active'));
-          selectedScore = 0; selectedText = "";
-      }
-      function startClock() { updateTime(); setInterval(updateTime, 1000); }
-      function updateTime() {
-        var now = new Date();
-        var locale = (currentLang === 'th') ? 'th-TH' : 'en-US';
-        var dateString = now.toLocaleString(locale, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        document.getElementById('realtime-clock').value = dateString;
-      }
-      var selectedScore = 0; var selectedText = "";
-      function selectEmoji(score, element) {
-        var items = document.querySelectorAll('.emoji-item'); 
-        items.forEach(el => el.classList.remove('active'));
-        element.querySelector('.emoji-item').classList.add('active');
-        
-        // เก็บแค่คะแนนพอ (ข้อความค่อยไปหาตอนกดปุ่มบันทึก)
-        selectedScore = score;
-      }
-
-      // ฟังก์ชันเช็คว่าเลือก "อื่นๆ" หรือไม่
-      function toggleOtherInput() {
-        var group = document.getElementById('customer-group').value;
-        var otherInput = document.getElementById('other-specify');
-        
-        // ถ้าค่าที่เลือกคือ "Other" ให้แสดงช่องกรอก
-        if (group === 'Other') {
-          otherInput.style.display = 'block';
-          // โฟกัสไปที่ช่องกรอกทันทีเพื่อความสะดวก
-          otherInput.focus(); 
+      Object.values(PAGES).forEach(page => page.style.display = 'none');
+      $$('.app-page').forEach(page => page.style.display = 'none');
+      if (pageKey === 'login') {
+        PAGES.login.style.display = 'flex';
+      } else {
+        PAGES.main.style.display = 'block';
+        if (PAGES[pageKey]) {
+          PAGES[pageKey].style.display = 'block';
+          if (pageKey === 'history') renderHistoryPage();
+          if (pageKey === 'settings') renderSettingsPage();
         } else {
-          otherInput.style.display = 'none';
-          otherInput.value = ""; // ล้างค่าเมื่อเปลี่ยนไปเลือกอย่างอื่น
+          const homePage = STATE.isPrivilegedUser ? 'history' : 'home';
+          navigateTo(homePage);
+          return;
         }
       }
+      $$('.nav-link').forEach(link => {
+        link.classList.toggle('text-cyan-600', link.dataset.page === pageKey);
+        link.classList.toggle('font-bold', link.dataset.page === pageKey);
+        link.classList.toggle('text-gray-700', link.dataset.page !== pageKey);
+      });
+      feather.replace();
+    }
 
-      function submitForm() {
-          // 1. ตรวจสอบคะแนนความพึงพอใจ
-          if (selectedScore === 0) { 
-            // แจ้งเตือนตามภาษาปัจจุบัน
-            var msg = (currentLang === 'th') ? 'กรุณาเลือกความพึงพอใจ' : 'Please select satisfaction level';
-            showCustomAlert(msg); 
+    // ------------------------------------
+    // (5) Login / Logout Logic
+    // ------------------------------------
+    function handleLogin(e) {
+      e.preventDefault();
+      const username = $('#username').value.trim();
+      const password = $('#password').value.trim();
+      if (!username || !password) {
+        $('#login-error-msg').textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
+        return;
+      }
+      $('#login-error-msg').textContent = '';
+      showLoading('กำลังเข้าสู่ระบบ...');
+      google.script.run
+        .withSuccessHandler(onLoginSuccess)
+        .withFailureHandler(handleGASFailure)
+        .checkLogin(username, password);
+    }
+    function onLoginSuccess(response) {
+      if (response.success) {
+        STATE.loggedInUser = response.user;
+        STATE.isSuperAdmin = STATE.loggedInUser.role === 'admin';
+        STATE.isPrivilegedUser = (STATE.loggedInUser.role === 'admin' || STATE.loggedInUser.role === 'manager');
+        sessionStorage.setItem('pyh_current_user', JSON.stringify(response.user));
+        google.script.run
+          .withSuccessHandler(response => onGetInitialDataSuccess(response, 'first-login'))
+          .withFailureHandler(handleGASFailure)
+          .getInitialData(STATE.loggedInUser);
+      } else {
+        hideLoading();
+        $('#login-error-msg').textContent = response.message;
+      }
+    }
+    function onGetInitialDataSuccess(response, loginType = 'first-login') {
+      if (response.success) {
+        // ✅ แก้ Error จอแดง: เช็คก่อนว่าเป็น Array จริงไหม
+        STATE.requests = Array.isArray(response.requests) ? response.requests : [];
+        STATE.users = Array.isArray(response.users) ? response.users : [];
+        STATE.settings = response.settings || { units: [], statuses: [], productTypes: [] };
+        
+        const depts = new Set((STATE.users || []).map(u => u.department));
+        STATE.departments = ['all', ...Array.from(depts)];
+        
+        initializeAppUI();
+        if (loginType === 'resume') {
+          if (STATE.currentPage === 'history') renderHistoryPage();
+          if (STATE.currentPage === 'settings') renderSettingsPage();
+        } else {
+          const homePage = STATE.isPrivilegedUser ? 'history' : 'home';
+          navigateTo(homePage);
+        }
+        hideLoading();
+      } else {
+        handleGASFailure(response);
+      }
+    }
+    function handleLogout() {
+      STATE.loggedInUser = null;
+      STATE.requests = [];
+      STATE.users = [];
+      sessionStorage.removeItem('pyh_current_user');
+      sessionStorage.removeItem('pyh_last_page');
+      $('#login-form').reset();
+      navigateTo('login');
+    }
+
+    // ------------------------------------
+    // (6) Application UI Rendering
+    // ------------------------------------
+    function initializeAppUI() {
+      if (!STATE.loggedInUser) return;
+      $('#user-info-name').textContent = `สวัสดี, ${STATE.loggedInUser.username}`;
+      $('#user-info-dept').textContent = `แผนก: ${STATE.loggedInUser.department}`;
+      $$('.admin-only-item').forEach(el => { el.style.display = STATE.isSuperAdmin ? '' : 'none'; });
+      $$('.manager-plus-item').forEach(el => { el.style.display = STATE.isPrivilegedUser ? '' : 'none'; });
+      $$('.manager-plus-item-cell').forEach(el => { el.style.display = STATE.isPrivilegedUser ? 'table-cell' : 'none'; });
+      
+      $('#req-department').value = STATE.loggedInUser.department;
+      $('#req-date').value = formatDate(new Date());
+      // Populate Units
+      const unitSelect = $('#req-unit');
+      unitSelect.innerHTML = '';
+      (STATE.settings.units || []).forEach(unit => {
+        unitSelect.innerHTML += `<option value="${unit}">${unit}</option>`;
+      });
+      // Populate Product Types
+      const typeSelect = $('#req-product-type');
+      typeSelect.innerHTML = '';
+      (STATE.settings.productTypes || []).forEach(type => {
+        typeSelect.innerHTML += `<option value="${type}">${type}</option>`;
+      });
+      // Populate Filters
+      const filterDept = $('#filter-dept');
+      filterDept.innerHTML = '';
+      (STATE.departments || []).forEach(dept => {
+        filterDept.innerHTML += `<option value="${dept}">${dept === 'all' ? 'ทุกแผนก' : dept}</option>`;
+      });
+      const filterStatus = $('#filter-status');
+      filterStatus.innerHTML = '<option value="all">ทุกสถานะ</option>';
+      (STATE.settings.statuses || []).forEach(status => {
+        filterStatus.innerHTML += `<option value="${status}">${status}</option>`;
+      });
+    }
+
+    function getStatusBadge(status) {
+      let colorClasses = 'bg-gray-100 text-gray-800';
+      if (status === 'รอดำเนินการ') colorClasses = 'bg-yellow-100 text-yellow-800';
+      else if (status === 'กำลังดำเนินการ') colorClasses = 'bg-blue-100 text-blue-800';
+      else if (status === 'ดำเนินการแล้ว') colorClasses = 'bg-green-100 text-green-800';
+      return `<span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${colorClasses}">${status}</span>`;
+    }
+
+    function renderHistoryPage() {
+      $('#history-title').textContent = STATE.isPrivilegedUser ? 'Dashboard (จัดการคำขอ)' : 'ประวัติคำขอ';
+      const deptFilter = $('#filter-dept').value;
+      const statusFilter = $('#filter-status').value;
+      const dateStartFilter = $('#filter-date-start').value;
+      const dateEndFilter = $('#filter-date-end').value;
+      const searchFilter = $('#filter-search').value.trim().toLowerCase();
+      const searchCodeFilter = $('#filter-search-code').value.trim().toLowerCase();
+      
+      // ✅ แก้ Error จอแดง: ตรวจสอบว่า STATE.requests เป็น Array จริงๆ
+      const sourceRequests = Array.isArray(STATE.requests) ? STATE.requests : [];
+      
+      let filteredRequests = sourceRequests.filter(req => {
+        if (STATE.isPrivilegedUser && deptFilter !== 'all' && req.Department !== deptFilter) return false;
+        if (statusFilter !== 'all' && req.Status !== statusFilter) return false;
+        const reqDate = formatDate(req.RequestDate);
+        if (dateStartFilter && reqDate < dateStartFilter) return false;
+        if (dateEndFilter && reqDate > dateEndFilter) return false;
+        if (searchFilter && !req.ProductName.toLowerCase().includes(searchFilter)) return false;
+        const productCode = String(req.ProductCode || '').toLowerCase();
+        if (searchCodeFilter && !productCode.includes(searchCodeFilter)) return false;
+        return true;
+      });
+      
+      if (STATE.isPrivilegedUser) filteredRequests.sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp));
+      else filteredRequests.sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+      
+      const tableBody = $('#history-table-body');
+      tableBody.innerHTML = '';
+      if (filteredRequests.length === 0) {
+        $('#history-no-data').style.display = 'block';
+        tableBody.style.display = 'none';
+        return;
+      }
+      $('#history-no-data').style.display = 'none';
+      tableBody.style.display = '';
+      filteredRequests.forEach(req => {
+        const canUserEdit = STATE.loggedInUser.role === 'user' && req.Status === 'รอดำเนินการ';
+        const canPrivilegedEdit = STATE.isPrivilegedUser;
+        const canSuperDelete = STATE.isSuperAdmin;
+        const row = `
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${formatDate(req.RequestDate)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${req.ProductName}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 manager-plus-item-cell" style="display: ${STATE.isPrivilegedUser ? 'table-cell' : 'none'}">${req.Department}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${req.ProductCode || 'N/A'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">${getStatusBadge(req.Status)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex items-center justify-center space-x-3">
+                <button class="text-cyan-600 hover:text-cyan-900 flex items-center justify-center w-8 h-8 rounded-md hover:bg-cyan-50 transition" title="ดูรายละเอียด" data-action="view" data-request-id="${req.RequestID}">
+                  <i data-feather="eye" class="w-4 h-4 btn-icon-no-pointer"></i>
+                </button>
+                ${(canPrivilegedEdit || canUserEdit) ? `
+                <button class="text-blue-600 hover:text-blue-900 flex items-center justify-center w-8 h-8 rounded-md hover:bg-blue-50 transition" title="แก้ไข" data-action="edit" data-request-id="${req.RequestID}">
+                  <i data-feather="edit-2" class="w-4 h-4 btn-icon-no-pointer"></i>
+                </button>` : ''}
+                ${(canSuperDelete) ? `
+                <button class="text-red-600 hover:text-red-900 flex items-center justify-center w-8 h-8 rounded-md hover:bg-red-50 transition" title="ลบ" data-action="delete" data-request-id="${req.RequestID}">
+                  <i data-feather="trash-2" class="w-4 h-4 btn-icon-no-pointer"></i>
+                </button>` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+      feather.replace();
+    }
+
+    function renderSettingsPage() {
+      // 1. Render User List
+      const userTableBody = $('#settings-user-table-body');
+      userTableBody.innerHTML = '';
+      (STATE.users || []).forEach(user => {
+        const row = `
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 text-sm text-gray-900">${user.username}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${user.role}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${user.department}</td>
+            <td class="px-4 py-3 text-sm">
+              <div class="flex items-center space-x-3">
+                <button class="text-blue-600 hover:text-blue-900" title="แก้ไข" data-action="edit-user" data-username="${user.username}">
+                  <i data-feather="edit-2" class="w-4 h-4 btn-icon-no-pointer"></i>
+                </button>
+                ${user.username !== 'admin' ?
+                `<button class="text-red-600 hover:text-red-900" title="ลบ" data-action="delete-user" data-username="${user.username}">
+                    <i data-feather="trash-2" class="w-4 h-4 btn-icon-no-pointer"></i>
+                  </button>` : ''
+                }
+              </div>
+            </td>
+          </tr>
+        `;
+        userTableBody.innerHTML += row;
+      });
+      // 2. Render Unit List
+      const unitList = $('#settings-unit-list');
+      unitList.innerHTML = '';
+      (STATE.settings.units || []).forEach(unit => {
+        unitList.innerHTML += `
+          <li class="flex justify-between items-center bg-gray-50 p-2 rounded-md">
+            <span class="text-sm">${unit}</span>
+            <button class="text-red-500 hover:text-red-700" data-action="delete-setting" data-type="units" data-value="${unit}">
+              <i data-feather="x" class="w-4 h-4 btn-icon-no-pointer"></i>
+            </button>
+          </li>
+        `;
+      });
+      // 3. Render Product Type List
+      const productTypeList = $('#settings-product-type-list');
+      productTypeList.innerHTML = '';
+      (STATE.settings.productTypes || []).forEach(type => {
+        productTypeList.innerHTML += `
+          <li class="flex justify-between items-center bg-gray-50 p-2 rounded-md">
+            <span class="text-sm">${type}</span>
+            <button class="text-red-500 hover:text-red-700" data-action="delete-setting" data-type="productTypes" data-value="${type}">
+              <i data-feather="x" class="w-4 h-4 btn-icon-no-pointer"></i>
+            </button>
+          </li>
+        `;
+      });
+      // 4. Render Status List
+      const statusList = $('#settings-status-list');
+      statusList.innerHTML = '';
+      (STATE.settings.statuses || []).forEach(status => {
+        statusList.innerHTML += `
+          <li class="flex justify-between items-center bg-gray-50 p-2 rounded-md">
+            <span class="text-sm">${status}</span>
+            <button class="text-red-500 hover:text-red-700" data-action="delete-setting" data-type="statuses" data-value="${status}">
+              <i data-feather="x" class="w-4 h-4 btn-icon-no-pointer"></i>
+            </button>
+          </li>
+        `;
+      });
+      feather.replace();
+    }
+
+    // ------------------------------------
+    // (7) Request Form Logic
+    // ------------------------------------
+    async function handleSubmitRequest(e) {
+      e.preventDefault();
+      const form = $('#request-form');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      showLoading('กำลังบันทึกคำขอ...');
+      const formData = {
+        requestDate: $('#req-date').value,
+        productName: $('#req-product-name').value,
+        productType: $('#req-product-type').value, 
+        unit: $('#req-unit').value,
+        requesterName: $('#req-requester-name').value,
+        position: $('#req-position').value,
+      };
+      const imageFile = $('#req-image').files[0];
+      let fileData = null;
+      if (imageFile) {
+        try {
+          if (imageFile.size > 5 * 1024 * 1024) {
+            hideLoading();
+            showError('ไฟล์รูปภาพต้องมีขนาดไม่เกิน 5MB');
             return;
           }
-
-          // 2. ตรวจสอบกลุ่มลูกค้า
-          var groupSelect = document.getElementById('customer-group');
-          var selectedOption = groupSelect.options[groupSelect.selectedIndex];
-          var groupValue = groupSelect.value; // ค่า value ภาษาอังกฤษ (เช่น Boat Owner)
-
-          if (groupValue === "") { 
-            var msg = (currentLang === 'th') ? 'กรุณาเลือกกลุ่มลูกค้า' : 'Please select customer category';
-            showCustomAlert(msg);
-            return; 
-          }
-
-          // --- Logic แปลงภาษา: กลุ่มลูกค้า ---
-          var finalGroupText = "";
-          
-          if (groupValue === "Other") {
-              // กรณีเลือก "อื่นๆ"
-              var specifiedText = document.getElementById('other-specify').value.trim();
-              if (specifiedText === "") {
-                  var msg = (currentLang === 'th') ? 'กรุณาระบุข้อมูลกลุ่มลูกค้า' : 'Please specify customer details';
-                  showCustomAlert(msg);
-                  document.getElementById('other-specify').focus();
-                  return;
-              }
-              // ใช้คำนำหน้าตามภาษา (อื่นๆ: ... / Other: ...)
-              var prefix = (currentLang === 'th') ? "อื่นๆ: " : "Other: ";
-              finalGroupText = prefix + specifiedText;
-          } else {
-              // กรณีเลือกจากรายการ (ดึงคำแปลจาก translations ตาม ID ของ option)
-              // ตัวอย่าง: ID "opt-1" -> แปลงเป็น key "opt_1" ใน translations
-              var translationKey = selectedOption.id.replace("-", "_"); // แปลง opt-1 เป็น opt_1
-              if (translations[currentLang][translationKey]) {
-                  finalGroupText = translations[currentLang][translationKey];
-              } else {
-                  finalGroupText = groupValue; // ถ้าหาไม่เจอใช้ค่าเดิม
-              }
-          }
-
-          // --- Logic แปลงภาษา: ความพึงพอใจ ---
-          // สร้าง Mapping ข้อความตามภาษา
-          var satMap = {
-            th: { 5: "ยอดเยี่ยม", 4: "ดีมาก", 3: "ปานกลาง", 2: "พอใช้", 1: "ปรับปรุง" },
-            en: { 5: "Excellent", 4: "Good", 3: "Average", 2: "Fair", 1: "Needs Improvement" }
+          const fileBase64 = await fileToBase64(imageFile);
+          fileData = {
+            fileName: imageFile.name,
+            mimeType: imageFile.type,
+            base64: fileBase64
           };
-          var finalSatText = satMap[currentLang][selectedScore];
-
-          // --- Logic แปลงภาษา: ข้อมูลติดต่อ ---
-          var cPhone = document.getElementById('c-phone').value.trim();
-          var cLine = document.getElementById('c-line').value.trim();
-          var cEmail = document.getElementById('c-email').value.trim();
-          var cOther = document.getElementById('c-other').value.trim();
-
-          var contactArray = [];
-          // กำหนดคำนำหน้า (Prefix) ตามภาษา
-          var pPhone = (currentLang === 'th') ? "โทร: " : "Phone: ";
-          var pLine  = "Line: "; // ทับศัพท์เหมือนกัน
-          var pEmail = (currentLang === 'th') ? "อีเมล: " : "Email: ";
-          var pOther = (currentLang === 'th') ? "อื่นๆ: " : "Other: ";
-
-          if(cPhone) contactArray.push(pPhone + cPhone);
-          if(cLine)  contactArray.push(pLine + cLine);
-          if(cEmail) contactArray.push(pEmail + cEmail);
-          if(cOther) contactArray.push(pOther + cOther);
-          
-          var combinedContact = contactArray.join(", ");
-
-          // 3. เริ่มกระบวนการบันทึก
-          showLoadingModal();
-          var btn = document.getElementById('btn-submit');
-          btn.disabled = true;
-
-          var formData = { 
-              satisfaction: finalSatText,  // ส่งค่าภาษาที่เลือก
-              customerGroup: finalGroupText, // ส่งค่าภาษาที่เลือก
-              contact: combinedContact,      // ส่งค่าภาษาที่เลือก
-              suggestion: document.getElementById('suggestion').value 
-          };
-
-          google.script.run.withSuccessHandler(function(response) {
-            closeLoadingModal();
-            showSuccessModal(); 
-            resetSurveyForm(); 
-            
-            btn.textContent = translations[currentLang].btn_submit; 
-            btn.disabled = false;
-            btn.style.cursor = 'pointer';
-
-            cachedHistoryData = null; 
-            loadHistoryData(true);
-
-          }).saveData(formData);
+        } catch (err) {
+          hideLoading();
+          showError('ไม่สามารถอ่านไฟล์ได้: ' + err.message);
+          return;
         }
-
-      // --- [เพิ่มใหม่] ฟังก์ชันตรวจสอบ Session เมื่อโหลดหน้าเว็บ ---
-      function checkSession() {
-          const isLoggedIn = localStorage.getItem('isLoggedIn');
-          
-          if (isLoggedIn === 'true') {
-              const user = localStorage.getItem('currentUser');
-              const role = localStorage.getItem('currentRole');
-              const tab = localStorage.getItem('currentTab') || 'main';
-
-              // 1. คืนค่าตัวแปร Global
-              currentUserRole = role;
-              
-              // 2. ปรับ UI ให้เหมือนตอนล็อกอินแล้ว
-              document.getElementById('login-section').style.display = 'none';
-              document.getElementById('main-container').style.display = 'block';
-              document.getElementById('main-navbar').style.display = 'flex';
-              document.getElementById('current-user').textContent = user;
-              
-              updateRoleText();
-
-              // 3. จัดการเมนู Admin
-              if (role === 'admin') {
-                  document.getElementById('nav-settings').style.display = 'inline-block';
-              } else {
-                  document.getElementById('nav-settings').style.display = 'none';
-              }
-
-              // 4. ปรับ Style ของ Body
-              document.body.style.overflowY = "scroll";
-              document.body.style.height = "auto";
-              document.body.style.alignItems = "flex-start";
-              document.body.style.paddingTop = "120px";
-              document.body.style.paddingBottom = "50px";
-              document.querySelector('.container').style.maxWidth = "700px";
-
-              // 5. เริ่มการทำงานพื้นฐาน
-              startClock();
-              preloadUsersData();
-
-              // 6. สลับไปหน้าที่เปิดค้างไว้
-              let navId = 'nav-home';
-              if (tab === 'history') navId = 'nav-history';
-              if (tab === 'settings' && role === 'admin') navId = 'nav-settings'; // เช็ค role กันพลาด
-              
-              // เรียก switchTab (จำลองการกด)
-              switchTab(tab, document.getElementById(navId));
-              
-          } else {
-              // ถ้าไม่มี Session ก็ปล่อยให้อยู่หน้า Login ตามปกติ
-          }
       }
-
-      // เรียกใช้งานทันที
-      window.onload = function() {
-          checkSession();
-          updateLanguage(); // สั่งให้โหลดภาษาและข้อความทันทีที่เปิดเว็บ
-      };
-
-      function showLoadingModal(customText) {
-        var textToShow = customText || translations[currentLang].msg_saving;
-
-        document.getElementById('loading-text').textContent = textToShow;
-        document.getElementById('loading-modal').style.display = 'flex';
-      }
-
-      function closeLoadingModal() {
-        document.getElementById('loading-modal').style.display = 'none';
-      }
-
-      // ฟังก์ชันเปิด Modal รายละเอียด
-      function openDetailModal(data) {
-        // data คือ Array [Timestamp, Satisfaction, Group, Contact, Suggestion]
+      google.script.run
+        .withSuccessHandler(onSubmitRequestSuccess)
+        .withFailureHandler(handleGASFailure)
+        .submitRequest(formData, fileData, STATE.loggedInUser);
+    }
+    function onSubmitRequestSuccess(response) {
+      if (response.success && response.newRequest) {
+        hideLoading();
+        if (STATE.isPrivilegedUser) STATE.requests.push(response.newRequest);
+        else STATE.requests.unshift(response.newRequest);
         
-        // ใส่ข้อมูลลงใน Modal
-        document.getElementById('d-date').textContent = data[0] || "-";
-        document.getElementById('d-sat').textContent = data[1] || "-";
-        document.getElementById('d-group').textContent = data[2] || "-";
+        $('#request-form').reset();
+        $('#req-image').value = null;
+        $('#req-image-preview').classList.add('hidden');
+        $('#file-name-display').textContent = 'No file chosen';
+        $('#req-department').value = STATE.loggedInUser.department;
+        $('#req-date').value = formatDate(new Date());
         
-        // Contact (ทำให้ขึ้นบรรทัดใหม่สวยๆ ถ้ามี comma)
-        var contactText = data[3] || "-";
-        document.getElementById('d-contact').textContent = contactText.replace(/, /g, '\n'); 
-
-        document.getElementById('d-suggest').textContent = (data[4] && data[4] !== "") ? data[4] : "- ไม่มีข้อเสนอแนะ -";
-
-        // แสดง Modal
-        document.getElementById('detail-modal').style.display = 'flex';
+        initializeAppUI();
+        Swal.fire({
+          icon: 'success',
+          title: 'บันทึกสำเร็จ!',
+          text: 'คำขอของคุณถูกส่งเข้าระบบแล้ว',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true
+        });
+        navigateTo('history');
+      } else {
+        handleGASFailure(response.message || 'เกิดข้อผิดพลาด: ไม่ได้รับข้อมูลใหม่กลับมา');
       }
-
-      function closeDetailModal() {
-        document.getElementById('detail-modal').style.display = 'none';
+    }
+    function onDataRefreshed(response) {
+      if (response.success) {
+        // ✅ แก้ Error จอแดง: ตรวจสอบ Array
+        STATE.requests = Array.isArray(response.requests) ? response.requests : [];
+        if(response.users) STATE.users = Array.isArray(response.users) ? response.users : [];
+        if(response.settings) STATE.settings = response.settings;
+      } else {
+        handleGASFailure(response);
       }
-      
-      // ปิด Modal เมื่อคลิกพื้นที่ว่างๆ รอบนอก
-      document.getElementById('detail-modal').addEventListener('click', function(e) {
-          if (e.target === this) {
-              closeDetailModal();
-          }
+    }
+    $$('.post-submit-nav-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        navigateTo(e.currentTarget.dataset.page);
       });
-    </script>
-  </body>
-</html>
+    });
 
+    // ------------------------------------
+    // (8) Request Modal Logic (View/Edit)
+    // ------------------------------------
+    function openRequestModal(requestId, mode = 'view') {
+      const request = (STATE.requests || []).find(r => r.RequestID === requestId);
+      if (!request) {
+        showError('ไม่พบข้อมูลคำขอ');
+        return;
+      }
+      STATE.currentModalRequest = request;
+      const canUserEdit = (STATE.loggedInUser.role === 'user' && request.Status === 'รอดำเนินการ');
+      const isPrivileged = STATE.isPrivilegedUser;
+      const isEditable = (mode === 'edit') && (isPrivileged || canUserEdit);
+      // Populate Units
+      const modalUnit = $('#modal-unit');
+      modalUnit.innerHTML = '';
+      (STATE.settings.units || []).forEach(unit => {
+        modalUnit.innerHTML += `<option value="${unit}">${unit}</option>`;
+      });
+      // Populate Statuses
+      const modalStatus = $('#modal-status');
+      modalStatus.innerHTML = '';
+      (STATE.settings.statuses || []).forEach(status => {
+        modalStatus.innerHTML += `<option value="${status}">${status}</option>`;
+      });
+      // Populate Product Types
+      const modalType = $('#modal-product-type');
+      modalType.innerHTML = '';
+      (STATE.settings.productTypes || []).forEach(type => {
+        modalType.innerHTML += `<option value="${type}">${type}</option>`;
+      });
+      // Populate Form Fields
+      $('#modal-request-id').value = request.RequestID;
+      $('#modal-date').value = formatDate(request.RequestDate);
+      $('#modal-department').value = request.Department;
+      $('#modal-product-name').value = request.ProductName;
+      $('#modal-product-type').value = request.ProductType;
+      $('#modal-unit').value = request.Unit;
+      $('#modal-requester-name').value = request.RequesterName;
+      $('#modal-position').value = request.Position;
+      $('#modal-product-code').value = request.ProductCode || 'รอดำเนินการ';
+      $('#modal-status').value = request.Status;
+      $('#modal-admin-notes').value = request.AdminNotes || '';
+      $('#detail-request-id').textContent = request.RequestID;
+      $('#detail-created-by').textContent = request.CreatedBy || 'N/A';
+      $('#detail-timestamp').textContent = formatDateTime(request.Timestamp);
+      $('#detail-status-timestamp').textContent = formatDateTime(request.StatusUpdateTimestamp);
+      // Set UI based on Mode
+      $$('.modal-field').forEach(field => {
+        field.disabled = !isEditable;
+        field.readOnly = !isEditable;
+        field.classList.toggle('bg-gray-100', !isEditable);
+      });
+      $$('.admin-field').forEach(field => {
+        field.disabled = !isPrivileged || !isEditable;
+        field.readOnly = !isPrivileged || !isEditable;
+        field.classList.toggle('bg-gray-100', !isPrivileged || !isEditable);
+      });
+      $$('.manager-plus-item').forEach(el => { el.style.display = isPrivileged ? '' : 'none'; });
+      $('#modal-save-button').style.display = isEditable ? 'inline-flex' : 'none';
+      const uploadContainer = $('#modal-image-upload-container');
+      if (isEditable) {
+        uploadContainer.classList.remove('hidden');
+      } else {
+        uploadContainer.classList.add('hidden');
+      }
+      $('#modal-image-upload-container').style.display = isEditable ? '' : 'none';
+
+      // Reset upload
+      $('#modal-image-upload').value = null;
+      $('#modal-file-name-display').textContent = 'No new file chosen';
+      $('#modal-image-upload-preview').classList.add('hidden');
+      $('#modal-image-upload-preview').src = '#';
+      // Show existing image
+      const imgContainer = $('#modal-image-container');
+      const imgPreview = $('#modal-image-preview');
+      const imgLink = $('#modal-image-link');
+      const imgLinkText = $('#modal-image-link-text');
+      if (request.ImageURL && request.ImageURL.trim() !== '') {
+        const originalUrl = request.ImageURL;
+        const fileId = getDriveIdFromUrl(originalUrl);
+        if (fileId) {
+          const thumbnailUrl = "https://drive.google.com/thumbnail?id=" + fileId;
+          imgPreview.src = thumbnailUrl;
+          imgLink.href = originalUrl;
+          imgLinkText.href = originalUrl;
+          imgContainer.classList.remove('hidden');
+        } else {
+          console.warn('ไม่สามารถดึง File ID จาก URL:', originalUrl);
+          imgContainer.classList.add('hidden');
+        }
+      } else {
+        imgContainer.classList.add('hidden');
+        imgPreview.src = '#';
+        imgLink.href = '#';
+        imgLinkText.href = '#';
+      }
+      MODALS.request.style.display = 'flex';
+      feather.replace();
+    }
+    function closeRequestModal() {
+      MODALS.request.style.display = 'none';
+      STATE.currentModalRequest = null;
+      $('#modal-form').reset();
+      $('#modal-image-container').classList.add('hidden');
+      $('#modal-image-preview').src = '#';
+      $('#modal-image-link').href = '#';
+      $('#modal-image-link-text').href = '#';
+      $('#modal-image-upload').value = null;
+      $('#modal-file-name-display').textContent = 'No new file chosen';
+      $('#modal-image-upload-preview').classList.add('hidden');
+      $('#modal-image-upload-preview').src = '#';
+    }
+    async function handleModalSave(e) {
+      e.preventDefault();
+      const requestId = $('#modal-request-id').value;
+      let updatedData = {
+        RequestDate: $('#modal-date').value,
+        ProductName: $('#modal-product-name').value,
+        ProductType: $('#modal-product-type').value, 
+        Unit: $('#modal-unit').value,
+        RequesterName: $('#modal-requester-name').value,
+        Position: $('#modal-position').value,
+      };
+      if (STATE.isPrivilegedUser) {
+        updatedData.ProductCode = $('#modal-product-code').value;
+        updatedData.Status = $('#modal-status').value;
+        updatedData.AdminNotes = $('#modal-admin-notes').value;
+      }
+      const imageFile = $('#modal-image-upload').files[0];
+      let newFileData = null;
+      if (imageFile) {
+        showLoading('กำลังแปลงไฟล์รูปภาพ...');
+        try {
+          if (imageFile.size > 5 * 1024 * 1024) {
+            hideLoading();
+            showError('ไฟล์รูปภาพต้องมีขนาดไม่เกิน 5MB');
+            return;
+          }
+          const fileBase64 = await fileToBase64(imageFile);
+          newFileData = {
+            fileName: imageFile.name,
+            mimeType: imageFile.type,
+            base64: fileBase64
+          };
+        } catch (err) {
+          hideLoading();
+          showError('ไม่สามารถอ่านไฟล์ใหม่ได้: ' + err.message);
+          return;
+        }
+      }
+      showLoading('กำลังอัปเดตคำขอ...');
+      google.script.run
+        .withSuccessHandler(onUpdateRequestSuccess)
+        .withFailureHandler(handleGASFailure)
+        .updateRequest(requestId, updatedData, newFileData, STATE.loggedInUser);
+    }
+    function onUpdateRequestSuccess(response) {
+      if (response.success) {
+        closeRequestModal();
+        showSuccess(response.message || 'อัปเดตสำเร็จ');
+        google.script.run
+          .withSuccessHandler((data) => {
+            onDataRefreshed(data);
+            renderHistoryPage();
+          })
+          .withFailureHandler(handleGASFailure)
+          .getInitialData(STATE.loggedInUser);
+      } else {
+        handleGASFailure(response);
+      }
+    }
+    function handleDeleteRequest(requestId) {
+      const request = (STATE.requests || []).find(r => r.RequestID === requestId);
+      const requestName = request ? request.ProductName : 'คำขอนี้';
+      Swal.fire({
+        title: `ยืนยันการลบ?`,
+        text: `คุณต้องการลบคำขอ "${requestName}" (ID: ${requestId}) ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'ใช่, ลบเลย!',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          showLoading('กำลังลบคำขอ...');
+          google.script.run
+            .withSuccessHandler(onDeleteRequestSuccess)
+            .withFailureHandler(handleGASFailure)
+            .deleteRequest(requestId, STATE.loggedInUser);
+        }
+      });
+    }
+    function onDeleteRequestSuccess(response) {
+      if (response.success) {
+        showSuccess(response.message || 'ลบคำขอสำเร็จ');
+        google.script.run
+          .withSuccessHandler((data) => {
+            onDataRefreshed(data);
+            renderHistoryPage();
+          })
+          .withFailureHandler(handleGASFailure)
+          .getInitialData(STATE.loggedInUser);
+      } else {
+        handleGASFailure(response);
+      }
+    }
+    
+    // ------------------------------------
+    // (9) Settings Page Logic (Admin)
+    // ------------------------------------
+    function handleAddUser(e) {
+      e.preventDefault();
+      const userData = {
+        username: $('#new-user-username').value.trim(),
+        password: $('#new-user-password').value.trim(),
+        role: $('#new-user-role').value,
+        department: $('#new-user-dept').value.trim(),
+      };
+      if (!userData.username || !userData.password || !userData.department) {
+        showError('กรุณากรอกข้อมูลผู้ใช้ให้ครบถ้วน');
+        return;
+      }
+      showLoading('กำลังเพิ่มผู้ใช้...');
+      google.script.run
+        .withSuccessHandler(onManageUserSuccess)
+        .withFailureHandler(handleGASFailure)
+        .manageUser('add', userData, STATE.loggedInUser);
+    }
+    function handleDeleteUser(username) {
+      Swal.fire({
+        title: `ยืนยันการลบ ${username}?`,
+        text: "การกระทำนี้ไม่สามารถย้อนกลับได้!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'ใช่, ลบเลย!',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          showLoading('กำลังลบผู้ใช้...');
+          google.script.run
+            .withSuccessHandler(onManageUserSuccess)
+            .withFailureHandler(handleGASFailure)
+            .manageUser('delete', { username: username }, STATE.loggedInUser);
+        }
+      });
+    }
+    function onManageUserSuccess(response) {
+      if (response.success) {
+        hideLoading();
+        showSuccess(response.message || 'จัดการผู้ใช้สำเร็จ');
+        STATE.users = response.users || [];
+        renderSettingsPage();
+        $('#add-user-form').reset();
+      } else {
+        handleGASFailure(response);
+      }
+    }
+    function openUserEditModal(username) {
+      const user = (STATE.users || []).find(u => u.username === username);
+      if (!user) {
+        showError('ไม่พบข้อมูลผู้ใช้');
+        return;
+      }
+      $('#edit-user-original-username').value = user.username;
+      $('#edit-user-username').value = user.username;
+      $('#edit-user-role').value = user.role;
+      $('#edit-user-dept').value = user.department;
+      $('#edit-user-password').value = '';
+      MODALS.userEdit.style.display = 'flex';
+      feather.replace();
+    }
+    function closeUserEditModal() {
+      MODALS.userEdit.style.display = 'none';
+      $('#user-edit-form').reset();
+    }
+    function handleUserEditSave(e) {
+      e.preventDefault();
+      const originalUsername = $('#edit-user-original-username').value;
+      const newUserData = {
+        username: $('#edit-user-username').value.trim(),
+        password: $('#edit-user-password').value.trim(),
+        role: $('#edit-user-role').value,
+        department: $('#edit-user-dept').value.trim()
+      };
+      if (!newUserData.username || !newUserData.department) {
+        showError('กรุณากรอก Username และ Department');
+        return;
+      }
+      if (originalUsername === 'admin' && newUserData.role !== 'admin') {
+        showError('ไม่สามารถเปลี่ยน Role ของ "admin" ได้');
+        return;
+      }
+      showLoading('กำลังอัปเดตผู้ใช้...');
+      google.script.run
+        .withSuccessHandler(onUpdateUserSuccess)
+        .withFailureHandler(handleGASFailure)
+        .updateUser(originalUsername, newUserData, STATE.loggedInUser);
+    }
+    function onUpdateUserSuccess(response) {
+      if (response.success) {
+        closeUserEditModal();
+        hideLoading();
+        showSuccess(response.message || 'อัปเดตผู้ใช้สำเร็จ');
+        STATE.users = response.users || [];
+        renderSettingsPage();
+      } else {
+        handleGASFailure(response);
+      }
+    }
+    function handleManageSetting(settingType, action, value) {
+      showLoading('กำลังอัปเดตการตั้งค่า...');
+      google.script.run
+        .withSuccessHandler(onManageSettingSuccess)
+        .withFailureHandler(handleGASFailure)
+        .manageSettings(settingType, action, value, STATE.loggedInUser);
+    }
+    function onManageSettingSuccess(response) {
+      if (response.success) {
+        hideLoading();
+        showSuccess(response.message || 'อัปเดตการตั้งค่าสำเร็จ');
+        STATE.settings = response.settings || { units: [], statuses: [], productTypes: [] };
+        initializeAppUI();
+        renderSettingsPage();
+      } else {
+        handleGASFailure(response);
+      }
+    }
+    function resumeSession() {
+      const savedUser = sessionStorage.getItem('pyh_current_user');
+      const lastPage = sessionStorage.getItem('pyh_last_page');
+      if (savedUser) {
+        try {
+          STATE.loggedInUser = JSON.parse(savedUser);
+          STATE.isSuperAdmin = STATE.loggedInUser.role === 'admin';
+          STATE.isPrivilegedUser = (STATE.loggedInUser.role === 'admin' || STATE.loggedInUser.role === 'manager');
+          const defaultPage = (STATE.isPrivilegedUser) ? 'history' : 'home';
+          navigateTo(lastPage || defaultPage);
+          showLoading('กำลังรีเฟรชข้อมูล...');
+          google.script.run
+            .withSuccessHandler(response => onGetInitialDataSuccess(response, 'resume'))
+            .withFailureHandler((err) => {
+              hideLoading();
+              Swal.fire({
+                title: 'เซสชันหมดอายุ',
+                text: 'ไม่สามารถโหลดข้อมูลได้ กรุณาเข้าสู่ระบบใหม่อีกครั้ง',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+              }).then(() => { handleLogout(); });
+            })
+            .getInitialData(STATE.loggedInUser);
+        } catch (e) { handleLogout(); }
+      } else { navigateTo('login'); }
+    }
+
+    // ------------------------------------
+    // (10) Event Listeners (ฉบับสมบูรณ์)
+    // ------------------------------------
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- Login ---
+      $('#login-form').addEventListener('submit', handleLogin);
+      $('#logout-button').addEventListener('click', handleLogout);
+
+      // --- Navigation ---
+      $$('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateTo(e.currentTarget.dataset.page);
+        });
+      });
+
+      // --- Request Form (หน้าหลัก) ---
+      $('#request-form').addEventListener('submit', handleSubmitRequest);
+
+      // (หน้าหลัก) แสดงภาพตัวอย่าง
+      $('#req-image').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        const preview = $('#req-image-preview');
+        const fileNameDisplay = $('#file-name-display');
+        if (file) {
+          fileNameDisplay.textContent = file.name;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            preview.src = event.target.result;
+            preview.classList.remove('hidden');
+          };
+          reader.readAsDataURL(file);
+        } else {
+          fileNameDisplay.textContent = 'No file chosen';
+          preview.src = '#';
+          preview.classList.add('hidden');
+        }
+      });
+      // --- History Filters ---
+      $('#filter-dept').addEventListener('change', renderHistoryPage);
+      $('#filter-status').addEventListener('change', renderHistoryPage);
+      $('#filter-date-start').addEventListener('change', renderHistoryPage);
+      $('#filter-date-end').addEventListener('change', renderHistoryPage);
+      $('#filter-search').addEventListener('input', renderHistoryPage);
+      $('#filter-search-code').addEventListener('input', renderHistoryPage);
+
+      // (แก้ไข) Event Delegation สำหรับตาราง History
+      $('#history-table-body').addEventListener('click', (e) => {
+        const targetButton = e.target.closest('button[data-action]');
+        if (!targetButton) return;
+        const { action, requestId } = targetButton.dataset;
+        if (action === 'view' || action === 'edit') openRequestModal(requestId, action);
+        else if (action === 'delete') handleDeleteRequest(requestId);
+      });
+      // --- Modal (Request) ---
+      $('#modal-form').addEventListener('submit', handleModalSave);
+      $('#modal-close-button').addEventListener('click', closeRequestModal);
+      $$('.modal-close-btn').forEach(btn => btn.addEventListener('click', closeRequestModal));
+      // (Modal) แสดงภาพตัวอย่าง (สำหรับอัปโหลดใหม่)
+      $('#modal-image-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        const preview = $('#modal-image-upload-preview');
+        const fileNameDisplay = $('#modal-file-name-display');
+        if (file) {
+          fileNameDisplay.textContent = file.name;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            preview.src = event.target.result;
+            preview.classList.remove('hidden');
+          };
+          reader.readAsDataURL(file);
+        } else {
+          fileNameDisplay.textContent = 'No new file chosen';
+          preview.src = '#';
+          preview.classList.add('hidden');
+        }
+      });
+
+      // --- Modal (User Edit) ---
+      $('#user-edit-form').addEventListener('submit', handleUserEditSave);
+      $('#user-edit-modal-close').addEventListener('click', closeUserEditModal);
+      $$('.user-edit-modal-close').forEach(btn => btn.addEventListener('click', closeUserEditModal));
+
+      // --- Settings ---
+      $('#add-user-form').addEventListener('submit', handleAddUser);
+      // (Settings) เพิ่ม Unit
+      $('#setting-unit-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = $('#new-unit-value').value.trim();
+        if (value) {
+          handleManageSetting('units', 'add', value);
+          $('#new-unit-value').value = '';
+        }
+      });
+      // (เพิ่มใหม่) (Settings) เพิ่ม Product Type
+      $('#setting-product-type-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = $('#new-product-type-value').value.trim();
+        if (value) {
+          handleManageSetting('productTypes', 'add', value); 
+          $('#new-product-type-value').value = '';
+        }
+      });
+      // (Settings) เพิ่ม Status
+      $('#setting-status-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = $('#new-status-value').value.trim();
+        if (value) {
+          handleManageSetting('statuses', 'add', value);
+          $('#new-status-value').value = '';
+        }
+      });
+      // (แก้ไข) Event Delegation สำหรับหน้า Settings ทั้งหมด
+      $('#app-page-settings').addEventListener('click', (e) => {
+        const targetButton = e.target.closest('button[data-action]');
+        if (!targetButton) return;
+        const { action, username, type, value } = targetButton.dataset;
+        if (action === 'edit-user') openUserEditModal(username);
+        else if (action === 'delete-user') handleDeleteUser(username);
+        else if (action === 'delete-setting') handleManageSetting(type, 'delete', value);
+      });
+      // --- Initial Page Load ---
+      resumeSession();
+      feather.replace();
+    });
+  </script>
+
+</body>
+</html>
