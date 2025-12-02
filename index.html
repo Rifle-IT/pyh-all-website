@@ -4,153 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PYH Service Portal</title>
-    <!-- Google Fonts: Prompt สำหรับภาษาไทย -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS สำหรับการจัดรูปแบบ -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome สำหรับไอคอน -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Prompt', 'sans-serif'],
-                    },
-                    colors: {
-                        gold: {
-                            100: '#F9F1D8',
-                            400: '#D4AF37',
-                            500: '#C5A028',
-                            600: '#B08D26',
-                        }
-                    }
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
+                    colors: { gold: { 100: '#F9F1D8', 400: '#D4AF37', 500: '#C5A028', 600: '#B08D26' } }
                 }
             }
         }
     </script>
     <style>
-        /* Animation Background */
-        body {
-            background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #334155);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Glassmorphism Card */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .glass-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(212, 175, 55, 0.5); /* Gold border on hover */
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        }
+        body { background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #334155); background-size: 400% 400%; animation: gradient 15s ease infinite; }
+        @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(212, 175, 55, 0.5); box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center text-white p-4">
-
     <div class="max-w-4xl w-full">
-        
-        <!-- Header Section -->
         <div class="text-center mb-12">
             <div class="inline-block p-3 rounded-full bg-gold-400/10 border border-gold-400/20 mb-4">
                 <i class="fa-solid fa-layer-group text-gold-400 text-2xl"></i>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-gold-100 to-white">
-                PYH Services Portal
-            </h1>
-            <p class="text-slate-400 text-lg font-light">
-                ระบบบริการและข้อมูลสารสนเทศกลาง
-            </p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-gold-100 to-white">PYH Services Portal</h1>
+            <p class="text-slate-400 text-lg font-light">ระบบบริการและข้อมูลสารสนเทศกลาง</p>
         </div>
-
-        <!-- Links Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            <!-- Link 1: Item Request -->
             <a href="request.html" class="block group">
                 <div class="glass-card rounded-2xl p-8 h-full flex flex-col items-center text-center relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-b from-gold-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
                     <div class="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fa-solid fa-box-open text-blue-400 text-3xl"></i>
                     </div>
-                    
                     <h3 class="text-xl font-semibold mb-3 group-hover:text-gold-400 transition-colors">Item Request</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">
-                        ระบบคำขอเปิดรายการสินค้า
-                    </p>
-                    
-                    <div class="mt-6 text-xs font-medium text-blue-300 uppercase tracking-wider flex items-center gap-2 opacity-70 group-hover:opacity-100">
-                        Access System <i class="fa-solid fa-arrow-right"></i>
-                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">ระบบคำขอเปิดรายการสินค้า</p>
+                    <div class="mt-6 text-xs font-medium text-blue-300 uppercase tracking-wider flex items-center gap-2 opacity-70 group-hover:opacity-100">Access System <i class="fa-solid fa-arrow-right"></i></div>
                 </div>
             </a>
-
-            <!-- Link 2: PYH IT Services -->
             <a href="it.html" class="block group">
                 <div class="glass-card rounded-2xl p-8 h-full flex flex-col items-center text-center relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-b from-gold-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
                     <div class="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i class="fa-solid fa-laptop-code text-purple-400 text-3xl"></i>
+                         <i class="fa-solid fa-laptop-code text-purple-400 text-3xl"></i>
                     </div>
-                    
                     <h3 class="text-xl font-semibold mb-3 group-hover:text-gold-400 transition-colors">PYH IT Services</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">
-                        ศูนย์บริการทางด้านเทคโนโลยีสารสนเทศ<br>และการสนับสนุน
-                    </p>
-                    
-                    <div class="mt-6 text-xs font-medium text-purple-300 uppercase tracking-wider flex items-center gap-2 opacity-70 group-hover:opacity-100">
-                        View Service <i class="fa-solid fa-arrow-right"></i>
-                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">ศูนย์บริการทางด้านเทคโนโลยีสารสนเทศ<br>และการสนับสนุน</p>
+                    <div class="mt-6 text-xs font-medium text-purple-300 uppercase tracking-wider flex items-center gap-2 opacity-70 group-hover:opacity-100">View Service <i class="fa-solid fa-arrow-right"></i></div>
                 </div>
             </a>
-
-            <!-- Link 3: Assessment -->
             <a href="assessment.html" class="block group">
                 <div class="glass-card rounded-2xl p-8 h-full flex flex-col items-center text-center relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-b from-gold-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
                     <div class="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fa-solid fa-clipboard-check text-emerald-400 text-3xl"></i>
                     </div>
-                    
                     <h3 class="text-xl font-semibold mb-3 group-hover:text-gold-400 transition-colors">Survey</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">
-                        ระบบประเมิน<br>คุณภาพการให้บริการ
-                    </p>
-                    
-                    <div class="mt-6 text-xs font-medium text-emerald-300 uppercase tracking-wider flex items-center gap-2 opacity-70 group-hover:opacity-100">
-                        Start Assessment <i class="fa-solid fa-arrow-right"></i>
-                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">ระบบประเมิน<br>คุณภาพการให้บริการ</p>
+                     <div class="mt-6 text-xs font-medium text-emerald-300 uppercase tracking-wider flex items-center gap-2 opacity-70 group-hover:opacity-100">Start Assessment <i class="fa-solid fa-arrow-right"></i></div>
                 </div>
             </a>
-
         </div>
-
-        <!-- Footer -->
         <div class="text-center mt-12 border-t border-white/10 pt-8">
             <p class="text-slate-500 text-sm">© 2024 PYH Services. All rights reserved.</p>
             <p class="text-slate-500 text-xs mt-1">Designed by Rifle</p>
-
         </div>
-
     </div>
-
 </body>
 </html>
