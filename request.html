@@ -15,7 +15,7 @@
     .pyh-gradient-text { background: linear-gradient(135deg, #10B981, #06B6D4); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .page { display: none; }
     .btn-icon-no-pointer { pointer-events: none; }
-    .manager-plus-item-cell { display: none; } /* ซ่อนโดย Default */
+    .manager-plus-item-cell { display: none; }
   </style>
 </head>
 
@@ -155,7 +155,6 @@
             <p>กรุณาใช้เมนู Admin เพื่อจัดการ (รายละเอียดอยู่ในไฟล์ต้นฉบับ)</p>
         </div>
       </div>
-
     </main>
   </div>
 
@@ -174,6 +173,10 @@
               <div><label class="block text-sm font-medium text-gray-700">แผนก</label><input type="text" id="modal-department" readonly class="modal-field bg-gray-100 mt-1 w-full border-gray-300 rounded-md h-11 px-3"></div>
             </div>
             <div><label class="block text-sm font-medium text-gray-700">ชื่อสินค้า</label><input type="text" id="modal-product-name" class="modal-field mt-1 w-full border-gray-300 rounded-md h-11 px-3"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div><label class="block text-sm font-medium text-gray-700">ประเภท</label><select id="modal-product-type" class="modal-field mt-1 w-full border-gray-300 bg-white rounded-md h-11 px-3"></select></div>
+              <div><label class="block text-sm font-medium text-gray-700">หน่วยนับ</label><select id="modal-unit" class="modal-field mt-1 w-full border-gray-300 bg-white rounded-md h-11 px-3"></select></div>
+            </div>
             <div class="space-y-5 pt-5 border-t border-gray-200 manager-plus-item" style="display:none;">
                 <h3 class="text-lg font-medium text-gray-900">ส่วนของ Admin</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -192,10 +195,12 @@
   </div>
 
   <script>
-    // ✅✅✅ แก้ URL ตรงนี้ให้เป็น URL ล่าสุดของคุณที่ได้จากการ Deploy (Anyone) ✅✅✅
+    // ==========================================
+    // 🔴 แก้ไข URL ตรงนี้! (Request API)
+    // ==========================================
+    // 👇👇👇 เอา URL จาก Google Apps Script (Request) มาใส่ตรงนี้ 👇👇👇
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL7bpluhy_QVwlhpgJ9ghnJ9k2ux1VvhVG2ssFG9SLM3wIzwWaSXDsEO2Rkn2VbxYJ/exec"; 
 
-    // API Shim
     const google = {
       script: {
         run: {
@@ -218,13 +223,12 @@
           getInitialData: function(...a) { this._call('getInitialData', a); },
           submitRequest: function(...a) { this._call('submitRequest', a); },
           updateRequest: function(...a) { this._call('updateRequest', a); },
-          deleteRequest: function(...a) { this._call('deleteRequest', a); }
+          deleteRequest: function(...a) { this._call('deleteRequest', a); },
         }
       }
     };
 
-    // State
-    const STATE = { loggedInUser: null, isPrivilegedUser: false, requests: [], settings: { units: [], statuses: [], productTypes: [] }, departments: [] };
+    const STATE = { loggedInUser: null, isPrivilegedUser: false, requests: [], settings: { units: [], statuses: [], productTypes: [] } };
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
 
@@ -258,13 +262,15 @@
     function initData(res) {
         hideLoading();
         if(res.success) {
-            STATE.requests = Array.isArray(res.requests) ? res.requests : []; // ✅ กันจอแดงตรงนี้
+            // ✅ กัน Error จอแดงตรงนี้
+            STATE.requests = Array.isArray(res.requests) ? res.requests : []; 
             STATE.settings = res.settings || {};
             
             // Setup UI
             $('#login-page').style.display = 'none';
             $('#main-app').style.display = 'block';
             $('#user-info-name').textContent = STATE.loggedInUser.username;
+            $$('.admin-only-item').forEach(el => el.style.display = STATE.loggedInUser.role === 'admin' ? '' : 'none');
             
             // Populate Dropdowns
             const populate = (id, list) => {
@@ -273,26 +279,20 @@
             };
             populate('#req-unit', STATE.settings.units);
             populate('#req-product-type', STATE.settings.productTypes);
-            
+            populate('#modal-unit', STATE.settings.units);
+            populate('#modal-product-type', STATE.settings.productTypes);
+            populate('#modal-status', STATE.settings.statuses);
+
             renderHistoryPage();
         }
     }
-
-    // Navigation
-    $$('.nav-link').forEach(l => l.addEventListener('click', (e) => {
-        e.preventDefault();
-        $$('.app-page').forEach(p => p.style.display = 'none');
-        const page = e.target.dataset.page;
-        $(`#app-page-${page}`).style.display = 'block';
-        if(page === 'history') renderHistoryPage();
-    }));
 
     // ✅ Function ที่แก้แล้ว: Render History
     function renderHistoryPage() {
         const tbody = $('#history-table-body');
         tbody.innerHTML = '';
         
-        // กรองข้อมูล (ตัดโค้ดส่วนกรองออกเพื่อให้สั้น แต่หลักการคือใช้ STATE.requests)
+        // กรองข้อมูล (ใช้ STATE.requests ที่ผ่านการเช็ค Array มาแล้ว)
         const data = STATE.requests; 
 
         if (data.length === 0) {
@@ -317,6 +317,15 @@
         });
         feather.replace();
     }
+    
+    // Navigation
+    $$('.nav-link').forEach(l => l.addEventListener('click', (e) => {
+        e.preventDefault();
+        $$('.app-page').forEach(p => p.style.display = 'none');
+        const page = e.target.dataset.page;
+        $(`#app-page-${page}`).style.display = 'block';
+        if(page === 'history') renderHistoryPage();
+    }));
 
     // Start
     if(sessionStorage.getItem('pyh_user')) {
