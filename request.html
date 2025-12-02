@@ -1594,37 +1594,78 @@
         }).getHistoryData();
       }
 
+      // --- ฟังก์ชันแสดงตารางประวัติ (สำหรับ request.html) ---
       function renderHistoryTable(data) {
-        var tbody = document.getElementById('table-body');
-        var loading = document.getElementById('loading-msg');
-        
-        if (!data || data.length === 0) { 
-            loading.textContent = translations[currentLang].no_data; 
-            loading.style.display = "block"; 
-            tbody.innerHTML = "";
-            return; 
-        }
-        
-        var html = "";
-        // Mapping Emoji ตามข้อความ (Optional: ใส่เพื่อให้สวยขึ้นตามภาพ)
-        const mapSat = { 
-          "1.ยอดเยี่ยม": "5.ยอดเยี่ยม", "2.ดีมาก": "4.ดีมาก", 
-          "3.ปานกลาง": "3.ปานกลาง", "4.พอใช้": "2.พอใช้", "5.ปรับปรุง": "1.ปรับปรุง"
-        };
-
-        data.forEach(function(row) {
-        var rowDataSafe = JSON.stringify(row).replace(/"/g, '&quot;');
-          // จัดการสี Background ของความพึงพอใจ (ถ้าต้องการ)
-          // แต่เบื้องต้นเอาแค่แสดงผลให้เร็วก่อน
-          html += `<tr onclick="openDetailModal(${rowDataSafe})">`;
-          html += "<td>" + (row[0] || "") + "</td>";
-          html += "<td>" + (row[1] || "") + "</td>"; // ความพึงพอใจ
-          html += "<td>" + (row[2] || "") + "</td>";
-          html += "<td>" + (row[3] || "") + "</td>";
-          html += "<td>" + (row[4] || "") + "</td>";
-          html += "</tr>";
-        });
-        tbody.innerHTML = html;
+          var tbody = document.getElementById('history-table-body');
+          var noData = document.getElementById('history-no-data');
+      
+          // ✅ 1. แก้ Error จอแดง: เช็คก่อนว่าเป็น Array จริงไหม
+          if (!data || !Array.isArray(data)) {
+              console.warn("Data is not an array:", data);
+              if (tbody) tbody.innerHTML = "";
+              return; // ถ้าไม่ใช่ Array ให้หยุดทำงานทันที (กันจอแดง)
+          }
+      
+          // 2. เช็คว่ามีข้อมูลไหม
+          if (data.length === 0) {
+              if (noData) noData.style.display = "block";
+              if (tbody) tbody.innerHTML = "";
+              return;
+          }
+      
+          if (noData) noData.style.display = "none";
+      
+          var html = "";
+      
+          // ✅ 3. วนลูปสร้างตาราง (ใช้ Key ให้ตรงกับระบบสินค้า)
+          data.forEach(function(req) {
+              // ใช้ฟังก์ชันเสริมที่มีอยู่แล้ว
+              var displayDate = (typeof formatDate === 'function') ? formatDate(req.RequestDate) : req.RequestDate;
+              var statusBadge = (typeof getStatusBadge === 'function') ? getStatusBadge(req.Status) : req.Status;
+              
+              // เช็คสิทธิ์การแสดงปุ่ม (จำลอง logic เดิม)
+              var isUser = (STATE.loggedInUser && STATE.loggedInUser.role === 'user');
+              var isPrivileged = (STATE.isPrivilegedUser);
+              var isSuper = (STATE.isSuperAdmin);
+              
+              var canEdit = isPrivileged || (isUser && req.Status === 'รอดำเนินการ');
+              var canDelete = isSuper;
+      
+              html += '<tr class="hover:bg-gray-50">';
+              html += '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">' + displayDate + '</td>';
+              html += '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">' + (req.ProductName || '-') + '</td>';
+              
+              // คอลัมน์แผนก (ซ่อนถ้าไม่ใช่ Admin/Manager)
+              var deptStyle = isPrivileged ? '' : 'display:none;';
+              html += '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 manager-plus-item-cell" style="' + deptStyle + '">' + (req.Department || '-') + '</td>';
+              
+              html += '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + (req.ProductCode || 'N/A') + '</td>';
+              html += '<td class="px-6 py-4 whitespace-nowrap text-sm">' + statusBadge + '</td>';
+              
+              // ปุ่มจัดการ
+              html += '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">';
+              html += '<div class="flex items-center justify-center space-x-3">';
+              
+              // ปุ่มดู
+              html += '<button class="text-cyan-600 hover:text-cyan-900 w-8 h-8 flex items-center justify-center rounded-md hover:bg-cyan-50" title="ดูรายละเอียด" data-action="view" data-request-id="' + req.RequestID + '"><i data-feather="eye" class="w-4 h-4 btn-icon-no-pointer"></i></button>';
+              
+              // ปุ่มแก้ไข
+              if (canEdit) {
+                  html += '<button class="text-blue-600 hover:text-blue-900 w-8 h-8 flex items-center justify-center rounded-md hover:bg-blue-50" title="แก้ไข" data-action="edit" data-request-id="' + req.RequestID + '"><i data-feather="edit-2" class="w-4 h-4 btn-icon-no-pointer"></i></button>';
+              }
+              
+              // ปุ่มลบ
+              if (canDelete) {
+                  html += '<button class="text-red-600 hover:text-red-900 w-8 h-8 flex items-center justify-center rounded-md hover:bg-red-50" title="ลบ" data-action="delete" data-request-id="' + req.RequestID + '"><i data-feather="trash-2" class="w-4 h-4 btn-icon-no-pointer"></i></button>';
+              }
+              
+              html += '</div></td></tr>';
+          });
+      
+          if (tbody) tbody.innerHTML = html;
+          
+          // เรียก Feather Icons ให้ทำงานใหม่
+          if (typeof feather !== 'undefined') feather.replace();
       }
 
       function showSuccessModal() {
@@ -1886,3 +1927,4 @@
     </script>
   </body>
 </html>
+
