@@ -1,0 +1,3602 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYH IT Service</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+        }
+        
+        /* =========================================
+           1. CUSTOM SCROLLBAR (ฉบับสมบูรณ์)
+           เป้าหมาย: ซ่อนแนวตั้ง (ขวา) / แสดงแนวนอน (ล่าง)
+           ========================================= */
+        
+        /* 1.1 ตั้งค่าพื้นฐาน (Chrome, Edge, Safari) */
+        .hide-scroll::-webkit-scrollbar {
+            width: 0px !important;    /* ซ่อนแนวตั้ง */
+            height: 8px !important;   /* แสดงแนวนอน สูง 8px */
+            background: transparent;  /* พื้นหลังใส */
+        }
+
+        /* 1.2 ซ่อนแนวตั้งแบบเจาะจง (กันเหนียว) */
+        .hide-scroll::-webkit-scrollbar:vertical {
+            display: none !important;
+            width: 0px !important;
+        }
+
+        /* 1.3 ตกแต่งตัวเลื่อนแนวนอน */
+        .hide-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5); /* สีเทาจางๆ */
+            border-radius: 10px;
+        }
+        .hide-scroll::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(107, 114, 128, 0.8); /* สีเข้มขึ้นเมื่อชี้ */
+        }
+
+        /* 1.4 สำหรับ Firefox (Firefox แยกแกนไม่ได้ชัดเจน ใช้แบบบางแทน) */
+        .hide-scroll {
+            scrollbar-width: thin; 
+            scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+        }
+
+        /* =========================================
+           2. UTILITIES
+           ========================================= */
+        
+        /* คลาสสำหรับซ่อน Scrollbar ทั้งหมด (ใช้กับ element อื่นถ้าจำเป็น) */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* === Custom styles for select === */
+        select,
+        input[type="date"] {
+             -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236B7280%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-13%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2013l128%20128c3.6%203.6%207.8%205.4%2013%205.4s9.4-1.8%2013-5.4l128-128c3.6-3.6%205.4-7.8%205.4-13%200-5-1.8-9.4-5.4-13z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 0.65rem auto;
+            padding-right: 2.5rem;
+        }
+        
+        /* Fix for date input icon */
+        input[type="date"] {
+            background-position: right 0.5rem center;
+        }
+
+        /* Modal backdrop */
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Loading spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Dashboard Chart Bar */
+        .chart-bar {
+            background-color: #3b82f6;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .chart-bar:hover {
+            background-color: #2563eb;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+  <a href="index.html" style="position:fixed; top:10px; left:10px; z-index:9999; background:rgba(0,0,0,0.5); color:white; padding:8px 12px; border-radius:20px; text-decoration:none; font-family:sans-serif; font-size:12px;">
+    ⬅ Home
+  </a>
+
+    <!-- === LOADING OVERLAY === -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-[60] flex flex-col items-center justify-center hidden">
+        <div class="loader"></div>
+        <p id="loadingText" class="text-white text-lg mt-4">กำลังโหลด...</p>
+    </div>
+
+    <!-- === LOGIN VIEW === -->
+    <div id="loginView" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-gray-900 to-black p-4">
+        <div class="w-full max-w-md bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-gray-700">
+            <div class="flex justify-center mb-6">
+                 <div class="w-24 h-24 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center shadow-lg">
+                    <span class="text-white text-4xl font-bold">PYH</span>
+                 </div>
+            </div>
+            <h2 class="text-3xl font-bold text-center text-white mb-2">IT Service System</h2>
+            <p class="text-center text-gray-300 mb-8">Phuket Yacht Haven Marina</p>
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300">ชื่อผู้ใช้ (แผนก)</label>
+                    <div class="mt-1 relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                           <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+                        </span>
+                        <input id="username" name="username" type="text" autocomplete="username" required
+                               class="block w-full pl-10 pr-3 py-3 bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300">รหัสผ่าน</label>
+                    <div class="mt-1 relative">
+                         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>
+                        </span>
+                         <input id="password" name="password" type="password" autocomplete="current-password" required
+                               class="block w-full pl-10 pr-3 py-3 bg-gray-900 bg-opacity-50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                </div>
+                <div>
+                    <button type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition transform hover:scale-105 duration-200">
+                         <i data-lucide="log-in" class="w-5 h-5 mr-2"></i>
+                        เข้าสู่ระบบ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- === MAIN APP VIEW (Hidden by default) === -->
+    <div id="mainView" class="hidden">
+        
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-blue-800 to-blue-900 shadow-lg sticky top-0 z-50">
+            <div class="w-full px-4">
+                <div class="flex justify-between items-center h-16">
+
+                    <div class="flex items-center space-x-4 flex-shrink-0">
+                         <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                             <span class="text-white text-lg font-bold">PYH</span>
+                         </div>
+                         <h1 class="text-xl font-bold text-white hidden sm:block">ระบบบันทึกงานองค์กร</h1>
+                    </div>
+                    
+                    <nav class="hidden md:flex flex-1 justify-center px-4 min-w-0"> 
+                        <div id="tabsNav" class="flex space-x-2 flex-nowrap overflow-x-auto no-scrollbar" role="tablist"> 
+                            </div>
+                    </nav>
+
+                    <div class="flex items-center space-x-3 flex-shrink-0 justify-end">
+                          <div class="text-right hidden sm:block">
+                             <div id="userInfo" class="text-sm font-medium text-white"></div>
+                             <div id="userRole" class="text-xs text-blue-300"></div>
+                          </div>
+                        
+                        <button id="logoutButton" title="ออกจากระบบ" class="p-2 rounded-full text-blue-200 hover:text-white hover:bg-red-700 focus:outline-none focus:bg-red-600 transition duration-200">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                        </button>
+
+                        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 transition">
+                            <i data-lucide="menu" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mobileMenuPanel" class="hidden md:hidden bg-blue-900 border-t border-blue-700 pb-4 shadow-xl">
+                <div class="px-4 py-3 bg-blue-950 flex items-center justify-between sm:hidden">
+                    <div>
+                        <div id="userInfoMobile" class="text-sm font-medium text-white">User</div>
+                        <div id="userRoleMobile" class="text-xs text-blue-300">Role</div>
+                    </div>
+                </div>
+                
+                <div id="mobileTabsNav" class="flex flex-col space-y-1 px-2 pt-2">
+                     </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+            <!-- === TAB PANEL: DASHBOARD (NEW) === -->
+            <div id="dashboardPanel" role="tabpanel">
+                <div class="space-y-6">
+                    
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div id="statTotal" class="bg-white p-5 rounded-xl shadow-lg flex items-center space-x-4 cursor-pointer hover:bg-gray-50 transition">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i data-lucide="ticket" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">งานทั้งหมด</p>
+                                <p id="statTotalCount" class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                        </div>
+                        <div id="statPending" class="bg-white p-5 rounded-xl shadow-lg flex items-center space-x-4 cursor-pointer hover:bg-gray-50 transition">
+                            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                <i data-lucide="clock" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">รอดำเนินการ</p>
+                                <p id="statPendingCount" class="text-2xl font-bold text-red-600">0</p>
+                            </div>
+                        </div>
+                        <div id="statInProgress" class="bg-white p-5 rounded-xl shadow-lg flex items-center space-x-4 cursor-pointer hover:bg-gray-50 transition">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i data-lucide="play-circle" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">รับงานแล้ว</p>
+                                <p id="statInProgressCount" class="text-2xl font-bold text-blue-600">0</p>
+                            </div>
+                        </div>
+                        <div id="statCompleted" class="bg-white p-5 rounded-xl shadow-lg flex items-center space-x-4 cursor-pointer hover:bg-gray-50 transition">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i data-lucide="check-circle" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">เสร็จแล้ว</p>
+                                <p id="statCompletedCount" class="text-2xl font-bold text-green-600">0</p>
+                            </div>
+                        </div>
+                         <div id="statDuration" class="bg-white p-5 rounded-xl shadow-lg flex items-center space-x-4 cursor-pointer hover:bg-gray-50 transition">
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i data-lucide="timer" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">เรียงตามระยะเวลา</p>
+                                <p class="text-base font-bold text-purple-600">(เร็ว -> ช้า)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-blue-500">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <i data-lucide="arrow-up-right" class="w-5 h-5 mr-2 text-blue-500"></i>
+                                สรุปงานที่แจ้งแผนกอื่น (Outgoing)
+                            </h3>
+                            <div id="chartOutgoing" class="space-y-3 max-h-96 overflow-y-auto">
+                                <p class="text-gray-400 text-sm text-center py-4">กำลังโหลดข้อมูล...</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-orange-500">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <i data-lucide="arrow-down-left" class="w-5 h-5 mr-2 text-orange-500"></i>
+                                สรุปงานที่แผนกอื่นแจ้ง (Incoming)
+                            </h3>
+                            <div id="chartIncoming" class="space-y-3 max-h-96 overflow-y-auto">
+                                <p class="text-gray-400 text-sm text-center py-4">กำลังโหลดข้อมูล...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="chartByDeptContainer" class="bg-white p-6 rounded-2xl shadow-lg mt-6 hidden">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">ภาพรวมงานทั้งองค์กร (Admin)</h3>
+                        <div id="chartByDept" class="space-y-3 max-h-96 overflow-y-auto"></div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <!-- === TAB PANEL: NEW TICKET === -->
+            <div id="newTicketPanel" role="tabpanel" class="hidden">
+                <form id="ticketForm" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-6">
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <h2 class="text-2xl font-semibold text-gray-900">แจ้งปัญหา / ขอรับบริการ</h2>
+                        <span id="ticketIdDisplay" class="text-lg font-medium text-gray-400">ID: (อัตโนมัติ)</span>
+                    </div>
+                    
+                    <!-- Form Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+
+                        <div>
+                            <label for="reportDateTime" class="block text-sm font-medium text-gray-700">วันที่และเวลาที่แจ้ง <span class="text-red-500">*</span></label>
+                            <div class="flex gap-2">
+                                <input type="datetime-local" id="reportDateTime" name="reportDateTime" required
+                                      class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                
+                                <button type="button" onclick="setDefaultDateTime()" 
+                                        class="mt-1 px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none transition-colors text-sm whitespace-nowrap"
+                                        title="ระบุเวลาปัจจุบัน">
+                                    <i data-lucide="clock" class="w-4 h-4 inline-block"></i> ปัจจุบัน
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="serialNumber" class="block text-sm font-medium text-gray-700">Scan Serial Number / Asset ID</label>
+                            
+                            <div class="relative w-full max-w-sm mx-auto mb-2">
+                                <div id="reader" class="hidden border-2 border-blue-500 rounded-lg overflow-hidden bg-black"></div>
+                                
+                                <button type="button" id="flashToggleBtn" onclick="toggleFlash()" 
+                                        class="hidden absolute top-2 right-2 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-all z-10 focus:outline-none">
+                                    <i id="flashIcon" data-lucide="zap-off" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <div class="flex gap-2 mt-1">
+                                <input type="text" id="serialNumber" name="serialNumber" 
+                                       placeholder="ยิงบาร์โค้ด หรือพิมพ์..." 
+                                       class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-colors"
+                                       onkeydown="handleSerialEnter(event)" onchange="fetchAssetData(this.value)">
+
+                                <button type="button" onclick="startScanner()" 
+                                        class="px-3 py-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                                        title="เปิดกล้องสแกน">
+                                    <i data-lucide="scan-barcode" class="w-5 h-5"></i>
+                                </button>
+                                
+                                <button type="button" onclick="viewAssetDetails()" 
+                                        id="btnViewAsset"
+                                        class="px-3 py-2 bg-gray-200 text-gray-500 rounded-lg hover:bg-blue-100 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="ดูรายละเอียดอุปกรณ์" disabled>
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            <span id="serialStatus" class="text-xs text-gray-500 mt-1 block h-4"></span>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="details" class="block text-sm font-medium text-gray-700">รายละเอียดงานที่แจ้ง <span class="text-red-500">*</span></label>
+                            <textarea id="details" name="details" rows="4" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+
+                        <div>
+                            <label for="department" class="block text-sm font-medium text-gray-700">แผนกที่แจ้ง <span class="text-red-500">*</span></label>
+                            <select id="department" name="department" required
+                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-100 disabled:cursor-not-allowed">
+                                <option value="" disabled selected>-- เลือกแผนก --</option>
+                                </select>
+                        </div>
+
+                        <div>
+                            <label for="serviceDept" class="block text-sm font-medium text-gray-700">แผนกที่ขอใช้บริการ <span class="text-red-500">*</span></label>
+                            <select id="serviceDept" name="serviceDept" required
+                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="" disabled selected>-- เลือกแผนก --</option>
+                                </select>
+                        </div>
+
+                        <div>
+                          <label for="priority" class="block text-sm font-medium text-gray-700">ความสำคัญ <span class="text-red-500">*</span></label>
+                            <select id="priority" name="priority" required
+                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="" disabled selected>-- เลือกความสำคัญ --</option>
+                                </select>
+                        </div>
+                
+                        <div>
+                            <label for="type" class="block text-sm font-medium text-gray-700">ประเภทงาน <span class="text-red-500">*</span></label>
+                            <select id="type" name="type" required
+                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="" disabled selected>-- เลือกประเภทงาน --</option>
+                                </select>
+                        </div>
+
+                         <div>
+                            <label for="location" class="block text-sm font-medium text-gray-700">สถานที่ <span class="text-red-500">*</span></label>
+                            <select id="location" name="location" required
+                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="" disabled selected>-- เลือกสถานที่ --</option>
+                                </select>
+                        </div>
+
+                        <div>
+                            <label for="contact" class="block text-sm font-medium text-gray-700">ผู้ติดต่อ <span class="text-red-500">*</span></label>
+                            <input type="text" id="contact" name="contact" required
+                                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">เบอร์โทร</label>
+                            <input type="tel" id="phone" name="phone"
+                                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+
+                        <div class="md:col-start-1"> 
+                            <label for="file1" class="block text-sm font-medium text-gray-700">ภาพประกอบ 1</label>
+                            <input type="file" id="file1" name="file1" accept="image/*"
+                                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <span id="file1Name" class="text-xs text-gray-500"></span>
+                            <img id="file1Preview" src="" alt="Image 1 Preview" class="hidden mt-2 max-h-48 w-auto rounded-lg shadow-md border">
+                        </div>
+                        
+                        <div>
+                            <label for="file2" class="block text-sm font-medium text-gray-700">ภาพประกอบ 2</label>
+                            <input type="file" id="file2" name="file2" accept="image/*"
+                                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <span id="file2Name" class="text-xs text-gray-500"></span>
+                            <img id="file2Preview" src="" alt="Image 2 Preview" class="hidden mt-2 max-h-48 w-auto rounded-lg shadow-md border">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="remark" class="block text-sm font-medium text-gray-700">Remark (หมายเหตุ)</label>
+                            <textarea id="remark" name="remark" rows="3"
+                                      class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="pt-6 border-t border-gray-200 flex justify-end">
+                        <button type="submit"
+                                class="flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-lg text-base font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
+                            <i data-lucide="send" class="w-5 h-5 mr-2"></i>
+                            ส่งข้อมูล
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- === TAB PANEL: HISTORY === -->
+            <div id="historyPanel" role="tabpanel" class="hidden">
+                <input type="hidden" id="typeFilter" value="">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+                    <div class="flex flex-col border-b pb-4 mb-6 gap-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-center">
+                             <h2 class="text-2xl font-semibold text-gray-900">งานที่แจ้งแผนกอื่น</h2>
+                             <button id="clearFiltersBtn" class="flex items-center text-sm text-blue-600 hover:text-blue-800 transition">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4 mr-1"></i>
+                                ล้างตัวกรอง
+                             </button>
+                        </div>
+                       
+                        <!-- Filters (NEW LAYOUT) -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            
+                            <div id="adminDeptFilterContainer" class="hidden">
+                                <label for="deptFilter" class="block text-sm font-medium text-gray-700">แผนก</label>
+                                <select id="deptFilter" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="">-- ทุกแผนก --</option>
+                                    </select>
+                            </div>
+       
+                            <div>
+                                <label for="statusFilter" class="block text-sm font-medium text-gray-700">สถานะ</label>
+                                <select id="statusFilter" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="">-- ทุกสถานะ --</option>
+                                    </select>
+                            </div>
+                            
+                            <div class="md:col-span-2 lg:col-span-1">
+                                <label for="contactFilter" class="block text-sm font-medium text-gray-700">ค้นหาผู้ติดต่อ</label>
+                                <input type="text" id="contactFilter" placeholder="พิมพ์ชื่อผู้ติดต่อ..." class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+
+                            <div class="md:col-span-2 lg:col-span-1">
+                                <label for="detailsFilter" class="block text-sm font-medium text-gray-700">ค้นหารายละเอียด</label>
+                                <input type="text" id="detailsFilter" placeholder="พิมพ์รายละเอียด..." class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+
+                            <div class="md:col-span-2 lg:col-span-1">
+                                <label for="serialFilter" class="block text-sm font-medium text-gray-700">ค้นหา Serial Number</label>
+                                <input type="text" id="serialFilter" placeholder="พิมพ์ S/N..." 
+                                      class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                        
+                            <div>
+                                <label for="dateStartFilter" class="block text-sm font-medium text-gray-700">วันที่แจ้ง (จาก)</label>
+                                <input type="date" id="dateStartFilter" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            
+                            <div id="dateEndFilterContainer">
+                                <label for="dateEndFilter" class="block text-sm font-medium text-gray-700">วันที่แจ้ง (ถึง)</label>
+                                <input type="date" id="dateEndFilter" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History Table Container -->
+                    <div id="historyTableContainer" class="overflow-x-auto"></div>
+                    <p id="noHistory" class="text-center text-gray-500 py-10 hidden">ไม่พบข้อมูล... กรุณาลองปรับเปลี่ยนตัวกรอง</p>
+                </div>
+            </div>
+
+            <!-- === TAB PANEL: SETTINGS (Admin Only) === -->
+            <div id="settingsPanel" role="tabpanel" class="hidden">
+                 <form id="settingsForm" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 border-b pb-4">ตั้งค่าตัวเลือก (Admin)</h2>
+                    <p class="text-sm text-gray-600">ใส่แต่ละตัวเลือกในบรรทัดใหม่</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="settingsPriority" class="block text-sm font-medium text-gray-700">ความสำคัญ (Priority)</label>
+                            <textarea id="settingsPriority" rows="10" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="settingsLocation" class="block text-sm font-medium text-gray-700">สถานที่ (Location)</label>
+                            <textarea id="settingsLocation" rows="10" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div>
+                            <label for="settingsDepartment" class="block text-sm font-medium text-gray-700">แผนก (Department)</label>
+                            <textarea id="settingsDepartment" rows="10" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div>
+                            <label for="settingsServiceDept" class="block text-sm font-medium text-gray-700">แผนกที่ขอใช้บริการ (Service Dept)</label>
+                            <textarea id="settingsServiceDept" rows="10" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                         <div>
+                            <label for="settingsStatus" class="block text-sm font-medium text-gray-700">สถานะ (Status)</label>
+                            <textarea id="settingsStatus" rows="10" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-200">
+                        <h2 class="text-2xl font-semibold text-gray-900 border-b pb-4 mb-6">ตั้งค่าผู้ใช้และสิทธิ์ (Admin)</h2>
+                        
+                        <div class="flex justify-end mb-4">
+                            <button type="button" id="addUserBtn" class="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 transition">
+                                <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i>
+                                เพิ่มผู้ใช้ใหม่
+                            </button>
+                        </div>
+
+                        <div id="adminUserTableContainer" class="overflow-x-auto">
+                            <p id="noAdminUsers" class="text-center text-gray-500 py-10 hidden">ไม่พบข้อมูลผู้ใช้</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-gray-200 flex justify-end">
+                        <button type="submit"
+                                class="flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-lg text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-105">
+                            <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                            บันทึกการตั้งค่าทั้งหมด
+                        </button>
+                    </div>
+                 </form>
+            </div>
+
+            <div id="assigneeSettingsPanel" role="tabpanel" class="hidden">
+                <form id="assigneeSettingsForm" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 border-b pb-4">ตั้งค่ารายชื่อผู้รับผิดชอบตามแผนก</h2>
+                    <p class="text-sm text-gray-600">เลือก "แผนก" เพื่อกำหนดรายชื่อผู้รับผิดชอบของแผนกนั้นๆ</p>
+
+                    <div>
+                        <label for="settingAssigneeDeptSelect" class="block text-sm font-medium text-gray-700">เลือกแผนก</label>
+                        <select id="settingAssigneeDeptSelect" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="" disabled selected>-- กรุณาเลือกแผนก --</option>
+                        </select>
+                    </div>
+
+                    <div id="assigneeEditorContainer" class="hidden">
+                        <label for="assigneeEditor" class="block text-sm font-medium text-gray-700">รายชื่อผู้รับผิดชอบ (บรรทัดละ 1 ชื่อ)</label>
+                        <textarea id="assigneeEditor" rows="15" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-4 font-mono text-sm"></textarea>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-200 flex justify-end">
+                        <button type="submit" class="flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
+                            <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                            บันทึกรายชื่อ
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="typeSettingsPanel" role="tabpanel" class="hidden">
+                <form id="typeSettingsForm" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg space-y-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 border-b pb-4">ตั้งค่าประเภทงานตามแผนก</h2>
+                    <p class="text-sm text-gray-600">เลือก "แผนกที่ให้บริการ" เพื่อกำหนดประเภทงานของแผนกนั้นๆ</p>
+
+                    <div>
+                        <label for="settingTypeDeptSelect" class="block text-sm font-medium text-gray-700">เลือกแผนกที่ให้บริการ</label>
+                        <select id="settingTypeDeptSelect" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="" disabled selected>-- กรุณาเลือกแผนก --</option>
+                            </select>
+                    </div>
+
+                    <div id="typeEditorContainer" class="hidden">
+                        <label for="settingsType" class="block text-sm font-medium text-gray-700">รายการประเภทงาน (บรรทัดละ 1 รายการ)</label>
+                        <textarea id="settingsType" rows="15" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-4 font-mono text-sm"></textarea>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-200 flex justify-end">
+                        <button type="submit"
+                                class="flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-lg text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
+                            <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                            บันทึกทั้งหมด
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+    <dialog id="adminUserModal" class="p-0 rounded-2xl shadow-2xl w-full max-w-xl backdrop:bg-black backdrop:bg-opacity-50 overflow-hidden">
+        <form id="adminUserForm" method="dialog" class="bg-white rounded-2xl">
+            <header class="flex justify-between items-center p-6 bg-gray-50 rounded-t-2xl border-b">
+                <h2 class="text-xl font-semibold text-gray-900"><span id="userModalTitle">เพิ่มผู้ใช้ใหม่</span></h2>
+                <button type="button" onclick="adminUserModal.close()" class="p-2 rounded-full text-gray-500 hover:bg-gray-200">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </header>
+            
+            <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                <input type="hidden" id="user-original-username">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="user-username" class="block text-sm font-medium text-gray-700">ชื่อผู้ใช้ (แผนก)</label>
+                        <input type="text" id="user-username" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="user-password" class="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
+                        <input type="text" id="user-password" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                     <div>
+                        <label for="user-role" class="block text-sm font-medium text-gray-700">สิทธิ์</label>
+                        <select id="user-role" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="Admin">Admin</option>
+                            <option value="Manager">Manager</option>
+                            <option value="User" selected>User</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="user-department" class="block text-sm font-medium text-gray-700">แผนกที่สังกัด</label>
+                        <select id="user-department" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">แผนกที่เข้าถึงได้ (Accessible Departments)</label>
+                    <div id="accessible-depts-container" class="grid grid-cols-3 gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
+                        </div>
+                </div>
+                
+            </div>
+
+            <footer class="flex justify-end items-center p-6 bg-gray-50 rounded-b-2xl border-t space-x-4">
+                <button type="button" onclick="adminUserModal.close()" class="px-4 py-2 rounded-lg border border-gray-300 bg-gray-200 text-gray-800 hover:bg-gray-300 transition-all duration-200">ยกเลิก</button>
+                <button type="submit" id="userModalSaveBtn" class="px-6 py-2 rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition-all duration-200 transform hover:scale-105">
+                    <i data-lucide="save" class="w-4 h-4 inline-block mr-2"></i>
+                    บันทึกผู้ใช้
+                </button>
+            </footer>
+        </form>
+    </dialog>
+
+    <!-- === ADMIN EDIT MODAL === -->
+    <dialog id="adminEditModal" class="p-0 rounded-2xl shadow-2xl w-full max-w-3xl backdrop:bg-black backdrop:bg-opacity-50 overflow-hidden">
+        <form id="adminEditForm" method="dialog" class="bg-white rounded-2xl">
+            <header class="flex justify-between items-center p-6 bg-gray-50 rounded-t-2xl border-b">
+                <h2 class="text-xl font-semibold text-gray-900">แก้ไข Ticket ID: <span id="modalTicketId"></span></h2>
+                <button type="button" onclick="adminEditModal.close()" class="p-2 rounded-full text-gray-500 hover:bg-gray-200">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </header>
+            
+            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                <!-- Form fields will be dynamically populated, similar to new ticket form but with admin fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="hidden" id="edit-id">
+
+                    <!-- ✅ NEW: Report DateTime -->
+                    <div class="md:col-span-2">
+                        <label for="edit-reportDateTime" class="block text-sm font-medium text-gray-700">
+                            วันที่และเวลาที่แจ้ง <span class="text-red-500">*</span>
+                        </label>
+                        <input type="datetime-local" id="edit-reportDateTime" required
+                              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <p class="mt-1 text-xs text-gray-500">Admin สามารถแก้ไขวันที่และเวลาที่แจ้งได้</p>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div>
+                        <label for="edit-status" class="block text-sm font-medium text-gray-700">สถานะ <span class="text-red-500">*</span></label>
+                        <select id="edit-status" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                    
+                    <!-- Assignee -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ผู้รับผิดชอบ <span class="text-red-500">*</span></label>
+                        <div id="edit-assignee-container" class="w-full rounded-lg border border-gray-300 shadow-sm h-40 overflow-y-auto p-3 bg-white">
+                            <p class="text-gray-400 text-sm">-- กรุณาเลือกแผนกก่อน --</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin Note -->
+                    <div class="md:col-span-2">
+                        <label for="edit-adminNote" class="block text-sm font-medium text-gray-700">Admin Note (บันทึกการแก้ไข)</label>
+                        <textarea id="edit-adminNote" rows="3" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+                    
+                    <!-- NEW: Admin Image Upload -->
+                    <div class="md:col-span-2">
+                        <label for="edit-fileAdmin" class="block text-sm font-medium text-gray-700">ภาพประกอบหลังจากดำเนินการแล้ว</label>
+                        <input type="file" id="edit-fileAdmin" name="edit-fileAdmin" accept="image/*"
+                                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        <span id="edit-fileAdminName" class="text-xs text-gray-500"></span>
+                        <img id="edit-fileAdminPreview" src="" alt="Admin Image Preview" class="hidden mt-2 max-h-48 w-auto rounded-lg shadow-md border">
+                    </div>
+
+                    <hr class="md:col-span-2 my-4">
+
+                    <!-- Detial -->
+                    <div class="md:col-span-2">
+                        <label for="edit-details" class="block text-sm font-medium text-gray-700">รายละเอียดงาน</label>
+                        <textarea id="edit-details" rows="3" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+                    <!-- Important -->
+                    <div>
+                        <label for="edit-priority" class="block text-sm font-medium text-gray-700">ความสำคัญ</label>
+                        <select id="edit-priority" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></select>
+                    </div>
+                    <!-- Location -->
+                    <div>
+                        <label for="edit-location" class="block text-sm font-medium text-gray-700">สถานที่</label>
+                        <select id="edit-location" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></select>
+                    </div>
+                    <!-- Type of Work -->
+                    <div>
+                        <label for="edit-type" class="block text-sm font-medium text-gray-700">ประเภทงานที่แจ้ง</label>
+                        <select id="edit-type" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></select>
+                    </div>
+                    <!-- Close Work Type -->
+                    <div>
+                         <label for="edit-closedType" class="block text-sm font-medium text-gray-700">ประเภทงานที่ปิด (Closed Type)</label>
+                         <select id="edit-closedType" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                             <option value="" disabled selected>-- เลือกประเภทงาน --</option>
+                         </select>
+                    </div>
+                    <!-- Department -->
+                    <div>
+                        <label for="edit-department" class="block text-sm font-medium text-gray-700">แผนก</label>
+                        <select id="edit-department" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></select>
+                    </div>
+                    <!-- Department Request -->
+                    <div>
+                        <label for="edit-serviceDept" class="block text-sm font-medium text-gray-700">แผนกที่ขอใช้บริการ</label>
+                        <select id="edit-serviceDept" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></select>
+                    </div>
+                    <!-- Contact -->
+                    <div>
+                        <label for="edit-contact" class="block text-sm font-medium text-gray-700">ผู้ติดต่อ</label>
+                        <input type="text" id="edit-contact" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <!-- Tel -->
+                    <div>
+                        <label for="edit-phone" class="block text-sm font-medium text-gray-700">เบอร์โทร</label>
+                        <input type="tel" id="edit-phone" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                    <!-- Remark -->
+                    <div class="md:col-span-2">
+                        <label for="edit-remark" class="block text-sm font-medium text-gray-700">Remark</label>
+                        <textarea id="edit-remark" rows="2" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            <footer class="flex justify-end items-center p-6 bg-gray-50 rounded-b-2xl border-t space-x-4">
+                <button type="button" onclick="adminEditModal.close()" class="px-4 py-2 rounded-lg border border-gray-300 bg-gray-200 text-gray-800 hover:bg-gray-300 transition-all duration-200">ยกเลิก</button>
+                <button type="submit" class="px-6 py-2 rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition-all duration-200 transform hover:scale-105">
+                    <i data-lucide="save" class="w-4 h-4 inline-block mr-2"></i>
+                    บันทึกการเปลี่ยนแปลง
+                </button>
+            </footer>
+        </form>
+    </dialog>
+
+
+    <!-- === USER EDIT MODAL === -->
+    <dialog id="userEditModal" class="p-0 rounded-2xl shadow-2xl w-full max-w-xl backdrop:bg-black backdrop:bg-opacity-50 overflow-hidden">
+        <form id="userEditForm" method="dialog" class="bg-white rounded-2xl">
+            <header class="flex justify-between items-center p-6 bg-gray-50 rounded-t-2xl border-b">
+                <h2 class="text-xl font-semibold text-gray-900">แก้ไขรายละเอียด Ticket ID: <span id="userModalTicketId"></span></h2>
+                <button type="button" onclick="userEditModal.close()" class="p-2 rounded-full text-gray-500 hover:bg-gray-200">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </header>
+            
+            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                <input type="hidden" id="user-edit-id">
+                
+                <!-- Details -->
+                <div class="col-span-2">
+                    <label for="user-edit-details" class="block text-sm font-medium text-gray-700">รายละเอียดงาน <span class="text-red-500">*</span></label>
+                    <textarea id="user-edit-details" rows="5" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+
+                <p class="text-sm text-gray-500">หมายเหตุ: การแก้ไขรูปภาพยังไม่รองรับในขณะนี้ กรุณาแจ้ง Admin หากต้องการเปลี่ยนแปลงรูปภาพ</p>
+    
+            </div>
+
+            <footer class="flex justify-end items-center p-6 bg-gray-50 rounded-b-2xl border-t space-x-4">
+                <button type="button" onclick="userEditModal.close()" class="px-4 py-2 rounded-lg border border-gray-300 bg-gray-200 text-gray-800 hover:bg-gray-300 transition-all duration-200">ยกเลิก</button>
+                <button type="submit" class="px-6 py-2 rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition-all duration-200 transform hover:scale-105">
+                    <i data-lucide="save" class="w-4 h-4 inline-block mr-2"></i>
+                    บันทึกการเปลี่ยนแปลง
+                </button>
+            </footer>
+        </form>
+    </dialog>
+
+    
+    <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.min.js"></script>
+
+    <script>
+        // === GLOBAL STATE ===
+        let currentUser = null;
+        let allTickets = [];
+        let dropdownOptions = {
+            priority: [],
+            type: {},
+            location: [],
+            department: [],
+            serviceDept: [],
+            assignees: [],
+            status: []
+        };
+        let tempTypeConfig = {};
+        let tempAssigneeConfig = {};
+        let adminUserList = {}; // NEW: For storing user list in admin settings
+        let currentSort = 'default'; // 'default' or 'duration'
+        
+        // File blobs state
+        let file1File = null;
+        let file2File = null;
+        let editFileAdminFile = null;
+
+        // === DOM ELEMENTS ===
+        let loginView = null;
+        let mainView = null;
+        let loginForm = null;
+        let logoutButton = null;
+        let userInfo = null;
+        let userRole = null;
+        let loadingOverlay = null;
+        let loadingText = null;
+        let tabsNav = null;
+        let mobileTabsNav = null; // ✅ เพิ่มตัวแปรนี้
+        let mobileMenuPanel = null; // ✅ เพิ่มตัวแปรนี้
+        let mobileMenuBtn = null; // ✅ เพิ่มตัวแปรนี้
+        let ticketForm = null;
+        
+        // Panels
+        let dashboardPanel = null;
+        let newTicketPanel = null;
+        let historyPanel = null;
+        let settingsPanel = null;
+        
+        // Form Fields
+        let deptSelect = null;
+        let prioritySelect = null;
+        let typeSelect = null;
+        let locationSelect = null;
+        let serviceDeptSelect = null;
+        
+        // History
+        let historyTableContainer = null;
+        let noHistory = null;
+        let adminDeptFilterContainer = null; 
+        let deptFilter = null;
+        let statusFilter = null;
+        let contactFilter = null;
+        let detailsFilter = null;
+        let serialFilter = null;
+        let dateStartFilter = null; 
+        let dateEndFilter = null; 
+        let dateEndFilterContainer = null;
+        let clearFiltersBtn = null; 
+        let typeFilter = null; // NEW: Hidden filter
+
+        // Settings
+        let settingsForm = null;
+        let adminUserTableContainer = null; // NEW
+        let noAdminUsers = null; // NEW
+        let addUserBtn = null; // NEW
+        
+        // Modals
+        let adminEditModal = null;
+        let adminEditForm = null;
+        let userEditModal = null;
+        let userEditForm = null;
+        let adminUserModal = null; // NEW
+        let adminUserForm = null; // NEW
+        let accessibleDeptsContainer = null; // NEW
+        
+        // === UTILITY FUNCTIONS ===
+
+        // === SESSION MANAGEMENT ===
+
+        function saveSession(user) {
+            try {
+                // ใช้ sessionStorage แทน localStorage
+                sessionStorage.setItem('pyhit_user', JSON.stringify(user));
+            } catch (e) {
+                console.error('Error saving session:', e);
+            }
+        }
+
+        function getStatusClass(status) {
+          switch(status) {
+              case 'รอดำเนินการ':
+                  return 'bg-red-100 text-red-800';
+              case 'รับงานแล้ว':
+              case 'กำลังดำเนินการ':
+                  return 'bg-blue-100 text-blue-800';
+              case 'เลื่อน/ยกเลิก':
+                  return 'bg-yellow-100 text-yellow-800';
+              case 'ดำเนินการเรียบร้อยแล้ว':
+                  return 'bg-green-100 text-green-800';
+              // เพิ่มสีสำหรับสถานะใหม่ (ใช้สีม่วง หรือ ส้ม เพื่อให้แตกต่าง)
+              case 'ส่งเคลมประกัน':
+              case 'ส่งซ่อม':
+              case 'ติดต่อ Support':
+              case 'ติดต่อใช้บริการช่างนอก':
+                  return 'bg-purple-100 text-purple-800'; // สีม่วง
+              default:
+                  return 'bg-gray-100 text-gray-800';
+          }
+        }
+
+        function getSession() {
+            try {
+                const userStr = sessionStorage.getItem('pyhit_user');
+                if (!userStr) return null;
+                return JSON.parse(userStr);
+            } catch (e) {
+                console.error('Error getting session:', e);
+                return null;
+            }
+        }
+
+        function clearSession() {
+            try {
+                sessionStorage.removeItem('pyhit_user');
+                sessionStorage.removeItem('pyhit_active_tab');
+            } catch (e) {
+                console.error('Error clearing session:', e);
+            }
+        }
+
+        // ✅ Save/Get Active Tab
+        function saveActiveTab(tabName) {
+            try {
+                sessionStorage.setItem('pyhit_active_tab', tabName);
+            } catch (e) {
+                console.error('Error saving active tab:', e);
+            }
+        }
+
+        function getActiveTab() {
+            try {
+                return sessionStorage.getItem('pyhit_active_tab') || 'dashboard';
+            } catch (e) {
+                console.error('Error getting active tab:', e);
+                return 'dashboard';
+            }
+        }
+
+        function showLoading(message = 'กำลังโหลด...') {
+            loadingText.textContent = message;
+            loadingOverlay.classList.remove('hidden');
+            loadingOverlay.classList.add('flex');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+            loadingOverlay.classList.remove('flex');
+        }
+
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzrIokL0B7kCvKtj9-W4D8qlWQKYBX1cNJwJzu0KW30s0GY7WfCDZB05avmR_TM_ul/exec";
+        function server(fn, ...args) {
+            return new Promise((resolve, reject) => {
+                
+                // ส่งข้อมูลแบบ POST (ส่งชื่อฟังก์ชัน และ ตัวแปร)
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    // ใช้ text/plain เพื่อหลีกเลี่ยงปัญหา CORS Pre-flight ของ Google
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ 
+                        action: fn, 
+                        args: args 
+                    })
+                })
+                .then(response => response.json()) // แปลงผลลัพธ์เป็น JSON
+                .then(data => {
+                    resolve(data); // ส่งข้อมูลกลับไปให้ทำงานต่อ
+                })
+                .catch(err => {
+                    console.error("API Error:", err);
+                    reject(err); // แจ้ง Error ถ้าเชื่อมต่อไม่ได้
+                });
+            });
+        }
+        
+        function onApiError(error) {
+            hideLoading();
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: error.message || error,
+            });
+        }
+        
+        function showToast(message, icon = 'success') {
+             Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: icon,
+                title: message,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString('th-TH', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        /**
+         * NEW: Creates a human-readable duration string from TOTAL SECONDS.
+         * Calculates days, hours, minutes, and seconds.
+         */
+        function humanReadableDuration(totalSeconds) {
+            if (totalSeconds === null || typeof totalSeconds === 'undefined' || totalSeconds === '') return 'N/A';
+            
+            const secs = parseInt(totalSeconds);
+            if (isNaN(secs) || secs < 0) return 'N/A';
+            if (secs === 0) return '0 วินาที';
+
+            const SEC_PER_DAY = 86400; // 60 * 60 * 24
+            const SEC_PER_HOUR = 3600; // 60 * 60
+            const SEC_PER_MIN = 60;
+
+            const days = Math.floor(secs / SEC_PER_DAY);
+            const remainingAfterDays = secs % SEC_PER_DAY;
+            const hours = Math.floor(remainingAfterDays / SEC_PER_HOUR);
+            const remainingAfterHours = remainingAfterDays % SEC_PER_HOUR;
+            const minutes = Math.floor(remainingAfterHours / SEC_PER_MIN);
+            const remainingSeconds = remainingAfterHours % SEC_PER_MIN;
+
+            const parts = [];
+            if (days > 0) {
+                parts.push(`${days} วัน`);
+            }
+            if (hours > 0) {
+                parts.push(`${hours} ชั่วโมง`);
+            }
+            if (minutes > 0) {
+                parts.push(`${minutes} นาที`);
+            }
+            if (remainingSeconds > 0) {
+                parts.push(`${remainingSeconds} วินาที`);
+            }
+
+            return parts.length > 0 ? parts.join(' ') : '0 วินาที';
+        }
+
+        /**
+         * NEW: Helper to extract Drive ID from URL
+         */
+        function getDriveIdFromUrl(url) {
+            if (!url) return null;
+            // Match .../file/d/FILE_ID/view
+            const match = url.match(/drive.google.com\/file\/d\/([\w-]+)/);
+            if (match && match[1]) { return match[1]; }
+            // Match .../uc?id=FILE_ID (เผื่อสำหรับรูปเก่าๆ)
+            const match2 = url.match(/drive.google.com\/uc\?id=([\w-]+)/);
+            if (match2 && match2[1]) { return match2[1]; }
+            return null;
+        }
+
+        /**
+         * NEW: Utility to read a file as Base64 asynchronously
+         */
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) {
+                    resolve(null);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // === VIEW & TAB MANAGEMENT ===
+        
+        function showView(viewId) {
+            ['loginView', 'mainView'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        function showTab(tabName) {
+            saveActiveTab(tabName);
+            
+            // Hide all panels
+            [dashboardPanel, newTicketPanel, historyPanel, settingsPanel, document.getElementById('typeSettingsPanel'), document.getElementById('assigneeSettingsPanel')].forEach(panel => {
+                if (panel) panel.classList.add('hidden');
+            });
+
+            // --- Deactivate ALL tabs (Desktop & Mobile) ---
+            // Desktop logic
+            if(tabsNav) {
+                tabsNav.querySelectorAll('button').forEach(tab => {
+                    tab.classList.remove('text-white', 'after:scale-x-100');
+                    tab.classList.add('text-blue-300', 'after:scale-x-0');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+            }
+            // Mobile logic
+            if(mobileTabsNav) {
+                mobileTabsNav.querySelectorAll('button').forEach(tab => {
+                    tab.classList.remove('bg-blue-700', 'text-white', 'shadow-inner');
+                    tab.classList.add('text-blue-200');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+            }
+
+            // --- Activate Target Tab (Desktop & Mobile) ---
+            let targetPanelId = `${tabName}Panel`;
+            if (tabName === 'serviceHistory') {
+                targetPanelId = 'historyPanel';
+            }
+
+            const activePanel = document.getElementById(targetPanelId);
+            if (activePanel) activePanel.classList.remove('hidden');
+
+            // Highlight Desktop Tab
+            const activeTabDesktop = tabsNav ? tabsNav.querySelector(`[data-tab="${tabName}"]`) : null;
+            if (activeTabDesktop) {
+                activeTabDesktop.classList.add('text-white', 'after:scale-x-100');
+                activeTabDesktop.classList.remove('text-blue-300', 'after:scale-x-0');
+                activeTabDesktop.setAttribute('aria-selected', 'true');
+            }
+            
+            // Highlight Mobile Tab
+            const activeTabMobile = mobileTabsNav ? mobileTabsNav.querySelector(`[data-tab="${tabName}"]`) : null;
+            if (activeTabMobile) {
+                activeTabMobile.classList.add('bg-blue-700', 'text-white', 'shadow-inner');
+                activeTabMobile.classList.remove('text-blue-200');
+                activeTabMobile.setAttribute('aria-selected', 'true');
+            }
+
+            // Logic การโหลดข้อมูล (คงเดิม)
+            if (tabName === 'dashboard') renderDashboard();
+            
+            const historyTitle = document.querySelector('#historyPanel h2');
+            if (tabName === 'history') {
+                if(historyTitle) historyTitle.textContent = 'งานที่แจ้งแผนกอื่น';
+                renderHistoryTable();
+            }
+            if (tabName === 'serviceHistory') {
+                if(historyTitle) historyTitle.textContent = 'งานที่แผนกอื่นแจ้ง';
+                renderHistoryTable();
+            }
+
+            if (tabName === 'settings') {
+                populateSettingsForm();
+                renderAdminUserTable();
+            }
+            if (tabName === 'typeSettings') populateSettingsForm();
+            if (tabName === 'assigneeSettings') prepareAssigneeSettings();
+        }
+
+        function prepareAssigneeSettings() {
+            // 1. Copy ข้อมูลปัจจุบันลง Temp
+            // ✅ แก้ไข: เช็คว่าถ้าของเดิมเป็น Array (หรือไม่มีค่า) ให้เริ่มใหม่เป็น Object {} ทันที
+            // เพื่อป้องกัน Bug ที่ JSON จะตัดข้อมูลชื่อแผนกทิ้งตอนบันทึก
+            let sourceAssignees = dropdownOptions.assignees;
+            if (Array.isArray(sourceAssignees) || !sourceAssignees) {
+                sourceAssignees = {}; 
+            }
+            tempAssigneeConfig = JSON.parse(JSON.stringify(sourceAssignees));
+
+            // 2. ใส่รายชื่อแผนก (ใช้ Dept List เดียวกับระบบ)
+            const deptSelect = document.getElementById('settingAssigneeDeptSelect');
+            
+            // ใช้รายชื่อแผนกทั้งหมด (Department) เป็นตัวเลือก
+            populateSelect(deptSelect, dropdownOptions.serviceDept, true);
+            deptSelect.value = "";
+
+            document.getElementById('assigneeEditorContainer').classList.add('hidden');
+            document.getElementById('assigneeEditor').value = "";
+
+            // 3. Event Listener
+            deptSelect.onchange = function() {
+                const dept = this.value;
+                const container = document.getElementById('assigneeEditorContainer');
+                const textarea = document.getElementById('assigneeEditor');
+
+                if (dept) {
+                    container.classList.remove('hidden');
+                    const names = tempAssigneeConfig[dept] || [];
+                    textarea.value = names.join('\n');
+
+                    textarea.oninput = function() {
+                        // ตอนนี้ tempAssigneeConfig เป็น Object แน่นอนแล้ว การใส่ Key จะทำงานถูกต้อง
+                        tempAssigneeConfig[dept] = this.value.split('\n').filter(Boolean);
+                    };
+                } else {
+                    container.classList.add('hidden');
+                }
+            };
+        }
+        
+        function createTab(id, text, icon, defaultTab = false) {
+            // 1. กำหนดคลาสพื้นฐานสำหรับปุ่ม และเส้นใต้ (::after)
+            const baseClasses = "py-2 px-4 rounded-lg font-medium text-sm flex items-center transition-colors duration-200 whitespace-nowrap " + 
+                              "relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 " + 
+                              "after:bg-cyan-400 after:transition-transform after:duration-300 after:origin-left " +
+                              "hover:after:scale-x-100"; // ← เพิ่มตรงนี้ให้ทุกปุ่มมี hover effect
+
+            // 2. คลาสสำหรับปุ่มที่ "ไม่" active (เส้นใต้ซ่อนอยู่)
+            const defaultClasses = "text-blue-300 after:scale-x-0 hover:text-white";
+
+            // 3. คลาสสำหรับปุ่มที่ "active" (เส้นใต้แสดงถาวร)
+            const activeClasses = "text-white after:scale-x-100";
+            
+            return `
+                <button type="button" role="tab" data-tab="${id}"
+                        class="${baseClasses} ${defaultTab ? activeClasses : defaultClasses}"
+                        aria-selected="${defaultTab}">
+                    <i data-lucide="${icon}" class="w-5 h-5 mr-2 flex-shrink-0"></i> ${text}
+                </button>
+            `;
+        }
+
+        // === LOGIN / LOGOUT ===
+        
+        async function handleLogin(e) {
+          e.preventDefault();
+          showLoading('กำลังเข้าสู่ระบบ...');
+          const username = loginForm.username.value;
+          const password = loginForm.password.value;
+
+          try {
+              const response = await server('checkLogin', { username, password });
+              if (response.success) {
+                  currentUser = response.user;
+                  saveSession(response.user);
+                  await loadDashboard();
+                  showView('mainView');
+                  if (currentUser.role === 'user') {
+                      showTab('newTicket');   // User -> ไปหน้าแจ้งงานใหม่
+                  } else if (currentUser.role === 'manager') {
+                      showTab('history');     // Manager -> ไปหน้าประวัติ
+                  } else {
+                      showTab('dashboard');   // Admin -> ไปหน้า Dashboard
+                  }
+              } else {
+                  onApiError({ message: response.message });
+              }
+          } catch (err) {
+              onApiError(err);
+          } finally {
+              hideLoading();
+              loginForm.reset();
+          }
+        }
+        
+        function handleLogout() {
+          currentUser = null;
+          allTickets = [];
+          dropdownOptions = {};
+          adminUserList = {};
+          clearSession(); // ← เพิ่มบรรทัดนี้
+          showView('loginView');
+          tabsNav.innerHTML = '';
+
+          if (typeof resetTicketForm === 'function') {
+              resetTicketForm(); 
+          }
+          
+          // ✅ เพิ่มบรรทัดนี้: ล้างช่อง User/Pass ในหน้า Login ด้วย
+          if (loginForm) loginForm.reset();
+
+          showView('loginView');
+          tabsNav.innerHTML = '';
+        }
+
+        // === AUTO LOGIN FROM SESSION ===
+
+        // === AUTO LOGIN FROM SESSION ===
+
+        async function autoLoginFromSession() {
+            const savedUser = getSession();
+            
+            if (savedUser) {
+                // มี session อยู่ - โหลดข้อมูลเลย ไม่ต้องแสดง login
+                showLoading('กำลังเข้าสู่ระบบอัตโนมัติ...');
+                currentUser = savedUser;
+                
+                try {
+                    await loadDashboard();
+                    showView('mainView');
+                    
+                    // Restore last active tab
+                    const lastTab = getActiveTab();
+                    showTab(lastTab);
+                    
+                    hideLoading(); // ปิด loading
+                    showToast(`ยินดีต้อนรับกลับ, ${savedUser.username}!`, 'success');
+                } catch (err) {
+                    console.error('Auto login failed:', err);
+                    clearSession();
+                    hideLoading(); // ปิด loading
+                    showView('loginView'); // แสดงหน้า login
+                    onApiError({ message: 'Session หมดอายุ กรุณาเข้าสู่ระบบใหม่' });
+                }
+            } else {
+                // ไม่มี session - แสดงหน้า login
+                hideLoading(); // ปิด loading
+                showView('loginView');
+            }
+        }
+
+        // === DASHBOARD & DATA LOADING ===
+        
+        async function loadDashboard() {
+            showLoading('กำลังดึงข้อมูล...');
+            try {
+                const data = await server('getInitialData', currentUser);
+                if (data.success) {
+                    allTickets = data.tickets || [];
+                    dropdownOptions = data.options || {};
+                    adminUserList = data.users || {}; // NEW: Load users for admin
+                    
+                    if (!dropdownOptions.assignees || Array.isArray(dropdownOptions.assignees)) {
+                        dropdownOptions.assignees = {}; 
+                    }
+                    if (!dropdownOptions.status || dropdownOptions.status.length === 0) {
+                        dropdownOptions.status = ['รอดำเนินการ', 'รับงานแล้ว', 'กำลังดำเนินการ', 'เลื่อน/ยกเลิก', 'ดำเนินการเรียบร้อยแล้ว']; // Fallback
+                    }
+                    setupUI();
+                } else {
+                    onApiError(data);
+                }
+            } catch (err) {
+                onApiError(err);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        function setupUI() {
+            // Assign Elements
+            tabsNav = document.getElementById('tabsNav');
+            mobileTabsNav = document.getElementById('mobileTabsNav');
+            mobileMenuPanel = document.getElementById('mobileMenuPanel');
+            mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            
+            // Toggle Mobile Menu
+            const newBtn = mobileMenuBtn.cloneNode(true);
+            mobileMenuBtn.parentNode.replaceChild(newBtn, mobileMenuBtn);
+            mobileMenuBtn = newBtn;
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuPanel.classList.toggle('hidden');
+            });
+
+            // Set user info
+            userInfo.textContent = currentUser.username;
+            if(document.getElementById('userInfoMobile')) document.getElementById('userInfoMobile').textContent = currentUser.username;
+            
+            let roleText = 'User';
+            if (currentUser.role === 'admin') roleText = 'Administrator';
+            else if (currentUser.role === 'manager') roleText = 'Manager';
+            
+            userRole.textContent = roleText;
+            if(document.getElementById('userRoleMobile')) document.getElementById('userRoleMobile').textContent = roleText;
+            
+            // Clear Tabs
+            tabsNav.innerHTML = '';
+            mobileTabsNav.innerHTML = '';
+
+            // Helper to add tab
+            const addTabToUI = (id, text, icon, isActive) => {
+                tabsNav.innerHTML += createTab(id, text, icon, isActive);
+                mobileTabsNav.innerHTML += createMobileTab(id, text, icon, isActive);
+            };
+
+            // --- 1. Dashboard ---
+            if (currentUser.role !== 'user') {
+                addTabToUI('dashboard', 'Dashboard', 'layout-dashboard', true);
+            }
+
+            // --- 2. New Ticket ---
+            const isUser = currentUser.role === 'user';
+            addTabToUI('newTicket', 'แจ้งงานใหม่', 'file-plus', isUser);
+            
+            // --- 3. History ---
+            addTabToUI('history', 'งานที่แจ้งแผนกอื่น', 'history', false);
+            addTabToUI('serviceHistory', 'งานที่แผนกอื่นแจ้ง', 'building', false);
+            
+            // --- 4. Admin Menus (ปรับลำดับใหม่) ---
+            if (currentUser.role === 'admin') {
+                addTabToUI('assigneeSettings', 'ตั้งค่าผู้รับผิดชอบ', 'users');
+                addTabToUI('typeSettings', 'ตั้งค่าประเภทงาน', 'list'); // ✅ ย้ายขึ้น
+                addTabToUI('settings', 'ตั้งค่า', 'settings');      // ✅ ย้ายลงล่างสุด
+                adminDeptFilterContainer.classList.remove('hidden');
+            } else {
+                adminDeptFilterContainer.classList.add('hidden');
+            }
+            dateEndFilterContainer.classList.remove('hidden');
+
+            // Add Click Listeners
+            const attachListeners = (container) => {
+                container.querySelectorAll('button').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        showTab(tab.dataset.tab);
+                        mobileMenuPanel.classList.add('hidden'); 
+                    });
+                });
+            };
+            
+            attachListeners(tabsNav);
+            attachListeners(mobileTabsNav);
+            
+            populateAllDropdowns();
+
+            if (currentUser.department && dropdownOptions.department.includes(currentUser.department)) {
+                deptSelect.value = currentUser.department;
+            } else {
+                console.warn("ชื่อแผนกของผู้ใช้ ไม่ตรงกับรายการในระบบ Config");
+            }
+            
+            if (currentUser.role === 'admin') {
+                deptSelect.disabled = false;
+            } else { 
+                deptSelect.disabled = true;
+            }
+            
+            lucide.createIcons();
+        }
+
+        // ✅ ฟังก์ชันใหม่: สร้างปุ่ม Tab สำหรับมือถือ (เต็มความกว้าง)
+        function createMobileTab(id, text, icon, defaultTab = false) {
+            const baseClasses = "w-full text-left py-3 px-4 rounded-lg font-medium text-sm flex items-center transition-colors duration-200";
+            const defaultClasses = "text-blue-200 hover:bg-blue-800 hover:text-white";
+            const activeClasses = "bg-blue-700 text-white shadow-inner"; // Active state for mobile
+
+            return `
+                <button type="button" role="tab" data-tab="${id}"
+                        class="${baseClasses} ${defaultTab ? activeClasses : defaultClasses}"
+                        aria-selected="${defaultTab}">
+                    <i data-lucide="${icon}" class="w-5 h-5 mr-3"></i> ${text}
+                </button>
+            `;
+        }
+
+        // === DROPDOWN POPULATION ===
+
+        function populateSelect(selectEl, options, addEmpty = true) {
+            if (!selectEl) return;
+            const currentValue = selectEl.value;
+            selectEl.innerHTML = '';
+            
+            let emptyValue = "";
+            let emptyText = "-- กรุณาเลือก --";
+            
+            if (selectEl.id === 'edit-assignee') {
+                emptyText = "-- ยังไม่กำหนด --";
+            }
+            if (selectEl.id === 'statusFilter') {
+                emptyValue = "";
+                emptyText = "-- ทุกสถานะ --";
+            }
+
+
+            if (addEmpty) {
+                 selectEl.innerHTML = `<option value="${emptyValue}" ${!currentValue || currentValue === emptyValue ? 'selected' : ''}>${emptyText}</option>`;
+                 if (!currentValue || currentValue === emptyValue) {
+                     // For disabled options
+                     const firstOption = selectEl.querySelector('option');
+                     if(firstOption && (selectEl.id !== 'statusFilter' && selectEl.id !== 'edit-assignee')) {
+                         firstOption.disabled = true;
+                     }
+                 }
+            }
+            
+            (options || []).forEach(option => {
+                const selected = currentValue === option ? 'selected' : '';
+                selectEl.innerHTML += `<option value="${option}" ${selected}>${option}</option>`;
+            });
+        }
+        
+        function populateAllDropdowns() {
+            // Main Form
+            populateSelect(prioritySelect, dropdownOptions.priority);
+            populateSelect(locationSelect, dropdownOptions.location);
+            populateSelect(deptSelect, dropdownOptions.department);
+            populateSelect(serviceDeptSelect, dropdownOptions.serviceDept);
+            
+            serviceDeptSelect.addEventListener('change', function() {
+                const selectedDept = this.value;
+                const types = (dropdownOptions.type && dropdownOptions.type[selectedDept]) ? dropdownOptions.type[selectedDept] : [];
+                populateSelect(typeSelect, types);
+            });
+            
+            // เคลียร์ค่า Type เริ่มต้น
+            typeSelect.innerHTML = '<option value="" disabled selected>-- กรุณาเลือกแผนกบริการก่อน --</option>';
+
+            // History Filters
+            populateSelect(deptFilter, dropdownOptions.department, false);
+            deptFilter.insertAdjacentHTML('afterbegin', '<option value="">-- ทุกแผนก --</option>');
+            deptFilter.value = "";
+            
+            populateSelect(statusFilter, dropdownOptions.status, true); // Now uses dynamic list
+            statusFilter.value = "";
+
+            let allAssignees = [];
+            if (Array.isArray(dropdownOptions.assignees)) {
+                allAssignees = dropdownOptions.assignees;
+            } else if (typeof dropdownOptions.assignees === 'object') {
+                Object.values(dropdownOptions.assignees).forEach(list => {
+                    allAssignees = allAssignees.concat(list);
+                });
+            }
+            
+            // Admin Edit Modal
+            populateSelect(document.getElementById('edit-priority'), dropdownOptions.priority, false);
+            populateSelect(document.getElementById('edit-location'), dropdownOptions.location, false);
+            populateSelect(document.getElementById('edit-department'), dropdownOptions.department, false);
+            allAssignees = [...new Set(allAssignees)].sort();
+            populateSelect(document.getElementById('edit-assignee'), allAssignees, true);
+            populateSelect(document.getElementById('edit-status'), dropdownOptions.status, false); // Now uses dynamic list
+            populateSelect(document.getElementById('edit-serviceDept'), dropdownOptions.serviceDept, false);
+        }
+
+        // === NEW TICKET FORM ===
+        
+        function handleFileChange(event, fileStateKey, previewElId, nameElId) {
+          const file = event.target.files[0];
+          const previewEl = document.getElementById(previewElId);
+          const nameEl = document.getElementById(nameElId);
+
+          if (!file) {
+              // 1. Clear file object
+              if (fileStateKey === 'file1') file1File = null;
+              else if (fileStateKey === 'file2') file2File = null;
+              else if (fileStateKey === 'editFileAdmin') editFileAdminFile = null;
+              
+              // 2. Clear UI
+              nameEl.textContent = '';
+              previewEl.src = '';
+              previewEl.classList.add('hidden');
+          } else {
+              // 1. Store file object
+              if (fileStateKey === 'file1') file1File = file;
+              else if (fileStateKey === 'file2') file2File = file;
+              else if (fileStateKey === 'editFileAdmin') editFileAdminFile = file;
+
+              // 2. Update UI (Use createObjectURL for instant preview)
+              nameEl.textContent = file.name;
+              previewEl.src = URL.createObjectURL(file); // Instant preview
+              previewEl.classList.remove('hidden');
+          }
+        }
+
+        // ฟังก์ชันย่อรูปภาพ (ปรับลดขนาดเหลือ max 1024px และคุณภาพ 70%)
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const maxWidth = 1024; // ความกว้างสูงสุด
+                const maxHeight = 1024; // ความสูงสูงสุด
+                const quality = 0.7;    // คุณภาพ (0.0 - 1.0)
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        // คำนวณอัตราส่วน
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height *= maxWidth / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width *= maxHeight / height;
+                                height = maxHeight;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // แปลงกลับเป็น Base64
+                        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        resolve(dataUrl);
+                    };
+                };
+            });
+        }
+        
+        async function handleTicketSubmit(e) {
+            e.preventDefault();
+            showLoading('กำลังประมวลผลไฟล์...');
+
+            // ✅ 1. อ่านค่าจาก Form เก็บไว้ก่อน
+            const formData = {
+                reportDateTime: ticketForm.reportDateTime.value,
+                details: ticketForm.details.value, 
+                priority: ticketForm.priority.value, 
+                type: ticketForm.type.value, 
+                department: ticketForm.department.value, 
+                serviceDept: ticketForm.serviceDept.value,
+                location: ticketForm.location.value, 
+                contact: ticketForm.contact.value, 
+                phone: ticketForm.phone.value, 
+                remark: ticketForm.remark.value,
+                serialNumber: document.getElementById('serialNumber').value,
+            };
+            // เก็บ file object ไว้
+            const tempFile1 = file1File;
+            const tempFile2 = file2File;
+
+            // ✅ 2. Reset ฟอร์มและสลับแท็บทันที
+            resetTicketForm(); 
+            showTab('history'); 
+
+            try {
+                // ✅ 3. อ่านไฟล์จาก object ที่เก็บไว้
+                // ของใหม่ (ใช้ compressImage แทน)
+                let file1Base64 = null;
+                let file2Base64 = null;
+
+                if (tempFile1) {
+                    showLoading('กำลังย่อไฟล์รูปภาพ 1...'); // แจ้งสถานะ user
+                    file1Base64 = await compressImage(tempFile1);
+                    // ตัดส่วน header ของ base64 ออกเพื่อให้เหมือนกับฟังก์ชัน readFileAsBase64 เดิมที่ backend รองรับ
+                    // หมายเหตุ: โค้ด backend เดิมมีการ split(',') อยู่แล้ว แต่ compressImage จะได้ data:image/jpeg;base64,... มาเลย
+                    // ดังนั้นส่งไปทั้งก้อนได้เลย เดี๋ยว backend ไปจัดการเอง หรือถ้า backend คาดหวัง format เดิมก็ใช้ได้เลย
+                }
+
+                if (tempFile2) {
+                    showLoading('กำลังย่อไฟล์รูปภาพ 2...');
+                    file2Base64 = await compressImage(tempFile2);
+                }
+
+                showLoading('กำลังส่งข้อมูล...'); // เปลี่ยนข้อความ
+
+                // ✅ 4. เพิ่มข้อมูลไฟล์เข้าไปใน formData
+                formData.file1 = file1Base64;
+                formData.file1Name = tempFile1 ? tempFile1.name : null;
+                formData.file2 = file2Base64;
+                formData.file2Name = tempFile2 ? tempFile2.name : null;
+
+                const response = await server('submitTicket', formData); 
+                hideLoading(); 
+                
+                if (response.success) { 
+                    // เพิ่มข้อมูลใหม่ลงตาราง (ตอนนี้เราอยู่หน้า History แล้ว)
+                    allTickets.unshift(response.newTicket);
+                    renderHistoryTable(); // อัปเดตตาราง
+                    showToast('บันทึกข้อมูลเรียบร้อยแล้ว');
+                } else {
+                    onApiError(response); 
+                }
+            } catch (err) {
+                hideLoading(); // ต้องมี hideLoading ใน catch ด้วย
+                onApiError(err); 
+            }
+        }
+        
+        function resetTicketForm() {
+          if (ticketForm) ticketForm.reset(); // เพิ่ม check ticketForm
+          file1File = null; 
+          file2File = null;
+          
+          if(document.getElementById('file1Name')) document.getElementById('file1Name').textContent = '';
+          if(document.getElementById('file2Name')) document.getElementById('file2Name').textContent = ''; 
+          
+          if(document.getElementById('file1Preview')) {
+              document.getElementById('file1Preview').src = ''; 
+              document.getElementById('file1Preview').classList.add('hidden'); 
+          }
+          if(document.getElementById('file2Preview')) {
+              document.getElementById('file2Preview').src = ''; 
+              document.getElementById('file2Preview').classList.add('hidden');
+          }
+
+          // ✅ แก้ไข: เพิ่มการเช็คว่า currentUser มีค่าหรือไม่ (ป้องกัน Error ตอน Logout)
+          if (currentUser && dropdownOptions && dropdownOptions.department) {
+              if (currentUser.department && dropdownOptions.department.includes(currentUser.department)) {
+                  deptSelect.value = currentUser.department;
+              }
+
+              if (currentUser.role === 'admin') {
+                  deptSelect.disabled = false;
+              } else { 
+                  deptSelect.disabled = true;
+              }
+          } else {
+              // กรณีไม่มี User (เช่น ตอน Logout) ให้ Disable ไปเลย
+              if(deptSelect) deptSelect.disabled = true;
+          }
+        }
+        
+        // === DASHBOARD (NEW) ===
+
+        function renderDashboard() {
+            // ป้องกัน Error กรณีเรียกใช้ก่อน Element จะพร้อม
+            if (!document.getElementById('statTotalCount')) return;
+
+            const tickets = allTickets;
+
+            // 1. กรองงานที่เกี่ยวข้องกับเรา
+            let myDepts = [];
+            if (currentUser.accessibleDepts && Array.isArray(currentUser.accessibleDepts) && currentUser.accessibleDepts.length > 0) {
+                myDepts = currentUser.accessibleDepts;
+            } else {
+                myDepts = [currentUser.department];
+            }
+
+            const relevantTickets = tickets.filter(t => 
+                myDepts.includes(t.department) || myDepts.includes(t.serviceDept)
+            );
+
+            // 2. คำนวณ Stats Cards
+            const pending = relevantTickets.filter(t => t.status === 'รอดำเนินการ').length;
+            const inProgress = relevantTickets.filter(t => t.status === 'กำลังดำเนินการ').length;
+            const completed = relevantTickets.filter(t => t.status === 'ดำเนินการเรียบร้อยแล้ว').length;
+
+            try {
+                document.getElementById('statTotalCount').textContent = relevantTickets.length;
+                document.getElementById('statPendingCount').textContent = pending;
+                document.getElementById('statInProgressCount').textContent = inProgress;
+                document.getElementById('statCompletedCount').textContent = completed;
+                
+                // Stat Cards Click Events (Update target tab here if needed)
+                // Default: ไปหน้า history (งานที่แจ้งไป) หรือ serviceHistory (งานที่ได้รับ) ตามบริบทที่อยากให้เป็น
+                // แต่ Stat รวมมักจะไปหน้าหลัก
+            } catch (e) { console.error("Error updating stats:", e); }
+
+
+            // 3. เตรียมข้อมูลสำหรับกราฟ Outgoing / Incoming
+            const outgoingTickets = tickets.filter(t => myDepts.includes(t.department));
+            const incomingTickets = tickets.filter(t => myDepts.includes(t.serviceDept));
+
+            // ฟังก์ชันสร้างกราฟ (เพิ่ม parameter 'targetTab')
+            function generateChartHTML(dataTickets, containerId, barColorClass, targetTab) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                container.innerHTML = '';
+                if (dataTickets.length === 0) {
+                    container.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">- ไม่มีข้อมูล -</p>';
+                    return;
+                }
+
+                const typeCounts = dataTickets.reduce((acc, ticket) => {
+                    const typeName = ticket.type || 'ไม่ระบุประเภท';
+                    acc[typeName] = (acc[typeName] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const sortedTypes = Object.entries(typeCounts).sort(([,a],[,b]) => b - a);
+                const maxCount = sortedTypes.length > 0 ? sortedTypes[0][1] : 0;
+                const totalCount = dataTickets.length;
+
+                sortedTypes.forEach(([type, count]) => {
+                    const widthPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                    const percent = totalCount > 0 ? ((count / totalCount) * 100).toFixed(1) : 0;
+                    
+                    // ✅ เพิ่ม onclick และ cursor-pointer ตรงนี้
+                    container.innerHTML += `
+                        <div class="group cursor-pointer" onclick="handleDashboardClick('type', '${type}', '${targetTab}')">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-700 truncate pr-2 group-hover:text-blue-600 transition-colors" title="${type}">${type}</span>
+                                <span class="text-xs text-gray-500 whitespace-nowrap">${count} (${percent}%)</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                <div class="${barColorClass} h-2.5 rounded-full transition-all duration-500 group-hover:opacity-80" style="width: ${widthPercent}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // ✅ เรียกใช้ฟังก์ชัน พร้อมระบุหน้าปลายทาง
+            // Outgoing (งานที่แจ้งไป) -> ไปหน้า history
+            generateChartHTML(outgoingTickets, 'chartOutgoing', 'bg-blue-500', 'history');
+            
+            // Incoming (งานที่ได้รับ) -> ไปหน้า serviceHistory
+            generateChartHTML(incomingTickets, 'chartIncoming', 'bg-orange-500', 'serviceHistory');
+
+
+            // 4. Admin Chart by Dept (คงเดิม)
+            const chartByDeptContainer = document.getElementById('chartByDeptContainer');
+            const chartByDept = document.getElementById('chartByDept');
+            
+            if (currentUser.role === 'admin' && chartByDeptContainer) {
+                chartByDeptContainer.classList.remove('hidden');
+                chartByDept.innerHTML = '';
+                
+                const deptCounts = tickets.reduce((acc, ticket) => {
+                    const deptName = ticket.department || 'N/A';
+                    acc[deptName] = (acc[deptName] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                const sortedDepts = Object.entries(deptCounts).sort(([,a],[,b]) => b - a);
+                const maxDeptCount = sortedDepts.length > 0 ? sortedDepts[0][1] : 0;
+                const totalDeptCount = tickets.length;
+
+                sortedDepts.forEach(([dept, count]) => {
+                    const widthPercent = maxDeptCount > 0 ? (count / maxDeptCount) * 100 : 0;
+                    const percent = totalDeptCount > 0 ? ((count / totalDeptCount) * 100).toFixed(1) : 0;
+                    
+                    // Admin chart ลิงก์ไปหน้า history (รวม)
+                    chartByDept.innerHTML += `
+                        <div class="group cursor-pointer" onclick="handleDashboardClick('dept', '${dept}', 'history')">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors">${dept} (${percent}%)</span>
+                                <span class="text-sm font-bold text-indigo-600">${count}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-indigo-500 h-2.5 rounded-full transition-all duration-500 group-hover:opacity-80" style="width: ${widthPercent}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else if (chartByDeptContainer) {
+                chartByDeptContainer.classList.add('hidden');
+            }
+            
+            lucide.createIcons();
+        }
+        
+        function handleDashboardClick(filterType, filterValue, targetTab = 'history') {
+            // 1. ล้างค่าตัวกรองเก่าออกก่อน
+            clearAllFilters(false);
+            
+            currentSort = 'default';
+            
+            // 2. ตั้งค่าตัวกรองใหม่ตามที่กดมา
+            if (filterType === 'status') {
+                statusFilter.value = filterValue;
+            }
+            if (filterType === 'dept') {
+                deptFilter.value = filterValue;
+            }
+            if (filterType === 'type') { 
+                typeFilter.value = filterValue;
+            }
+            if (filterType === 'duration') {
+                currentSort = 'duration';
+                statusFilter.value = 'ดำเนินการเรียบร้อยแล้ว';
+            }
+            
+            // 3. กระโดดไปแท็บปลายทาง (ถ้าไม่ระบุ จะไป history เป็นค่าเริ่มต้น)
+            showTab(targetTab);
+        }
+
+        // === HISTORY TABLE ===
+        
+        function clearAllFilters(render = true) {
+            deptFilter.value = "";
+            statusFilter.value = "";
+            contactFilter.value = "";
+            detailsFilter.value = "";
+            serialFilter.value = "";
+            dateStartFilter.value = "";
+            dateEndFilter.value = "";
+            typeFilter.value = ""; // NEW
+            currentSort = 'default';
+            if (render) {
+                renderHistoryTable();
+            }
+        }
+        
+        function renderHistoryTable() {
+            // --- 1. อ่านค่า Filter ---
+            const dept = deptFilter.value;
+            const status = statusFilter.value;
+            const contact = contactFilter.value.toLowerCase();
+            const startDate = dateStartFilter.value;
+            const endDate = dateEndFilter.value;
+            const type = typeFilter.value;
+            const detailsInput = document.getElementById('detailsFilter');
+            const detailsText = detailsInput ? detailsInput.value.toLowerCase().trim() : '';
+            const serialInput = document.getElementById('serialFilter');
+            const serialText = serialInput ? serialInput.value.toLowerCase().trim() : '';
+            
+    
+            let filteredTickets = allTickets;
+            const currentTab = getActiveTab();
+            
+            // --- กรองตามสิทธิ์การเข้าถึง ---
+            if (currentUser.role !== 'admin') {
+                let myDepts = [];
+                if (currentUser.accessibleDepts && Array.isArray(currentUser.accessibleDepts) && currentUser.accessibleDepts.length > 0) {
+                    myDepts = currentUser.accessibleDepts;
+                } else {
+                    myDepts = [currentUser.department];
+                }
+    
+                if (currentTab === 'history') {
+                    filteredTickets = filteredTickets.filter(t => myDepts.includes(t.department));
+                } else if (currentTab === 'serviceHistory') {
+                    filteredTickets = filteredTickets.filter(t => myDepts.includes(t.serviceDept));
+                }
+            }
+    
+            // --- กรองตาม Filter ต่างๆ ---
+            if (dept) filteredTickets = filteredTickets.filter(t => t.department === dept);
+            if (status) filteredTickets = filteredTickets.filter(t => t.status === status);
+            if (type) filteredTickets = filteredTickets.filter(t => t.type === type);
+            if (contact) filteredTickets = filteredTickets.filter(t => (t.contact || '').toLowerCase().includes(contact));
+            if (detailsText) filteredTickets = filteredTickets.filter(t => String(t.details || '').toLowerCase().includes(detailsText));
+            if (serialText) filteredTickets = filteredTickets.filter(t => String(t.serialNumber || '').toLowerCase().includes(serialText));
+            if (startDate) filteredTickets = filteredTickets.filter(t => new Date(t.submitDate) >= new Date(startDate));
+            if (endDate) {
+                const endOfDay = new Date(endDate);
+                endOfDay.setDate(endOfDay.getDate() + 1);
+                filteredTickets = filteredTickets.filter(t => new Date(t.submitDate) < endOfDay);
+            }
+    
+            // --- 2. จัดเรียงข้อมูล ---
+            let displayTickets = [...filteredTickets];
+            if (currentSort === 'duration') {
+                displayTickets.sort((a, b) => {
+                    const doneStatuses = ['ดำเนินการเรียบร้อยแล้ว', 'เลื่อน/ยกเลิก', 'ส่งเคลมประกัน', 'ส่งซ่อม', 'ติดต่อ Support', 'ติดต่อใช้บริการช่างนอก'];
+                    const validStatusA = doneStatuses.includes(a.status);
+                    const validStatusB = doneStatuses.includes(b.status);
+                    if (!validStatusA) return 1;
+                    if (!validStatusB) return -1;
+                    
+                    const durationA = a.duration ? parseInt(a.duration) : Infinity;
+                    const durationB = b.duration ? parseInt(b.duration) : Infinity;
+                    
+                    if (durationA === durationB) return new Date(b.submitDate) - new Date(a.submitDate);
+                    return durationA - durationB;
+                });
+            } else {
+                displayTickets.sort((a, b) => new Date(b.submitDate) - new Date(a.submitDate));
+            }
+    
+            // --- 3. เริ่มวาดตาราง ---
+            historyTableContainer.innerHTML = '';
+            if (displayTickets.length === 0) {
+                noHistory.classList.remove('hidden');
+                return;
+            }
+    
+            noHistory.classList.add('hidden');
+    
+            // สร้าง Table Wrapper
+            const tableWrapper = document.createElement('div');
+            // ใส่ Class ใหม่เพื่อให้มั่นใจว่าไม่มีอักขระแปลกปลอม
+            tableWrapper.className = "overflow-x-auto overflow-y-auto max-h-[600px] rounded-lg border border-gray-200 shadow hide-scroll";
+            const table = document.createElement('table');
+            table.className = 'min-w-full divide-y divide-gray-200';
+    
+            const thead = document.createElement('thead');
+            thead.className = 'bg-gradient-to-r from-blue-600 to-blue-700 sticky top-0 z-10';
+            
+            // --- เลือก Header ตามแท็บ ---
+            let headerHTML = '';
+            if (currentTab === 'serviceHistory') {
+                headerHTML = `
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">ID</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">วันที่แจ้ง</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">รายละเอียด</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">แผนกที่แจ้ง</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">สถานที่</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">ผู้ติดต่อ</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">สถานะ</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">ผู้รับผิดชอบ</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">เวลาที่ใช้</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">จัดการ</th>
+                    </tr>
+                `;
+            } else {
+                headerHTML = `
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">ID</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">วันที่แจ้ง</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">รายละเอียด</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">แผนกที่ขอใช้บริการ</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">สถานะ</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">ผู้รับผิดชอบ</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">เวลาที่ใช้</th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">จัดการ</th>
+                    </tr>
+                `;
+            }
+            thead.innerHTML = headerHTML;
+            table.appendChild(thead);
+    
+            const tbody = document.createElement('tbody');
+            tbody.className = 'bg-white divide-y divide-gray-200';
+    
+            displayTickets.forEach((ticket, index) => {
+                const tr = document.createElement('tr');
+                // ✅ เพิ่ม onclick="showRowActions(...)" และ cursor-pointer
+                tr.className = `hover:bg-blue-50 transition-colors duration-150 cursor-pointer ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`;
+                tr.onclick = function() { showRowActions(ticket.id); };
+    
+                const duration = humanReadableDuration(ticket.duration);
+                const isAdmin = currentUser.role === 'admin';
+    
+                // --- CSS สำหรับ Status Badge ---
+                let badgeClass = 'bg-gray-100 text-gray-800';
+                let dotClass = 'bg-gray-500';
+    
+                if (ticket.status === 'รอดำเนินการ') {
+                    badgeClass = 'bg-red-100 text-red-800';
+                    dotClass = 'bg-red-500';
+                } else if (ticket.status === 'กำลังดำเนินการ' || ticket.status === 'รับงานแล้ว') {
+                    badgeClass = 'bg-blue-100 text-blue-800';
+                    dotClass = 'bg-blue-500';
+                } else if (ticket.status === 'เลื่อน/ยกเลิก') {
+                    badgeClass = 'bg-yellow-100 text-yellow-800';
+                    dotClass = 'bg-yellow-500';
+                } else if (ticket.status === 'ดำเนินการเรียบร้อยแล้ว') {
+                    badgeClass = 'bg-green-100 text-green-800';
+                    dotClass = 'bg-green-500';
+                } else if (['ส่งเคลมประกัน', 'ส่งซ่อม', 'ติดต่อ Support', 'ติดต่อใช้บริการช่างนอก'].includes(ticket.status)) {
+                    badgeClass = 'bg-purple-100 text-purple-800';
+                    dotClass = 'bg-purple-500';
+                }
+    
+                // --- ปุ่ม Action (เดิม) ---
+
+                let actionButtons = `
+                    <div class="flex space-x-2 items-center justify-center">
+                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200" title="ดูรายละเอียดงาน" onclick="event.stopPropagation(); viewTicketDetails(${ticket.id})">
+                            <i data-lucide="eye" class="w-4 h-4 mr-1"></i><span class="hidden sm:inline">ดู</span>
+                        </button>
+                        
+                        ${ticket.serialNumber ? `
+                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200" 
+                                title="ดูข้อมูลอุปกรณ์ (${ticket.serialNumber})" 
+                                onclick="event.stopPropagation(); fetchAndShowAsset('${ticket.serialNumber}')">
+                            <i data-lucide="monitor" class="w-4 h-4 mr-1"></i><span class="hidden sm:inline">อุปกรณ์</span>
+                        </button>` : ''}
+                `;
+
+                if (ticket.status === 'รอดำเนินการ' && currentTab === 'serviceHistory') {
+                    actionButtons += `
+                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200" title="รับงาน" onclick="event.stopPropagation(); acceptTicket(${ticket.id})">
+                            <i data-lucide="play-circle" class="w-4 h-4 mr-1"></i><span class="hidden sm:inline">รับงาน</span>
+                        </button>
+                    `;
+                }
+    
+                actionButtons += `
+                    <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors duration-200" title="แก้ไข" onclick="event.stopPropagation(); openAdminEditModal(${ticket.id})">
+                        <i data-lucide="edit-2" class="w-4 h-4 mr-1"></i><span class="hidden sm:inline">แก้ไข</span>
+                    </button>
+                `;
+
+                if (isAdmin) {
+                    actionButtons += `
+                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-200" title="ลบ" onclick="event.stopPropagation(); confirmDeleteTicket(${ticket.id})">
+                            <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i><span class="hidden sm:inline">ลบ</span>
+                        </button>
+                    `;
+                }
+
+                actionButtons += `</div>`;
+    
+                // --- HTML ของแถว ---
+                let rowContent = '';
+                const statusBadgeHTML = `
+                    <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${badgeClass}">
+                        <span class="w-2 h-2 mr-1.5 rounded-full ${dotClass}"></span>
+                        ${ticket.status}
+                    </span>
+                `;
+    
+                if (currentTab === 'serviceHistory') {
+                    rowContent = `
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-bold text-gray-900">#${ticket.id}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">${formatDate(ticket.submitDate)}</div></td>
+                        <td class="px-6 py-4"><div class="text-sm text-gray-700 max-w-xs truncate" title="${ticket.details}">${ticket.details}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">${ticket.department}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">${ticket.location || '-'}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${ticket.contact}</div>
+                            <div class="text-xs text-gray-500">${ticket.phone || ''}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">${statusBadgeHTML}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">${ticket.assignee || '-'}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">${duration}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><div class="flex items-center justify-center space-x-2">${actionButtons}</div></td>
+                    `;
+                } else {
+                    rowContent = `
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-bold text-gray-900">#${ticket.id}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">${formatDate(ticket.submitDate)}</div></td>
+                        <td class="px-6 py-4"><div class="text-sm text-gray-700 max-w-xs truncate" title="${ticket.details}">${ticket.details}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">${ticket.serviceDept}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap">${statusBadgeHTML}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">${ticket.assignee || '-'}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">${duration}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><div class="flex items-center justify-center space-x-2">${actionButtons}</div></td>
+                    `;
+                }
+    
+                tr.innerHTML = rowContent;
+                tbody.appendChild(tr);
+            });
+    
+            table.appendChild(tbody);
+            tableWrapper.appendChild(table);
+            historyTableContainer.appendChild(tableWrapper);
+            lucide.createIcons();
+        }
+
+        // ฟังก์ชันแสดงเมนูจัดการเมื่อกดที่แถว (Mobile/Desktop friendly)
+        function showRowActions(ticketId) {
+            const ticket = allTickets.find(t => t.id == ticketId);
+            if (!ticket) return;
+
+            const currentTab = getActiveTab();
+            const isAdmin = currentUser.role === 'admin';
+            
+            // เชื่อนไขการแสดงปุ่ม (อ้างอิงจาก Logic เดิมในตาราง)
+            const showAccept = (ticket.status === 'รอดำเนินการ' && currentTab === 'serviceHistory');
+            const showDelete = isAdmin; // ลบได้เฉพาะ Admin
+            
+            // สร้าง HTML ของปุ่มใน Popup
+            let buttonsHtml = '<div class="flex flex-col gap-3 p-2">';
+
+            // 1. ปุ่มดูรายละเอียด (ทุกคนเห็น)
+            buttonsHtml += `
+                <button onclick="Swal.close(); viewTicketDetails(${ticketId});" class="w-full py-3 px-4 bg-blue-50 text-blue-700 rounded-xl font-semibold hover:bg-blue-100 flex items-center justify-center transition shadow-sm border border-blue-100">
+                    <i data-lucide="eye" class="w-5 h-5 mr-3"></i> ดูรายละเอียด
+                </button>
+            `;
+
+            // 2. ปุ่มรับงาน (เฉพาะงานที่เข้ามาใหม่)
+            if (showAccept) {
+                 buttonsHtml += `
+                    <button onclick="Swal.close(); acceptTicket(${ticketId});" class="w-full py-3 px-4 bg-green-50 text-green-700 rounded-xl font-semibold hover:bg-green-100 flex items-center justify-center transition shadow-sm border border-green-100">
+                        <i data-lucide="play-circle" class="w-5 h-5 mr-3"></i> รับงาน
+                    </button>
+                `;
+            }
+
+            // 3. ปุ่มแก้ไข (Admin/User ตามสิทธิ์ที่มี)
+            // หมายเหตุ: ใช้ openAdminEditModal ตามโค้ดเดิมของคุณ
+            buttonsHtml += `
+                <button onclick="Swal.close(); openAdminEditModal(${ticketId});" class="w-full py-3 px-4 bg-indigo-50 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-100 flex items-center justify-center transition shadow-sm border border-indigo-100">
+                    <i data-lucide="edit-2" class="w-5 h-5 mr-3"></i> แก้ไขข้อมูล
+                </button>
+            `;
+
+            // 4. ปุ่มลบ (เฉพาะ Admin)
+            if (showDelete) {
+                 buttonsHtml += `
+                    <button onclick="Swal.close(); confirmDeleteTicket(${ticketId});" class="w-full py-3 px-4 bg-red-50 text-red-700 rounded-xl font-semibold hover:bg-red-100 flex items-center justify-center transition shadow-sm border border-red-100">
+                        <i data-lucide="trash-2" class="w-5 h-5 mr-3"></i> ลบรายการ
+                    </button>
+                `;
+            }
+
+            buttonsHtml += '</div>';
+
+            // แสดง Popup
+            Swal.fire({
+                title: `จัดการรายการ #${ticketId}`,
+                html: buttonsHtml,
+                showConfirmButton: false,
+                showCloseButton: true,
+                customClass: {
+                    popup: 'rounded-2xl'
+                },
+                didOpen: () => {
+                     lucide.createIcons();
+                }
+            });
+        }
+        
+    function viewTicketDetails(ticketId) {
+    const ticket = allTickets.find(t => t.id == ticketId);
+    if (!ticket) return;
+
+    // Logic รูปภาพ
+    const img1_id = getDriveIdFromUrl(ticket.img1);
+    const img1_thumb = img1_id ? 'https://drive.google.com/thumbnail?id=' + img1_id : '#';
+
+    const img2_id = getDriveIdFromUrl(ticket.img2);
+    const img2_thumb = img2_id ? 'https://drive.google.com/thumbnail?id=' + img2_id : '#';
+
+    const imgAdmin_id = getDriveIdFromUrl(ticket.imgAdmin);
+    const imgAdmin_thumb = imgAdmin_id ? 'https://drive.google.com/thumbnail?id=' + imgAdmin_id : '#';
+
+    let imagesHTML = '';
+    const imgClass = "mt-2 h-32 w-auto rounded border border-gray-300 shadow-sm hover:opacity-80 transition-opacity";
+
+    if (img1_id) {
+        imagesHTML += `<div class="flex flex-col"><span class="text-xs font-bold text-black mb-1">ภาพ 1 (ผู้แจ้ง)</span><a href="${ticket.img1}" target="_blank"><img src="${img1_thumb}" class="${imgClass}"></a></div>`;
+    }
+    if (img2_id) {
+        imagesHTML += `<div class="flex flex-col"><span class="text-xs font-bold text-black mb-1">ภาพ 2 (ผู้แจ้ง)</span><a href="${ticket.img2}" target="_blank"><img src="${img2_thumb}" class="${imgClass}"></a></div>`;
+    }
+    if (imgAdmin_id) {
+        imagesHTML += `<div class="flex flex-col"><span class="text-xs font-bold text-black mb-1">ภาพ (Admin)</span><a href="${ticket.imgAdmin}" target="_blank"><img src="${imgAdmin_thumb}" class="${imgClass}"></a></div>`;
+    }
+    if (!imagesHTML) imagesHTML = '<span class="text-gray-400 text-sm font-light">- ไม่มีภาพประกอบ -</span>';
+
+    const durationText = humanReadableDuration(ticket.duration);
+    const formattedSubmitDate = formatDate(ticket.submitDate);
+
+    // Helper สร้างกล่องข้อมูลทั่วไป
+    const createInfoBox = (label, value, icon = '', textColorClass = 'text-gray-900') => {
+        return `
+            <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col justify-center h-full">
+                <div class="text-black text-xs font-bold mb-1 uppercase tracking-wide flex items-center gap-1">
+                    ${icon ? `<i data-lucide="${icon}" class="w-3 h-3 text-gray-500"></i>` : ''} 
+                    ${label}
+                </div>
+                <div class="${textColorClass} text-sm font-normal break-words">${value || '-'}</div>
+            </div>
+        `;
+    };
+
+    // Logic สีตัวอักษรความสำคัญ
+    const priorityColorClass = (ticket.priority && ticket.priority.trim() === 'ด่วน') ? 'text-red-600' : 'text-gray-900';
+
+    // Status Badge
+    const statusBadge = `
+        <span class="inline-flex items-center px-2.5 py-0.5 text-sm font-medium rounded border ${
+            ticket.status === 'รอดำเนินการ' ? 'bg-red-50 text-red-700 border-red-200' :
+            ticket.status === 'กำลังดำเนินการ' || ticket.status === 'รับงานแล้ว' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+            ticket.status === 'เลื่อน/ยกเลิก' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+            ticket.status === 'ดำเนินการเรียบร้อยแล้ว' ? 'bg-green-50 text-green-700 border-green-200' :
+            'bg-gray-50 text-gray-700 border-gray-200'
+        }">
+            ${ticket.status}
+        </span>
+    `;
+
+    Swal.fire({
+        title: `<div class="flex items-center gap-3 text-xl font-bold text-black border-b pb-3">
+                <span class="bg-black text-white text-sm px-2 py-1 rounded">ID: ${ticket.id}</span>
+                <span>รายละเอียดงาน</span>
+              </div>`,
+        html: `
+          <div class="text-left space-y-4 p-1 font-sans">
+              
+              <div class="p-4 bg-sky-50 rounded-lg border border-gray-200 shadow-sm">
+                   <strong class="text-black text-sm font-bold flex items-center gap-2 mb-2">
+                      <i data-lucide="file-text" class="w-4 h-4 text-black"></i>
+                      รายละเอียด
+                   </strong>
+                   <p class="text-gray-900 text-base font-normal whitespace-pre-wrap leading-relaxed">${ticket.details || '-'}</p>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  
+                  <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col justify-center">
+                      <div class="text-black text-xs font-bold mb-1 uppercase tracking-wide">สถานะ</div>
+                      <div>${statusBadge}</div>
+                  </div>
+
+                  ${createInfoBox('ความสำคัญ', ticket.priority, 'alert-circle', priorityColorClass)}
+                  
+                  ${createInfoBox('แผนก', ticket.department, 'building')}
+                  ${createInfoBox('แผนกที่ขอใช้บริการ', ticket.serviceDept, 'arrow-right-circle')}
+                  ${createInfoBox('ประเภทงานที่แจ้ง', ticket.type, 'tag')}
+                  ${createInfoBox('ประเภทงานที่ปิด', ticket.closedType, 'check-square')}
+                  ${createInfoBox('สถานที่', ticket.location, 'map-pin')}
+                  ${createInfoBox('ผู้ติดต่อ', ticket.contact, 'user')}
+                  ${createInfoBox('เบอร์โทร', ticket.phone, 'phone')}
+                  ${createInfoBox('ผู้รับผิดชอบ', ticket.assignee, 'user-check')}
+              </div>
+
+              <div class="grid grid-cols-1 gap-3">
+                  <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                     <strong class="text-black text-xs font-bold mb-1 flex items-center gap-2">
+                        <i data-lucide="message-square" class="w-3 h-3"></i> Remark
+                     </strong>
+                     <p class="text-gray-600 text-sm font-light whitespace-pre-wrap">${ticket.remark || '-'}</p>
+                  </div>
+
+                  <div class="p-3 bg-yellow-50 rounded-lg border border-gray-200">
+                      <strong class="text-black text-xs font-bold mb-1 flex items-center gap-2">
+                          <i data-lucide="shield" class="w-3 h-3"></i> Admin Note
+                      </strong>
+                      <p class="text-gray-600 text-sm font-light whitespace-pre-wrap">${ticket.adminNote || '-'}</p>
+                  </div>
+              </div>
+
+              <div class="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                  <strong class="text-black text-sm font-bold flex items-center gap-2 mb-3">
+                     <i data-lucide="image" class="w-4 h-4"></i> ไฟล์แนบ
+                  </strong>
+                  <div class="flex flex-wrap gap-4">
+                      ${imagesHTML}
+                  </div>
+              </div>
+              
+              <div class="p-4 bg-sky-50 rounded-lg border border-blue-100 mt-2 space-y-3">
+                  <div class="flex items-center flex-wrap gap-2">
+                      <div class="inline-flex items-center px-3 py-1 bg-red-100 border border-black rounded-md shadow-sm">
+                           <i data-lucide="clock" class="w-3.5 h-3.5 mr-2 text-gray-600"></i>
+                           <span class="text-xs font-bold text-gray-800">วันที่แจ้ง</span>
+                      </div>
+                      <span class="text-sm text-gray-900 font-medium ml-1">${formattedSubmitDate}</span>
+                  </div>
+                  
+                  <div class="flex items-center flex-wrap gap-2">
+                      <div class="inline-flex items-center px-3 py-1 bg-green-100 border border-black rounded-md shadow-sm">
+                           <i data-lucide="timer" class="w-3.5 h-3.5 mr-2 text-gray-600"></i>
+                           <span class="text-xs font-bold text-gray-800">ระยะเวลาดำเนินการ</span>
+                      </div>
+                      <span class="text-sm text-gray-900 font-medium ml-1">${durationText}</span>
+                  </div>
+              </div>
+
+          </div>
+      `,
+        width: '800px',
+        showCloseButton: true,
+        showConfirmButton: true,
+        confirmButtonText: 'ปิด',
+        confirmButtonColor: '#000000',
+        didRender: () => {
+            lucide.createIcons();
+        }
+    });
+}
+        
+        // === ADMIN FUNCTIONS ===
+
+        async function acceptTicket(ticketId) {
+            // 1. ดึงแผนกของผู้ใช้งานที่ล็อกอินอยู่
+            const myDept = currentUser.department; 
+            
+            let myAssignees = [];
+
+            // 2. ตรวจสอบและดึงรายชื่อเฉพาะแผนกนั้นๆ
+            if (dropdownOptions.assignees && !Array.isArray(dropdownOptions.assignees)) {
+                // เช็คว่ามีรายชื่อของแผนกนี้หรือไม่
+                if (dropdownOptions.assignees[myDept]) {
+                    myAssignees = dropdownOptions.assignees[myDept];
+                } else {
+                    // กรณีไม่เจอ (เช่น ยังไม่ได้ตั้งค่ารายชื่อให้แผนกนี้)
+                    console.warn(`ไม่พบรายชื่อผู้รับผิดชอบสำหรับแผนก: ${myDept}`);
+                }
+            } else if (Array.isArray(dropdownOptions.assignees)) {
+                // กรณีระบบเก่า (ยังไม่ได้แยกแผนก) ให้แสดงทั้งหมดไปก่อน
+                myAssignees = dropdownOptions.assignees;
+            }
+
+            // 3. แปลงเป็นรูปแบบที่ SweetAlert ต้องการ (Object Key:Value)
+            const assigneesMap = myAssignees.reduce((acc, name) => {
+                acc[name] = name;
+                return acc;
+            }, {});
+
+            // 4. ถ้าไม่มีรายชื่อเลย ให้แจ้งเตือน
+            if (Object.keys(assigneesMap).length === 0) {
+                onApiError({ message: `ไม่พบรายชื่อผู้รับผิดชอบในแผนกของคุณ (${myDept}) กรุณาติดต่อ Admin เพื่อเพิ่มรายชื่อในหน้าตั้งค่า` });
+                return;
+            }
+
+            // 5. แสดง Popup
+            const { value: assignee } = await Swal.fire({
+                title: 'เลือกผู้รับผิดชอบ',
+                input: 'select',
+                inputOptions: assigneesMap,
+                inputPlaceholder: '-- เลือกผู้รับผิดชอบ --',
+                showCancelButton: true,
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonText: 'รับงาน',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'กรุณาเลือกผู้รับผิดชอบ!'
+                    }
+                }
+            });
+
+            // 6. ส่งข้อมูลไปบันทึก
+            if (assignee) {
+                showLoading('กำลังรับงาน...');
+                try {
+                    const response = await server('acceptTicket', { ticketId, assignee });
+                    hideLoading();
+                    
+                    if (response.success) {
+                        const index = allTickets.findIndex(t => t.id == response.updatedTicket.id);
+                        if (index !== -1) {
+                            allTickets[index] = response.updatedTicket;
+                        }
+                        renderHistoryTable();
+                        showToast('รับงานและเริ่มดำเนินการเรียบร้อยแล้ว');
+                    } else { 
+                        onApiError(response);
+                    }
+                } catch (err) {
+                    onApiError(err);
+                }
+            }
+        }
+        
+        function openAdminEditModal(ticketId) {
+            const ticket = allTickets.find(t => t.id == ticketId);
+            if (!ticket) return;
+
+            // Reset file input
+            editFileAdminFile = null;
+            const fileInput = document.getElementById('edit-fileAdmin');
+            if (fileInput) fileInput.value = null;
+            document.getElementById('edit-fileAdminName').textContent = '';
+
+            // Populate General info
+            document.getElementById('modalTicketId').textContent = ticket.id;
+            document.getElementById('edit-id').value = ticket.id;
+            document.getElementById('edit-status').value = ticket.status || (dropdownOptions.status ? dropdownOptions.status[0] : '');
+            document.getElementById('edit-adminNote').value = ticket.adminNote || '';
+            document.getElementById('edit-details').value = ticket.details || '';
+            document.getElementById('edit-priority').value = ticket.priority || '';
+            document.getElementById('edit-department').value = ticket.department || '';
+            document.getElementById('edit-location').value = ticket.location || '';
+            document.getElementById('edit-contact').value = ticket.contact || '';
+            document.getElementById('edit-phone').value = ticket.phone || '';
+            document.getElementById('edit-remark').value = ticket.remark || '';
+
+            // Date Formatting
+            if (ticket.submitDate) {
+                try {
+                    const date = new Date(ticket.submitDate);
+                    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                    const datetimeString = date.toISOString().slice(0, 16);
+                    document.getElementById('edit-reportDateTime').value = datetimeString;
+                } catch (e) { console.error(e); }
+            }
+
+            // --- Setup Dropdowns ---
+            const editServiceDept = document.getElementById('edit-serviceDept');
+            const editType = document.getElementById('edit-type');
+            const editClosedType = document.getElementById('edit-closedType');
+            const assigneeContainer = document.getElementById('edit-assignee-container'); // ✅ เปลี่ยนเป็น Container
+
+            // Set initial value
+            editServiceDept.value = ticket.serviceDept || '';
+
+            // ฟังก์ชันอัปเดต Type และ Checkbox รายชื่อ
+            function updateDependentDropdowns(dept) {
+                // 1. Update Types
+                const types = (dropdownOptions.type && dropdownOptions.type[dept]) ? dropdownOptions.type[dept] : [];
+                populateSelect(editType, types, false);
+                populateSelect(editClosedType, types, true);
+
+                // 2. Update Assignees (สร้าง Checkbox)
+                assigneeContainer.innerHTML = ''; // ล้างเก่าก่อน
+                let assignees = [];
+                
+                if (dropdownOptions.assignees && !Array.isArray(dropdownOptions.assignees) && dropdownOptions.assignees[dept]) {
+                    assignees = dropdownOptions.assignees[dept];
+                }
+
+                if (assignees.length === 0) {
+                    assigneeContainer.innerHTML = '<p class="text-gray-400 text-sm italic p-2">-- ไม่มีรายชื่อในแผนกนี้ --</p>';
+                } else {
+                    assignees.forEach(name => {
+                        // สร้าง HTML ของ Checkbox
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'flex items-center mb-2 p-1 hover:bg-gray-50 rounded';
+                        wrapper.innerHTML = `
+                            <input type="checkbox" id="assignee-${name}" value="${name}" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                            <label for="assignee-${name}" class="ml-2 text-sm text-gray-700 cursor-pointer select-none flex-1">${name}</label>
+                        `;
+                        assigneeContainer.appendChild(wrapper);
+                    });
+                }
+            }
+
+            // Event Listener
+            editServiceDept.onchange = function() {
+                updateDependentDropdowns(this.value);
+            };
+
+            // Initial Trigger
+            if (ticket.serviceDept) {
+                updateDependentDropdowns(ticket.serviceDept);
+                editType.value = ticket.type;
+                editClosedType.value = ticket.closedType || "";
+
+                // --- ✅ Logic ติ๊กถูก Checkbox ตามข้อมูลเดิม ---
+                const currentAssignees = (ticket.assignee || '').split(',').map(name => name.trim());
+                currentAssignees.forEach(name => {
+                    const checkbox = document.getElementById('assignee-' + name);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    } else if (name) {
+                        // กรณีชื่อไม่มีในลิสต์ปัจจุบัน (เช่น ลาออก/ย้ายแผนก) ให้เติมเข้าไปเพื่อให้เห็น
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'flex items-center mb-2 p-1 bg-yellow-50 rounded border border-yellow-200';
+                        wrapper.innerHTML = `
+                            <input type="checkbox" id="assignee-${name}" value="${name}" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                            <label for="assignee-${name}" class="ml-2 text-sm text-gray-700 cursor-pointer select-none flex-1">${name} (ไม่อยู่ในลิสต์)</label>
+                        `;
+                        assigneeContainer.prepend(wrapper);
+                    }
+                });
+            } else {
+                updateDependentDropdowns('');
+                // แสดงชื่อเดิมถ้ามี
+                if (ticket.assignee) {
+                    assigneeContainer.innerHTML = '';
+                    const currentAssignees = ticket.assignee.split(',').map(name => name.trim());
+                    currentAssignees.forEach(name => {
+                         const wrapper = document.createElement('div');
+                         wrapper.className = 'flex items-center mb-2 p-1';
+                         wrapper.innerHTML = `
+                            <input type="checkbox" value="${name}" checked class="w-4 h-4 text-blue-600 border-gray-300 rounded">
+                            <label class="ml-2 text-sm text-gray-700">${name}</label>
+                        `;
+                        assigneeContainer.appendChild(wrapper);
+                    });
+                }
+            }
+
+            // Image Preview
+            const adminPreview = document.getElementById('edit-fileAdminPreview');
+            const admin_id = getDriveIdFromUrl(ticket.imgAdmin);
+            if (admin_id) {
+                adminPreview.src = 'https://drive.google.com/thumbnail?id=' + admin_id;
+                adminPreview.classList.remove('hidden');
+            } else {
+                adminPreview.src = '';
+                adminPreview.classList.add('hidden');
+            }
+
+            adminEditModal.showModal();
+        }
+        
+        async function handleAdminUpdate(e) {
+            e.preventDefault(); 
+            adminEditModal.close(); // ✅ 1. ย้ายคำสั่งปิดมาไว้บนสุด
+            showLoading('กำลังบันทึกการเปลี่ยนแปลง...'); // ✅ 2. เปลี่ยนข้อความ Loading
+
+            try {
+                // อ่านไฟล์ (ยังต้องรอเหมือนเดิม)
+                const adminFileBase64 = await readFileAsBase64(editFileAdminFile);
+                // --- ✅ ส่วนที่แก้ไข: อ่านค่าจาก Checkbox ---
+                const checkedBoxes = document.querySelectorAll('#edit-assignee-container input[type="checkbox"]:checked');
+                const selectedAssignees = Array.from(checkedBoxes).map(cb => cb.value);
+                const assigneeString = selectedAssignees.join(', '); 
+                // ---------------------------------------
+
+                const ticketData = {
+                    id: document.getElementById('edit-id').value, 
+                    reportDateTime: document.getElementById('edit-reportDateTime').value, 
+                    status: document.getElementById('edit-status').value, 
+                    assignee: assigneeString,
+                    adminNote: document.getElementById('edit-adminNote').value, 
+                    details: document.getElementById('edit-details').value, 
+                    priority: document.getElementById('edit-priority').value, 
+                    type: document.getElementById('edit-type').value, 
+                    department: document.getElementById('edit-department').value,
+                    serviceDept: document.getElementById('edit-serviceDept').value, // <--- เพิ่มบรรทัดนี้ 
+                    closedType: document.getElementById('edit-closedType').value,
+                    location: document.getElementById('edit-location').value, 
+                    contact: document.getElementById('edit-contact').value, 
+                    phone: document.getElementById('edit-phone').value, 
+                    remark: document.getElementById('edit-remark').value, 
+                    fileAdminBase64: adminFileBase64,
+                    fileAdminName: editFileAdminFile ? editFileAdminFile.name : null
+                };
+                
+                const response = await server('updateTicket', ticketData); 
+                hideLoading(); 
+                
+                if (response.success) { 
+                    const index = allTickets.findIndex(t => t.id == response.updatedTicket.id); 
+                    if (index !== -1) { 
+                        allTickets[index] = response.updatedTicket; 
+                    } else {
+                        allTickets.push(response.updatedTicket); 
+                    }
+                    
+                    renderHistoryTable(); 
+                    // adminEditModal.close(); // ✅ 3. ลบคำสั่งปิดจากตรงนี้
+                    showToast('อัปเดตข้อมูลเรียบร้อยแล้ว'); 
+                } else {
+                    onApiError(response); 
+                }
+            } catch (err) {
+                onApiError(err); 
+            }
+        }
+
+        // === NEW: Confirm Deletion ===
+        function confirmDeleteTicket(ticketId) {
+            const ticket = allTickets.find(t => t.id == ticketId);
+            const ticketDetails = ticket ? `(ID: ${ticket.id}, รายละเอียด: ${ticket.details})` : `(ID: ${ticket.id})`;
+            
+            // ใช้ SweetAlert เพื่อยืนยัน [cite: 298]
+            Swal.fire({
+                title: 'คุณแน่ใจหรือไม่?',
+                text: `คุณต้องการลบ Ticket นี้ใช่หรือไม่ ${ticketDetails}. การกระทำนี้ไม่สามารถย้อนกลับได้!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'ใช่, ลบเลย',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ถ้าผู้ใช้ยืนยัน ให้เรียกฟังก์ชันลบ
+                    deleteTicketById(ticketId);
+                }
+            });
+        }
+
+        // === NEW: Handle Deletion ===
+        async function deleteTicketById(ticketId) {
+            showLoading('กำลังลบข้อมูล...');
+            try {
+                const data = {
+                    ticketId: ticketId,
+                    user: currentUser // ส่ง User ไปตรวจสอบสิทธิ์
+                };
+                
+                // เรียกฟังก์ชัน 'deleteTicket' ที่ Backend [cite: 296]
+                const response = await server('deleteTicket', data);
+                hideLoading();
+                
+                if (response.success) {
+                    // ลบข้อมูลออกจาก state ในหน้าเว็บ
+                    allTickets = allTickets.filter(t => t.id != response.deletedTicketId);
+                    
+                    // วาดตารางใหม่
+                    renderHistoryTable();
+                    
+                    // แสดง Toast [cite: 300]
+                    showToast('ลบข้อมูลเรียบร้อยแล้ว');
+                } else {
+                    onApiError(response);
+                }
+            } catch (err) {
+                onApiError(err);
+            }
+        }
+
+        // --- USER EDIT FUNCTIONS ---
+        
+        function openUserEditModal(ticketId) {
+            const ticket = allTickets.find(t => t.id == ticketId);
+            if (!ticket) return;
+
+            document.getElementById('userModalTicketId').textContent = ticket.id;
+            document.getElementById('user-edit-id').value = ticket.id;
+            document.getElementById('user-edit-details').value = ticket.details || '';
+            
+            userEditModal.showModal();
+        }
+        
+        async function handleUserUpdate(e) {
+            e.preventDefault();
+            userEditModal.close(); // ✅ 1. ย้ายคำสั่งปิดมาไว้บนสุด
+            showLoading('กำลังบันทึกการเปลี่ยนแปลง...'); // ✅ 2. เปลี่ยนข้อความ Loading
+
+            const ticketData = {
+                ticketId: document.getElementById('user-edit-id').value,
+                details: document.getElementById('user-edit-details').value,
+                department: currentUser.username
+            };
+            
+            try {
+                const response = await server('updateUserTicket', ticketData);
+                hideLoading();
+                
+                if (response.success) {
+                    const index = allTickets.findIndex(t => t.id == response.ticketId);
+                    if (index !== -1) {
+                        allTickets[index].details = response.details;
+                    }
+                    
+                    renderHistoryTable();
+                    // userEditModal.close(); // ✅ 3. ลบคำสั่งปิดจากตรงนี้
+                    showToast('อัปเดตรายละเอียดเรียบร้อยแล้ว');
+                } else {
+                    onApiError(response);
+                }
+            } catch (err) {
+                onApiError(err);
+            }
+        }
+        
+        // === SETTINGS PANEL (ADMIN) ===
+
+        const ALL_DEPARTMENTS = [
+            'IT', 'AC', 'HR', 'HK', 'BD', 'SP', 'EN', 'SS', 'GN', 'DH', 'The Deck', 'MSC', 'GSA', 'LP'
+        ];
+        
+        function populateSettingsForm() {
+            // Populate Options
+            document.getElementById('settingsPriority').value = (dropdownOptions.priority || []).join('\n');
+            document.getElementById('settingsLocation').value = (dropdownOptions.location || []).join('\n');
+            document.getElementById('settingsDepartment').value = (dropdownOptions.department || []).join('\n');
+            document.getElementById('settingsServiceDept').value = (dropdownOptions.serviceDept || []).join('\n');
+            document.getElementById('settingsStatus').value = (dropdownOptions.status || []).join('\n');
+
+            const deptOptions = Array.from(new Set([...ALL_DEPARTMENTS, ...(dropdownOptions.department || [])])).sort();
+            populateSelect(document.getElementById('user-department'), deptOptions, false);
+
+            // --- ส่วนจัดการหน้า Type Settings ---
+            // 1. Copy ข้อมูลปัจจุบันมาใส่ตัวแปร Temp
+            tempTypeConfig = JSON.parse(JSON.stringify(dropdownOptions.type || {}));
+            
+            // 2. ใส่รายชื่อแผนก (Service Dept) ลงใน Dropdown เลือกแผนก
+            const typeDeptSelect = document.getElementById('settingTypeDeptSelect');
+            populateSelect(typeDeptSelect, dropdownOptions.serviceDept, true);
+            typeDeptSelect.value = "";
+            
+            // 3. ซ่อน Textarea ไว้ก่อน
+            document.getElementById('typeEditorContainer').classList.add('hidden');
+            document.getElementById('settingsType').value = "";
+            
+            // 4. เพิ่ม Event เมื่อเลือกแผนกในหน้าตั้งค่า
+            typeDeptSelect.onchange = function() {
+                const dept = this.value;
+                const container = document.getElementById('typeEditorContainer');
+                const textarea = document.getElementById('settingsType');
+                
+                if (dept) {
+                    container.classList.remove('hidden');
+                    // ดึงข้อมูลจาก temp มาแสดง
+                    const types = tempTypeConfig[dept] || [];
+                    textarea.value = types.join('\n');
+                    
+                    // เมื่อพิมพ์แก้ ให้บันทึกลง temp ทันที
+                    textarea.oninput = function() {
+                        tempTypeConfig[dept] = this.value.split('\n').filter(Boolean);
+                    };
+                } else {
+                    container.classList.add('hidden');
+                }
+            };
+        }
+
+        async function handleSettingsSave(e) {
+            e.preventDefault();
+
+            // ถ้ากำลังอยู่ในหน้า Type Settings ให้เซฟค่าปัจจุบันลง Temp อีกทีเพื่อความชัวร์
+            const activeTab = getActiveTab();
+            if (activeTab === 'typeSettings') {
+                const currentDept = document.getElementById('settingTypeDeptSelect').value;
+                if (currentDept) {
+                    tempTypeConfig[currentDept] = document.getElementById('settingsType').value.split('\n').filter(Boolean);
+                }
+            }
+            // ถ้าอยู่ในหน้า Settings ธรรมดา ให้ใช้ dropdownOptions.type เดิม หรือถ้าเคยแก้หน้า Type มาแล้วก็ใช้ temp
+            // เพื่อความง่าย เราจะใช้ tempTypeConfig เป็นหลักถ้ามันมีค่า
+            const finalTypeConfig = Object.keys(tempTypeConfig).length > 0 ? tempTypeConfig : (dropdownOptions.type || {});
+            
+            // Read Options
+            const newOptions = {
+                priority: document.getElementById('settingsPriority').value.split('\n').filter(Boolean),
+                type: finalTypeConfig,
+                location: document.getElementById('settingsLocation').value.split('\n').filter(Boolean),
+                department: document.getElementById('settingsDepartment').value.split('\n').filter(Boolean),
+                serviceDept: document.getElementById('settingsServiceDept').value.split('\n').filter(Boolean),
+                assignees: dropdownOptions.assignees,
+                status: document.getElementById('settingsStatus').value.split('\n').filter(Boolean),
+            };
+            
+            const settingsData = {
+                options: newOptions,
+                users: adminUserList 
+            };
+            
+            showLoading('กำลังบันทึกการตั้งค่า...');
+            
+            try {
+                const response = await server('saveSettings', settingsData);
+                hideLoading();
+                
+                if (response.success) {
+                    dropdownOptions = response.options;
+                    adminUserList = response.users; // Update global list with server response
+                    populateAllDropdowns();
+                    renderAdminUserTable(); // Re-render user table
+                    showToast('บันทึกการตั้งค่าทั้งหมดเรียบร้อยแล้ว');
+                } else {
+                    onApiError(response);
+                }
+            } catch (err) {
+                onApiError(err);
+            }
+        }
+
+        // --- NEW: ADMIN USER MANAGEMENT FUNCTIONS ---
+        
+        function renderAdminUserTable() {
+            const users = Object.values(adminUserList).sort((a, b) => a.username.localeCompare(b.username));
+            adminUserTableContainer.innerHTML = '';
+
+            if (users.length === 0) {
+                noAdminUsers.classList.remove('hidden');
+                return;
+            }
+
+            noAdminUsers.classList.add('hidden');
+            
+            const tableWrapper = document.createElement('div');
+            tableWrapper.className = 'overflow-x-auto rounded-lg border border-gray-200 shadow';
+            
+            const table = document.createElement('table');
+            table.className = 'min-w-full divide-y divide-gray-200';
+            
+            const thead = document.createElement('thead');
+            thead.className = 'bg-gray-50';
+            thead.innerHTML = `
+                <tr>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ชื่อผู้ใช้</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">รหัสผ่าน</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">สิทธิ์</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">แผนกสังกัด</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">แผนกที่เข้าถึงได้</th>
+                    <th scope="col" class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">จัดการ</th>
+                </tr>
+            `;
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            tbody.className = 'bg-white divide-y divide-gray-200';
+            
+            users.forEach((user, index) => {
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-blue-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`;
+                
+                // Show first 3 accessible depts, + count if more
+                const displayDepts = user.accessibleDepts.slice(0, 3).join(', ');
+                const moreDepts = user.accessibleDepts.length > 3 ? ` (+${user.accessibleDepts.length - 3} อื่นๆ)` : '';
+                
+                tr.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">${user.username}</div></td>
+                    <td class="px-4 py-3 whitespace-nowrap"><div class="text-sm text-gray-600">***</div></td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${getStatusClass(user.role)}">${user.role}</span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap"><div class="text-sm text-gray-600">${user.department}</div></td>
+                    <td class="px-4 py-3">
+                        <div class="text-xs text-gray-600 max-w-xs">${displayDepts}${moreDepts}</div>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition" title="แก้ไข" onclick="openAdminUserModal('${user.username}')">
+                                 <i data-lucide="edit-2" class="w-4 h-4"></i>
+                            </button>
+                            
+                            <button type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition" title="ลบ" onclick="confirmDeleteUser('${user.username}')">
+                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            table.appendChild(tbody);
+            tableWrapper.appendChild(table);
+            adminUserTableContainer.appendChild(tableWrapper);
+            lucide.createIcons();
+        }
+
+        function openAdminUserModal(username = null) {
+            const isEdit = !!username;
+            const modalTitle = document.getElementById('userModalTitle');
+            const saveBtn = document.getElementById('userModalSaveBtn');
+            const userForm = document.getElementById('adminUserForm');
+            const deptSelectEl = document.getElementById('user-department');
+
+            modalTitle.textContent = isEdit ? `แก้ไขผู้ใช้: ${username}` : 'เพิ่มผู้ใช้ใหม่';
+            saveBtn.textContent = isEdit ? 'บันทึกการแก้ไข' : 'บันทึกผู้ใช้';
+
+            userForm['user-original-username'].value = username || '';
+            userForm['user-username'].disabled = false; // Prevent changing username in edit mode
+            
+            // Populate department options for the select dropdown
+            const deptOptions = Array.from(new Set([...ALL_DEPARTMENTS, ...(dropdownOptions.department || [])])).sort();
+            populateSelect(deptSelectEl, deptOptions, false);
+
+            // Populate Checkboxes
+            accessibleDeptsContainer.innerHTML = '';
+            ALL_DEPARTMENTS.forEach(dept => {
+                const checked = isEdit && adminUserList[username] && adminUserList[username].accessibleDepts.includes(dept) ? 'checked' : '';
+                accessibleDeptsContainer.innerHTML += `
+                    <div class="flex items-center">
+                        <input id="dept-${dept}" name="accessibleDepts" type="checkbox" value="${dept}" ${checked}
+                               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="dept-${dept}" class="ml-2 block text-sm text-gray-900">${dept}</label>
+                    </div>
+                `;
+            });
+
+
+            if (isEdit) {
+                const user = adminUserList[username];
+                if (!user) {
+                    showToast('ไม่พบข้อมูลผู้ใช้', 'error');
+                    return;
+                }
+                userForm['user-username'].value = user.username;
+                userForm['user-password'].value = user.password;
+                userForm['user-role'].value = user.role;
+                deptSelectEl.value = user.department;
+            } else {
+                userForm.reset();
+                // Ensure default roles are set for new user
+                userForm['user-role'].value = 'User';
+            }
+
+            adminUserModal.showModal();
+        }
+
+        async function handleAdminUserSubmit(e) {
+            e.preventDefault();
+            
+            const originalUsername = document.getElementById('user-original-username').value;
+            const username = document.getElementById('user-username').value;
+            const password = document.getElementById('user-password').value;
+            const role = document.getElementById('user-role').value;
+            const department = document.getElementById('user-department').value;
+            
+            // Get selected accessible departments from checkboxes
+            const accessibleDepts = Array.from(accessibleDeptsContainer.querySelectorAll('input[name="accessibleDepts"]:checked'))
+                                         .map(cb => cb.value);
+
+            // Validation
+            if (!username || !password || !role || !department || accessibleDepts.length === 0) {
+                 onApiError({ message: 'กรุณากรอกข้อมูลให้ครบถ้วนและเลือกอย่างน้อย 1 แผนกที่เข้าถึงได้' });
+                 return;
+            }
+            
+            // Check for duplicate username on creation
+            if (username !== originalUsername && adminUserList[username]) {
+                onApiError({ message: `ชื่อผู้ใช้ ${username} มีอยู่แล้ว กรุณาใช้ชื่ออื่น` });
+                return;
+            }
+
+            showLoading(originalUsername ? 'กำลังบันทึกการแก้ไขผู้ใช้...' : 'กำลังเพิ่มผู้ใช้ใหม่...');
+            
+            const userData = { username, password, role, department, accessibleDepts };
+            
+            // Update the local state
+            if (originalUsername && originalUsername !== username) {
+                // Should not happen as username is disabled in edit, but for safety
+                delete adminUserList[originalUsername];
+            }
+            adminUserList[username] = userData;
+
+
+            // Call saveSettings to sync ALL options and ALL users
+            const settingsData = {
+                options: dropdownOptions, // Existing options
+                users: adminUserList // Updated user list
+            };
+            
+            try {
+                const response = await server('saveSettings', settingsData);
+                hideLoading();
+                
+                if (response.success) {
+                    adminUserList = response.users;
+                    renderAdminUserTable();
+                    adminUserModal.close();
+                    showToast(originalUsername ? 'อัปเดตผู้ใช้เรียบร้อยแล้ว' : 'เพิ่มผู้ใช้ใหม่เรียบร้อยแล้ว');
+                } else {
+                    onApiError(response);
+                }
+            } catch (err) {
+                onApiError(err);
+            }
+        }
+
+        function confirmDeleteUser(username) {
+            Swal.fire({
+                title: 'คุณแน่ใจหรือไม่?',
+                text: `คุณต้องการลบผู้ใช้ ${username} ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'ใช่, ลบเลย',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteUserFromList(username);
+                }
+            });
+        }
+
+        async function deleteUserFromList(username) {
+            if (username === currentUser.username) {
+                 onApiError({ message: 'ไม่สามารถลบผู้ใช้ที่กำลังเข้าสู่ระบบอยู่ได้' });
+                 return;
+            }
+            
+            showLoading('กำลังลบผู้ใช้...');
+            
+            // Update local state
+            delete adminUserList[username];
+            
+            // Call saveSettings to sync ALL options and ALL users
+            const settingsData = {
+                options: dropdownOptions,
+                users: adminUserList
+            };
+            
+            try {
+                const response = await server('saveSettings', settingsData);
+                hideLoading();
+                
+                if (response.success) {
+                    adminUserList = response.users;
+                    renderAdminUserTable();
+                    showToast('ลบผู้ใช้เรียบร้อยแล้ว');
+                } else {
+                    onApiError(response);
+                }
+            } catch (err) {
+                onApiError(err);
+            }
+        }
+        
+        // === INITIALIZATION ===
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+    
+            // Assign DOM Elements
+            loginView = document.getElementById('loginView');
+            mainView = document.getElementById('mainView');
+            loginForm = document.getElementById('loginForm');
+            logoutButton = document.getElementById('logoutButton');
+            userInfo = document.getElementById('userInfo');
+            userRole = document.getElementById('userRole');
+            loadingOverlay = document.getElementById('loadingOverlay');
+            loadingText = document.getElementById('loadingText');
+            tabsNav = document.getElementById('tabsNav');
+            ticketForm = document.getElementById('ticketForm');
+            dashboardPanel = document.getElementById('dashboardPanel');
+            newTicketPanel = document.getElementById('newTicketPanel');
+            historyPanel = document.getElementById('historyPanel');
+            settingsPanel = document.getElementById('settingsPanel');
+            deptSelect = document.getElementById('department');
+            prioritySelect = document.getElementById('priority');
+            typeSelect = document.getElementById('type');
+            locationSelect = document.getElementById('location');
+            serviceDeptSelect = document.getElementById('serviceDept'); // NEW
+            historyTableContainer = document.getElementById('historyTableContainer');
+            noHistory = document.getElementById('noHistory');
+            adminDeptFilterContainer = document.getElementById('adminDeptFilterContainer');
+            deptFilter = document.getElementById('deptFilter');
+            statusFilter = document.getElementById('statusFilter');
+            contactFilter = document.getElementById('contactFilter');
+            detailsFilter = document.getElementById('detailsFilter'); // ✅ เพิ่มบรรทัดนี้
+            serialFilter = document.getElementById('serialFilter');
+            dateStartFilter = document.getElementById('dateStartFilter');
+            dateEndFilter = document.getElementById('dateEndFilter');
+            dateEndFilterContainer = document.getElementById('dateEndFilterContainer');
+            clearFiltersBtn = document.getElementById('clearFiltersBtn');
+            typeFilter = document.getElementById('typeFilter');
+            settingsForm = document.getElementById('settingsForm');
+            adminEditModal = document.getElementById('adminEditModal');
+            adminEditForm = document.getElementById('adminEditForm');
+            userEditModal = document.getElementById('userEditModal');
+            userEditForm = document.getElementById('userEditForm');
+            adminUserTableContainer = document.getElementById('adminUserTableContainer'); // NEW
+            noAdminUsers = document.getElementById('noAdminUsers'); // NEW
+            addUserBtn = document.getElementById('addUserBtn'); // NEW
+            adminUserModal = document.getElementById('adminUserModal'); // NEW
+            adminUserForm = document.getElementById('adminUserForm'); // NEW
+            accessibleDeptsContainer = document.getElementById('accessible-depts-container'); // NEW
+
+            // Setup Listeners
+            loginForm.addEventListener('submit', handleLogin);
+            logoutButton.addEventListener('click', handleLogout);
+            ticketForm.addEventListener('submit', handleTicketSubmit);
+            settingsForm.addEventListener('submit', handleSettingsSave);
+            document.getElementById('typeSettingsForm').addEventListener('submit', handleSettingsSave);
+            adminEditForm.addEventListener('submit', handleAdminUpdate);
+            userEditForm.addEventListener('submit', handleUserUpdate);
+            clearFiltersBtn.addEventListener('click', () => clearAllFilters(true));
+            addUserBtn.addEventListener('click', () => openAdminUserModal(null)); // NEW
+            adminUserForm.addEventListener('submit', handleAdminUserSubmit); // NEW
+            
+            // File input listeners
+            document.getElementById('file1').addEventListener('change', (e) => handleFileChange(e, 'file1', 'file1Preview', 'file1Name'));
+            document.getElementById('file2').addEventListener('change', (e) => handleFileChange(e, 'file2', 'file2Preview', 'file2Name'));
+            document.getElementById('edit-fileAdmin').addEventListener('change', (e) => handleFileChange(e, 'editFileAdmin', 'edit-fileAdminPreview', 'edit-fileAdminName'));
+            
+            // Filter listeners
+            deptFilter.addEventListener('change', () => { currentSort = 'default'; renderHistoryTable(); });
+            statusFilter.addEventListener('change', () => { currentSort = 'default'; renderHistoryTable(); });
+            contactFilter.addEventListener('input', () => { currentSort = 'default'; renderHistoryTable(); });
+            detailsFilter.addEventListener('input', () => { currentSort = 'default'; renderHistoryTable(); }); // ✅ เพิ่มบรรทัดนี้
+            serialFilter.addEventListener('input', () => { currentSort = 'default'; renderHistoryTable(); }); // ✅ เพิ่มบรรทัดนี้
+            dateStartFilter.addEventListener('change', () => { currentSort = 'default'; renderHistoryTable(); });
+            dateEndFilter.addEventListener('change', () => { currentSort = 'default'; renderHistoryTable(); });
+            
+            // Dashboard stat card listeners
+            document.getElementById('statTotal').addEventListener('click', () => handleDashboardClick('status', ''));
+            document.getElementById('statPending').addEventListener('click', () => handleDashboardClick('status', 'รอดำเนินการ'));
+            document.getElementById('statInProgress').addEventListener('click', () => handleDashboardClick('status', 'กำลังดำเนินการ'));
+            document.getElementById('statCompleted').addEventListener('click', () => handleDashboardClick('status', 'ดำเนินการเรียบร้อยแล้ว'));
+            document.getElementById('statDuration').addEventListener('click', () => handleDashboardClick('duration', ''));
+            document.getElementById('assigneeSettingsForm').addEventListener('submit', handleAssigneeSave);
+
+            // Set default datetime
+            setDefaultDateTime();
+            
+            // Init icons
+            lucide.createIcons();
+            
+            // ✅ Check session and auto-login (ต้องเป็นบรรทัดสุดท้าย)
+            await autoLoginFromSession();
+        });
+
+        // NEW: Function to set default datetime
+        function setDefaultDateTime() {
+            const now = new Date();
+            // Format: YYYY-MM-DDThh:mm (ตามมาตรฐาน datetime-local)
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const datetimeString = now.toISOString().slice(0, 16);
+            
+            const dateTimeInput = document.getElementById('reportDateTime');
+            if (dateTimeInput) {
+                dateTimeInput.value = datetimeString;
+            }
+        }
+
+        // ✅ ฟังก์ชันบันทึก (แก้ไขใหม่)
+        async function handleAssigneeSave(e) {
+            e.preventDefault();
+            showLoading('กำลังบันทึกรายชื่อ...');
+
+            // Save ค่าปัจจุบันลง Temp อีกครั้งเพื่อความชัวร์
+            const currentDept = document.getElementById('settingAssigneeDeptSelect').value;
+            if (currentDept) {
+                tempAssigneeConfig[currentDept] = document.getElementById('assigneeEditor').value.split('\n').filter(Boolean);
+            }
+
+            // อัปเดต Global Options
+            dropdownOptions.assignees = tempAssigneeConfig;
+
+            const settingsData = {
+                options: dropdownOptions,
+                users: adminUserList
+            };
+
+            try {
+                const response = await server('saveSettings', settingsData);
+                hideLoading();
+                if (response.success) {
+                    dropdownOptions = response.options;
+                    populateAllDropdowns();
+                    showToast('บันทึกรายชื่อผู้รับผิดชอบเรียบร้อยแล้ว');
+                } else {
+                    onApiError(response);
+                }
+            } catch (err) {
+                onApiError(err);
+            }
+        }
+
+        // --- Global Variable สำหรับเก็บข้อมูล Asset ชั่วคราว ---
+        let currentAssetData = null;
+
+        // 1. ฟังก์ชันจัดการเมื่อกด Enter (สำหรับเครื่องสแกนบาร์โค้ดส่วนใหญ่จะ Enter อัตโนมัติ)
+        function handleSerialEnter(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // กัน Form Submit
+                fetchAssetData(event.target.value);
+            }
+        }
+
+        // 2. ฟังก์ชันไปดึงข้อมูลจาก Server
+        async function fetchAssetData(serial) {
+            if (!serial) return;
+            
+            const statusSpan = document.getElementById('serialStatus');
+            const btnView = document.getElementById('btnViewAsset');
+            
+            statusSpan.textContent = 'กำลังค้นหาข้อมูล...';
+            statusSpan.className = 'text-xs text-blue-600 mt-1';
+            
+            try {
+                // เรียกฟังก์ชัน Backend ที่เราสร้างในข้อ 2
+                const response = await server('getAssetBySerial', serial);
+                
+                if (response.success) {
+                    currentAssetData = response.data; // เก็บข้อมูลไว้
+                    currentAssetSheet = response.sheetName;
+                    
+                    statusSpan.textContent = `พบข้อมูล: ${response.data.name}`;
+                    statusSpan.className = 'text-xs text-green-600 mt-1';
+                    
+                    // เปิดปุ่มรูปตา และเปลี่ยนสีให้เด่น
+                    btnView.disabled = false;
+                    btnView.classList.remove('bg-gray-200', 'text-gray-500');
+                    btnView.classList.add('bg-blue-100', 'text-blue-600');
+                    
+                    // (Optional) ถ้าอยากให้ Auto Fill ลงช่องรายละเอียดด้วย ให้เปิดบรรทัดล่างนี้
+                    // document.getElementById('details').value += `\n[Device]: ${response.data.name} (${response.data.model})`;
+
+                } else {
+                    currentAssetData = null;
+                    statusSpan.textContent = 'ไม่พบข้อมูลอุปกรณ์นี้ในระบบ';
+                    statusSpan.className = 'text-xs text-red-500 mt-1';
+                    btnView.disabled = true;
+                    btnView.classList.add('bg-gray-200', 'text-gray-500');
+                    btnView.classList.remove('bg-blue-100', 'text-blue-600');
+                }
+            } catch (e) {
+                console.error(e);
+                statusSpan.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
+            }
+        }
+
+        // --- ส่วนฟังก์ชันสแกน QR/Barcode (ฉบับปรับปรุงความเร็ว) ---
+        // --- ส่วนฟังก์ชันสแกน QR/Barcode (แก้ไข Error & เพิ่มปุ่ม Flash) ---
+        let html5QrcodeScanner = null;
+        let isScanning = false;
+        let isFlashOn = false;
+
+        async function startScanner() {
+            const readerDiv = document.getElementById('reader');
+            const flashBtn = document.getElementById('flashToggleBtn');
+
+            // 1. ถ้ามี Scanner ค้างอยู่ หรือกำลังเปิดอยู่ ให้ปิดก่อนเสมอ (Hard Reset)
+            if (html5QrcodeScanner || isScanning) {
+                try {
+                    await stopScanner();
+                } catch (e) {
+                    console.warn("Force stop error:", e);
+                }
+            }
+
+            // เปิดกล่องแสดงกล้อง
+            readerDiv.classList.remove('hidden');
+
+            try {
+                // สร้าง Instance ใหม่
+                html5QrcodeScanner = new Html5Qrcode("reader", { 
+                    experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+                    verbose: false
+                });
+
+                const config = { 
+                    fps: 20, 
+                    qrbox: { width: 250, height: 150 }, 
+                    aspectRatio: 1.0,
+                    videoConstraints: {
+                        facingMode: "environment",
+                        focusMode: "continuous",
+                        width: { min: 640, ideal: 1280 }
+                    }
+                };
+                
+                // เริ่มสแกน
+                isScanning = true;
+                await html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure);
+
+                // เช็คว่ามีแฟลชไหม (เรียกฟังก์ชันที่เคยหาไม่เจอ)
+                checkFlashCapability();
+
+            } catch (err) {
+                console.error("Error starting scanner", err);
+                
+                if (!err.toString().includes("already running")) {
+                    alert("ไม่สามารถเปิดกล้องได้: " + err);
+                }
+                
+                isScanning = false;
+                readerDiv.classList.add('hidden');
+                if(html5QrcodeScanner) {
+                    try { await html5QrcodeScanner.clear(); } catch(e){}
+                    html5QrcodeScanner = null;
+                }
+            }
+        }
+
+        async function stopScanner() {
+            const readerDiv = document.getElementById('reader');
+            const flashBtn = document.getElementById('flashToggleBtn');
+
+            if (html5QrcodeScanner) {
+                try {
+                    // ปิดแฟลชก่อน
+                    if (isFlashOn) {
+                        isFlashOn = false;
+                        updateFlashIcon(); 
+                    }
+
+                    // สั่ง Stop
+                    if (html5QrcodeScanner.isScanning) {
+                        await html5QrcodeScanner.stop();
+                    }
+
+                    // สั่ง Clear
+                    await html5QrcodeScanner.clear();
+                    
+                } catch (err) {
+                    console.error("Failed to clear scanner:", err);
+                }
+            }
+            
+            // รีเซ็ตค่าตัวแปร
+            html5QrcodeScanner = null;
+            isFlashOn = false;
+            isScanning = false;
+            
+            // ซ่อน UI
+            readerDiv.classList.add('hidden');
+            flashBtn.classList.add('hidden');
+        }
+
+        // ฟังก์ชันเช็คสเปคเครื่อง (ต้องมีฟังก์ชันนี้!)
+        function checkFlashCapability() {
+            try {
+                if (!html5QrcodeScanner) return;
+                
+                const capabilities = html5QrcodeScanner.getRunningTrackCameraCapabilities();
+                const flashBtn = document.getElementById('flashToggleBtn');
+
+                // ถ้า capabilities เป็น null (บาง browser ไม่ส่งค่ามา) ให้ซ่อนปุ่มไปก่อน
+                if (capabilities && capabilities.torchFeature && capabilities.torchFeature().isSupported()) {
+                    flashBtn.classList.remove('hidden');
+                } else {
+                    flashBtn.classList.add('hidden');
+                }
+            } catch (e) {
+                console.warn("Check flash error:", e);
+            }
+        }
+
+        // ฟังก์ชันเปิด/ปิด แฟลช
+        async function toggleFlash() {
+            if (!html5QrcodeScanner || !isScanning) return;
+
+            try {
+                isFlashOn = !isFlashOn;
+                await html5QrcodeScanner.applyVideoConstraints({
+                    advanced: [{ torch: isFlashOn }]
+                });
+                updateFlashIcon();
+            } catch (err) {
+                console.error("Toggle flash error", err);
+                isFlashOn = !isFlashOn; 
+            }
+        }
+
+        function updateFlashIcon() {
+            const icon = document.getElementById('flashIcon');
+            const btn = document.getElementById('flashToggleBtn');
+            
+            if (isFlashOn) {
+                icon.setAttribute('data-lucide', 'zap');
+                btn.classList.remove('bg-black', 'text-white');
+                btn.classList.add('bg-yellow-400', 'text-black');
+            } else {
+                icon.setAttribute('data-lucide', 'zap-off');
+                btn.classList.add('bg-black', 'text-white');
+                btn.classList.remove('bg-yellow-400', 'text-black');
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            const input = document.getElementById('serialNumber');
+            input.value = decodedText;
+            
+            stopScanner().then(() => {
+                fetchAssetData(decodedText);
+            });
+        }
+
+        function onScanFailure(error) {
+            // ไม่ต้องทำอะไร
+        }
+
+        // --- ฟังก์ชันแสดง Popup ข้อมูล (ฉบับปรับปรุง: เพิ่มหน่วย "ปี" ให้ประกัน) ---
+        function viewAssetDetails() {
+            if (!currentAssetData) return;
+
+            // Helper Function หาค่าจาก Key หลายๆ แบบ
+            const findValue = (searchKeys) => {
+                const dataKeys = Object.keys(currentAssetData);
+                for (const key of searchKeys) {
+                    const foundKey = dataKeys.find(k => k.toLowerCase().trim() === key.toLowerCase().trim());
+                    if (foundKey && currentAssetData[foundKey] && 
+                        currentAssetData[foundKey].toString().trim() !== '' && 
+                        currentAssetData[foundKey] !== '-') {
+                        return currentAssetData[foundKey];
+                    }
+                }
+                return '-';
+            };
+
+            // 1. ดึงข้อมูล
+            const serial = findValue(['Serial/ServiceTag', 'Serial', 'S/N', 'Serial Number', 'Barcode', 'AssetCode']);
+            const location = findValue(['Location', 'สถานที่']);
+            const model = findValue(['Model', 'รุ่น', 'Item Name', 'Device Name', 'Computer_Name']);
+            const startDate = findValue(['Start Date', 'Start_Date', 'วันที่ซื้อ', 'วันที่เริ่มใช้งาน', 'วันที่ติดตั้ง']);
+            
+            let age = findValue(['อายุการใช้งาน', 'Age', 'Life Time']);
+            if (age === '-') {
+                age = findValue(['Year Total', 'จำนวนปีที่ใช้งาน', 'จำนวนปีที่ใข้งาน']);
+            } else {
+                age = age.toString()
+                        .replace(/years?,?/gi, 'ปี')
+                        .replace(/months?,?/gi, 'เดือน')
+                        .replace(/days?,?/gi, 'วัน');
+            }
+
+            let warranty = findValue(['Total Warranty', 'Warranty', 'Warranty _Check', 'ประกัน', 'สถานะประกัน']);
+            if (warranty !== '-' && !isNaN(parseFloat(warranty)) && isFinite(warranty)) {
+                warranty = `${warranty} ปี`;
+            }
+
+            // 2. สร้าง HTML
+            const htmlContent = `
+                <div class="text-left space-y-4 font-sans">
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl flex flex-col items-center justify-center text-center shadow-sm">
+                        <span class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Serial Number / Asset ID</span>
+                        <span class="text-2xl font-extrabold text-blue-700 tracking-tight break-all">${serial}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                            <strong class="block text-[10px] text-gray-400 uppercase tracking-wide mb-1">
+                                <i data-lucide="map-pin" class="w-3 h-3 inline mr-1"></i> Location
+                            </strong>
+                            <span class="text-sm font-semibold text-gray-800">${location}</span>
+                        </div>
+
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                            <strong class="block text-[10px] text-gray-400 uppercase tracking-wide mb-1">
+                                <i data-lucide="box" class="w-3 h-3 inline mr-1"></i> Model / รุ่น
+                            </strong>
+                            <span class="text-sm font-semibold text-gray-800">${model}</span>
+                        </div>
+
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                            <strong class="block text-[10px] text-gray-400 uppercase tracking-wide mb-1">
+                                <i data-lucide="calendar" class="w-3 h-3 inline mr-1"></i> วันที่ซื้อ / เริ่มต้น
+                            </strong>
+                            <span class="text-sm font-semibold text-gray-800">${startDate}</span>
+                        </div>
+
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                            <strong class="block text-[10px] text-gray-400 uppercase tracking-wide mb-1">
+                                <i data-lucide="hourglass" class="w-3 h-3 inline mr-1"></i> อายุการใช้งาน
+                            </strong>
+                            <span class="text-sm font-semibold text-blue-600">${age}</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-full mr-3 text-green-600">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <strong class="block text-xs text-green-700 font-bold uppercase">สถานะประกัน (Total Warranty)</strong>
+                                <span class="text-sm font-medium text-green-900">${warranty}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 3. แสดง Popup
+            Swal.fire({
+                title: `<div class="flex items-center gap-2 text-lg font-bold text-gray-800">
+                            <i data-lucide="info" class="w-6 h-6 text-blue-600"></i> รายละเอียดอุปกรณ์
+                        </div>`,
+                html: htmlContent,
+                width: '500px',
+                padding: '1.5rem',
+                showCloseButton: true,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'ปิดหน้าต่าง',
+                cancelButtonColor: '#94a3b8',
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl',
+                    actions: 'mt-4'
+                },
+                didOpen: () => {
+                    lucide.createIcons();
+                }
+            });
+        }
+
+        // --- ฟังก์ชันดึงข้อมูล (ต้องอยู่นอก viewAssetDetails) ---
+        async function fetchAndShowAsset(serial) {
+            if (!serial) return;
+            
+            // แสดง Loading
+            const loadingToast = Swal.fire({
+                title: 'กำลังค้นหาข้อมูล...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            try {
+                const response = await server('getAssetBySerial', serial);
+                loadingToast.close();
+
+                if (response.success) {
+                    currentAssetData = response.data; // เก็บใส่ตัวแปร Global
+                    viewAssetDetails(); // เรียกฟังก์ชันแสดงผล
+                } else {
+                    Swal.fire('ไม่พบข้อมูล', `ไม่พบอุปกรณ์ Serial: ${serial} ในระบบ`, 'warning');
+                }
+            } catch (e) {
+                loadingToast.close();
+                Swal.fire('Error', e.message, 'error');
+            }
+        }
+
+    </script>
+</body>
+</html>
